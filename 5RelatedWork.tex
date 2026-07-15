@@ -18,11 +18,13 @@ Our evaluation differs in its output variable: each turn asks whether memory sho
 
 \subsection{Proactive Memory and Agents}
 
+ProactiveAgent predicts tasks from streams of environment observations and explicitly evaluates whether an agent should propose assistance or remain silent~\citep{lu2025proactiveagent}.
 PASK~\citep{xie2026pask} combines streaming latent-need detection with hybrid memory in an end-to-end proactive agent.
 MemCog~\citep{li2026memcog} supports reasoning-driven memory traversal.
 The concurrent preprint Remember When It Matters~\citep{wu2026remember} runs a separate memory agent that decides whether to inject a memory-grounded reminder or remain silent during long-horizon tasks.
 These systems establish that proactive memory is broader than \system{}.
-Our focus is the combination of (i) discovering typed habits from repeated behavior that users need not articulate, and (ii) exposing an auditable, phase- and cooldown-aware intervention controller.
+Our benchmark differs from end-to-end proactive task prediction by fixing a turn-level intervention-opportunity label and evaluating timing separately from proposal wording.
+Our method focus is the combination of (i) discovering typed habits from repeated behavior that users need not articulate, and (ii) exposing an auditable, phase- and cooldown-aware intervention controller.
 
 \subsection{Habit and Intervention Control}
 

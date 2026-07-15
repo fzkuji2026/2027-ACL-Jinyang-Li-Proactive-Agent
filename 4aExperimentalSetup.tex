@@ -1,46 +1,60 @@
-\section{Experimental Setup}
+\section{Benchmark and Experimental Setup}
 \label{sec:setup}
 
-\subsection{Research Questions}
+\subsection{Benchmark Task and Construction}
 
-We study four questions: (RQ1) Does \system{} improve proactive decision quality over the evaluated memory proxies? (RQ2) Which mechanisms contribute under different domain structures? (RQ3) Are the effects stable across repetitions, protocols, and model configurations? (RQ4) What is the measured call and token composition of the framework?
+We construct a controlled benchmark for longitudinal proactive intervention with 207 sessions, 3,435 evaluated turns, and 301 positive intervention opportunities across six domains.
+Each source-grounded record or scenario template is converted into the event representation from Section~\ref{sec:problem} and expanded into a multi-turn session in which a method must either Push or abstain at every turn.
+Relative to ProactiveBench~\citep{lu2025proactiveagent}, which evaluates whether a generated proactive task would be accepted, our labels identify whether the current turn is an appropriate intervention opportunity independently of proposal wording.
+The benchmark therefore isolates longitudinal evidence use, intervention timing, and abstention; it is not a reproduction of the ProactiveBench protocol.
 
-\subsection{Domains and Data Construction}
+\paragraph{Public-source grounding.}
+Code uses a provenance pool of 989 non-merge commits collected from Requests (179), Flask (194), HTTPX (200), tqdm (216), and FastAPI (200).
+Bug-fix, feature, documentation, configuration, and refactoring activity families from this pool inform 32 controlled repository workflows with edit, test, debug, documentation, and commit stages; the sessions are scenario expansions rather than direct commit replays.
+SmartHome lifts 20 public SmartBench traces---15 anomaly and five normal traces---into Easy event sessions while preserving their routine or anomaly semantics; 12 controlled Hard variants test less explicit or exception-bearing cues (snapshot commit \texttt{98bec394})~\citep{horizonsinzqs2026smartbench}.
+Email and Calendar are anchored to 25 distinct WorkBench email records and 25 distinct calendar events, respectively~\citep{styles2024workbench}.
+Project Management uses 18 existing WorkBench task records plus four schema-compatible create-task requests for operations without a pre-existing target record.
+Shopping uses the $\tau$-bench Retail task/tool schema and its product, order, and user resources to construct 32 sessions around six recurring preference or action patterns; it is a schema-grounded adaptation rather than a one-to-one replay of official trajectories~\citep{yao2025taubench}.
 
-Table~\ref{tab:data} summarizes the evaluation data.
-Code is a real-world-grounded controlled adaptation rather than a direct replay of raw developer logs.
-We mined public commit histories from five open-source repositories---Requests, Flask, HTTPX, tqdm, and FastAPI---and used representative bug-fix, feature, documentation, configuration, and refactoring activities to inform the scenario design.
-We then expanded these activities into multi-turn repository workflows with explicit edit, test, debug, and commit stages.
-Code Push labels follow pre-specified observable workflow rules that are independent of \system{}'s predictions and internal phase detector.
-Email, Calendar, and Project Management are HCPM adaptations of records and task structures from WorkBench~\citep{styles2024workbench}; Shopping is an HCPM adaptation of the Retail domain in $\tau$-bench~\citep{yao2025taubench}; SmartHome is an HCPM adaptation of the public SmartBench repository (accessed July 14, 2026; local snapshot commit \texttt{98bec394})~\citep{horizonsinzqs2026smartbench}.
-We transform these sources into longitudinal event sessions and assign turn-level intervention labels using domain-specific construction rules.
-The evaluated sessions contain 51 positive turns in Code, 42 in SmartHome, and 52 in each of the other four domains.
-These controlled labels make intervention timing reproducible but are not annotations of naturally occurring longitudinal agent--user interactions.
-The reported numbers are not directly comparable to official, unmodified benchmark leaderboards.
+\paragraph{Longitudinal conversion and labels.}
+The source-grounded records and scenario families are expanded into repeated evidence, an actionable or non-actionable current stage, and observable consequences.
+Easy sessions expose clearer recurring evidence and intervention stages.
+Each domain's 12 Hard sessions comprise four ambiguous late positives, four implicit positives, and four aligned or explicit-exception negatives.
+Turn-level labels follow pre-specified domain construction rules that are independent of \system{}'s predictions and internal phase detector.
+This controlled construction makes intervention timing reproducible, but the labels are not annotations of naturally occurring longitudinal agent--user interactions and the resulting scores are not official scores on the unmodified source benchmarks.
+
+\subsection{Dataset Statistics}
+
+Table~\ref{tab:data} reports only evaluated benchmark sessions and turns.
 
 \begin{table}[t]
 \centering
-\caption{Dataset statistics. C/H denote clean/hard subsets. Warm-up events are excluded from evaluated turns.}
+\caption{Benchmark statistics. Pos. denotes turns labeled for proactive intervention.}
 \label{tab:data}
 \small
-\begin{tabular}{lrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Domain & C sess. & H sess. & Turns & Warm-up \\
+& \multicolumn{2}{c}{Sessions} & & & \\
+\cmidrule(lr){2-3}
+Domain & Easy & Hard & Turns/session & Turns & Pos. \\
 \midrule
-Code & 20 & 12 & 448 & 34 \\
-SmartHome & 20 & 12 & 440 & 50 \\
-Shopping & 20 & 12 & 495 & 54 \\
-Email & 25 & 12 & 684 & 54 \\
-Calendar & 25 & 12 & 684 & 54 \\
-Project Mgmt. & 25 & 12 & 684 & 54 \\
+Code & 20 & 12 & 12--17 & 448 & 51 \\
+SmartHome & 20 & 12 & 12--17 & 440 & 42 \\
+Shopping & 20 & 12 & 15--17 & 495 & 52 \\
+Email & 25 & 12 & 16--20 & 684 & 52 \\
+Calendar & 25 & 12 & 16--20 & 684 & 52 \\
+Project Mgmt. & 25 & 12 & 16--20 & 684 & 52 \\
+\midrule
+Total & 135 & 72 & 12--20 & 3,435 & 301 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Clean sessions contain clearer evidence and expected intervention stages.
-Hard sessions add premature cues, implicit positives, aligned actions, and explicit exceptions.
-The main \texttt{all} condition is a continual stateful clean-to-hard run: the Habit Store, counter state, and learned variants persist across the subset boundary, while session-local cooldown is reset.
-We separately audited split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
+The released artifact retains \texttt{clean} as the internal split identifier for Easy; this is a presentation alias and does not change any frozen data or result.
+
+\subsection{Research Questions}
+
+We study four questions: (RQ1) Does \system{} improve proactive decision quality over the evaluated memory proxies? (RQ2) Which mechanisms contribute under different domain structures? (RQ3) Are the effects stable across repetitions, protocols, and model configurations? (RQ4) What is the measured call and token composition of the framework?
 
 \subsection{Baselines}
 
@@ -56,12 +70,19 @@ Summary-Reflection updates every 20 observations, flushes any nonempty remainder
 Generative Memory uses Jaccard overlap as relevance and scores observations as $0.55\,\mathrm{relevance}+0.25\exp(-\mathrm{age}/80)+0.20\,\mathrm{importance}$, where age is observation-index distance.
 Importance starts at 0.45, adds 0.25 for predefined action verbs, 0.20 for predefined salient terms, and 0.10 for user-authored events, and is capped at 1.0.
 The baselines intentionally exclude \system{}'s typed Habit Store, generalized preference abstraction, and consolidation mechanism.
-Warm-up and a per-memory cooldown of three events are applied where supported to avoid giving \system{} an intervention-frequency advantage by protocol alone.
+
+\subsection{Evaluation Protocol}
+
+The main \texttt{all} condition is a continual stateful Easy-to-Hard run: long-term method state persists across the subset boundary, while session-local cooldown is reset.
+We separately audit split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
+Before evaluated turns, Code receives 34 initialization events, SmartHome receives 50, and each remaining domain receives 54.
+These warm-up events initialize longitudinal state, are excluded from Table~\ref{tab:data} and all reported metrics, and are provided to every stateful method where supported.
+A per-memory cooldown of three events is likewise applied where supported to avoid giving \system{} an intervention-frequency advantage by protocol alone.
 
 \subsection{Metrics and Statistical Tests}
 
 We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces, while the main table presents precision, recall, F1, FP, and Push count.
-For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and clean/hard stratum sizes, with fixed seed \texttt{20260713}.
+For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and Easy/Hard stratum sizes, with fixed seed \texttt{20260713}.
 Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
 For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces as references because the original Full logs predate structured tracing; the reference traces reproduce the frozen Full predictions and confusion matrices.
 

@@ -1,8 +1,6 @@
 \section{HCPM Framework}
 \label{sec:framework}
 
-\subsection{Overview}
-
 Figure~\ref{fig:architecture} summarizes the pipeline.
 \system{} separates two responsibilities.
 The \emph{discovery layer} turns repeated interaction evidence into typed, persistent habits.
@@ -17,7 +15,16 @@ This separation prevents ``memory found'' from becoming synonymous with ``notifi
     \label{fig:architecture}
 \end{figure*}
 
-\subsection{Event Accumulation and Habit Discovery}
+\subsection{Habit Discovery and Consolidation}
+
+In \system{}, a habit is a method-specific record
+\begin{equation}
+h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h),
+\end{equation}
+where $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ contains generalized variants.
+Habit types include workflow, temporal, emotional, and associative patterns.
+
+\paragraph{Event accumulation.}
 
 An event counter maintains frequencies of $(o,v)$ pairs and a sliding buffer of recent event summaries.
 Every discovery batch filters out conversational, terminal, and verification actions that should not independently define a habit.
@@ -30,7 +37,7 @@ The parser removes reasoning blocks, scans for a schema-valid JSON payload, and 
 Thus, the LLM proposes structured regularities, while deterministic checks govern admissible evidence and the representation written to memory.
 Users need not state ``this is my habit,'' but the system still requires repeated observational evidence and does not claim zero-history personalization.
 
-\subsection{Habit Confidence and Lifecycle}
+\paragraph{Confidence and lifecycle.}
 
 Each record tracks frequency, last observation, consequence statistics, confidence, and lifecycle state.
 Let
@@ -48,7 +55,7 @@ Here, $\sigma$ is the logistic sigmoid, $(w_f,w_r,w_c)=(0.5,0.3,0.2)$, and $\lam
 Records transition among active, fading, forgotten, and abandoned states; repeated evidence can reinforce a fading record.
 The current implementation persists the Habit Store; counters and queues are maintained as runtime state and could in principle be rebuilt by replaying the event stream.
 
-\subsection{Generalized Habit Matching}
+\paragraph{Generalized variants.}
 
 Exact matching is brittle when behavior is stable but surface forms vary.
 \system{} therefore stores generalized trigger patterns and variants.
@@ -56,7 +63,9 @@ A coding habit may match a glob pattern, while preference-oriented domains can m
 At runtime, Variant Match selects the highest-confidence supported variant and emits a candidate describing the typical consequence.
 The Exact-only ablation retains habit discovery but disables generalized runtime matching, isolating the value of abstraction beyond literal event equality.
 
-\subsection{Multi-Source Candidate Generation}
+\subsection{Proactive Intervention Control}
+
+\paragraph{Candidate generation and scoring.}
 
 The controller supports seven trigger families:
 \begin{itemize}
@@ -76,7 +85,7 @@ s(c)=0.35r_c+0.25u_c+0.25q_c+0.15n_c
 \end{equation}
 The highest-scoring candidate proceeds only if $s(c)>\theta_{\mathrm{push}}$, with $\theta_{\mathrm{push}}=0.6$ by default.
 
-\subsection{Phase-Aware and Confidence-Aware Control}
+\paragraph{Phase- and confidence-aware control.}
 
 Related behavior is not necessarily actionable behavior.
 For workflow domains with observable execution stages, \system{} derives a compact phase from recent events.
@@ -91,7 +100,7 @@ The checker receives current phase, recent actions, test state, and the candidat
 An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream candidate selection, thresholding, and cooldown.
 As Section~\ref{sec:ablation} shows, this checker has only weak and unstable marginal evidence in the current experiments; it is retained as an optional safeguard rather than presented as the central contribution.
 
-\subsection{Cooldown and Feedback Control}
+\paragraph{Cooldown.}
 
 After thresholding, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
 Habit-backed candidates can therefore maintain independent cooldowns, while candidates without a habit identifier use the trigger--source key as a fallback.
@@ -102,7 +111,7 @@ Cooldown determines an intervention operating point.
 It is not a categorical user-interface label and is not expected to maximize F1 in every domain.
 The complete decision trace stores the candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
 
-\subsection{Deployment Boundary}
+\paragraph{Deployment boundary.}
 
 The structured decision is middleware output.
 An agent host may inject it directly, transform it into a notification, request confirmation, or suppress it under an application policy.

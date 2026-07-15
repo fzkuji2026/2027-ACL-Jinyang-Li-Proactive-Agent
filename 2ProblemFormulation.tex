@@ -1,7 +1,7 @@
 \section{Problem Formulation}
 \label{sec:problem}
 
-\subsection{Events, Habits, and Decisions}
+\subsection{Longitudinal Proactive Assistance}
 
 Let a session be an ordered stream of events $E=(e_1,\ldots,e_T)$.
 Each event is represented as
@@ -12,20 +12,22 @@ Here, $\tau_t$ is time, $a_t$ is the actor, $v_t$ is an action verb, $o_t$ is an
 Structured tool calls are mapped deterministically; free-form language can be parsed into the same schema by an LLM.
 The benchmark uses pre-structured events so event parsing is not part of the reported decision accuracy.
 
-A habit $h$ represents a recurring behavioral regularity:
+Before turn $t$, an agent maintains a method-dependent state $S_t$ derived from prior events $e_{<t}$.
+The state may contain raw observations, retrieved memories, summaries, or learned behavioral representations; the task definition does not prescribe its form.
+After observing the current event, the agent chooses whether to intervene:
 \begin{equation}
-h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h)
+(\hat{y}_t,\hat{p}_t)=\pi(e_t,S_t),
+\qquad \hat{y}_t\in\{0,1\}.
 \end{equation}
-Here, $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics over observed typical outcomes, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ is a set of generalized variants.
-Habit types include workflow, temporal, emotional, and associative patterns.
+Here, $\hat{y}_t=1$ denotes a proactive intervention and $\hat{y}_t=0$ denotes abstention; $\hat{p}_t$ is the proposed service when an intervention is made and is empty otherwise.
+The current event is incorporated into persistent state only after this decision, preventing it from appearing as its own historical evidence:
+\begin{equation}
+S_{t+1}=U(S_t,e_t).
+\end{equation}
 
-At each turn, the system observes the current event and memory state $M_t$, and outputs
-\begin{equation}
-\hat{y}_t = \pi(e_{\leq t},M_t) \in \{0,1\}
-\end{equation}
-Here, $1$ denotes a structured Push decision.
-When $\hat{y}_t=1$, the decision also identifies its trigger, supporting habit, candidate score, and control trace.
-Natural-language wording is a downstream host-system concern and does not change $\hat{y}_t$.
+This formulation shares the observe--propose-or-abstain structure of prior proactive-agent work~\citep{lu2025proactiveagent}, but our evaluated variable is deliberately narrower.
+The benchmark provides a turn-level label for whether an intervention opportunity exists, independent of the wording of a generated task proposal.
+We therefore evaluate intervention timing and abstention rather than end-to-end natural-language proposal quality; language realization remains a downstream host-system concern.
 
 \subsection{Evaluation Objective}
 
