@@ -7,8 +7,9 @@
 \usepackage{xcolor}
 \usepackage{xspace}
 
-\settopmatter{printacmref=false}
-\renewcommand\footnotetextcopyrightpermission[1]{}
+\setcopyright{none}
+\acmDOI{}
+\acmISBN{}
 \acmConference[WSDM '27]{The Twentieth ACM International Conference on Web Search and Data Mining}{February 15--19, 2027}{Hong Kong, China}
 \acmYear{2027}
 \copyrightyear{2027}
@@ -591,6 +592,8 @@ Benchmark-derived prompts were sent to external model APIs during the experiment
 A released artifact must exclude credentials and personal paths, document which benchmark fields are transmitted, and state provider retention assumptions where available.
 The structured traces used for audit can themselves contain behavioral evidence and should receive the same access, retention, and deletion protections as the Habit Store.
 
+\clearpage
+\balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sample-base}
 
