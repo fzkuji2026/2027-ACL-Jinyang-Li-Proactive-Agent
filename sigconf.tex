@@ -1,847 +1,597 @@
-%%
-%% This is file `sigconf.tex',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% samples.dtx  (with options: `all,proceedings,sigconf')
-%% 
-%% IMPORTANT NOTICE:
-%% 
-%% For the copyright see the source file.
-%% 
-%% Any modified versions of this file must be renamed
-%% with new filenames distinct from sigconf.tex.
-%% 
-%% For distribution of the original source see the terms
-%% for copying and modification in the file samples.dtx.
-%% 
-%% This generated file may be distributed as long as the
-%% original source files, as listed above, are part of the
-%% same distribution. (The sources need not necessarily be
-%% in the same archive or directory.)
-%%
-%%
-%% Commands for TeXCount
-%TC:macro \cite [option:text,text]
-%TC:macro \citep [option:text,text]
-%TC:macro \citet [option:text,text]
-%TC:envir table 0 1
-%TC:envir table* 0 1
-%TC:envir tabular [ignore] word
-%TC:envir displaymath 0 word
-%TC:envir math 0 word
-%TC:envir comment 0 0
-%%
-%% The first command in your LaTeX source must be the \documentclass
-%% command.
-%%
-%% For submission and review of your manuscript please change the
-%% command to \documentclass[manuscript, screen, review]{acmart}.
-%%
-%% When submitting camera ready or to TAPS, please change the command
-%% to \documentclass[sigconf]{acmart} or whichever template is required
-%% for your publication.
-%%
-%%
-\documentclass[sigconf]{acmart}
-%%
-%% \BibTeX command to typeset BibTeX logo in the docs
-\AtBeginDocument{%
-  \providecommand\BibTeX{{%
-    Bib\TeX}}}
+\documentclass[sigconf,anonymous,review]{acmart}
 
-%% Rights management information.  This information is sent to you
-%% when you complete the rights form.  These commands have SAMPLE
-%% values in them; it is your responsibility as an author to replace
-%% the commands and values with those provided to you when you
-%% complete the rights form.
-\setcopyright{acmlicensed}
-\copyrightyear{2018}
-\acmYear{2018}
-\acmDOI{XXXXXXX.XXXXXXX}
-%% These commands are for a PROCEEDINGS abstract or paper.
-\acmConference[Conference acronym 'XX]{Make sure to enter the correct
-  conference title from your rights confirmation email}{June 03--05,
-  2018}{Woodstock, NY}
-%%
-%%  Uncomment \acmBooktitle if the title of the proceedings is different
-%%  from ``Proceedings of ...''!
-%%
-%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
-%%  June 03--05, 2018, Woodstock, NY}
-\acmISBN{978-1-4503-XXXX-X/2018/06}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{xspace}
 
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\acmConference[WSDM '27]{The Twentieth ACM International Conference on Web Search and Data Mining}{February 15--19, 2027}{Hong Kong, China}
+\acmYear{2027}
+\copyrightyear{2027}
 
-%%
-%% Submission ID.
-%% Use this when submitting an article to a sponsored event. You'll
-%% receive a unique submission ID from the organizers
-%% of the event, and this ID should be used as the parameter to this command.
-%%\acmSubmissionID{123-A56-BU3}
+\newcommand{\system}{HCPM}
 
-%%
-%% For managing citations, it is recommended to use bibliography
-%% files in BibTeX format.
-%%
-%% You can then either use BibTeX with the ACM-Reference-Format style,
-%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
-%% support for advanced citation of software artefact from the
-%% biblatex-software package, also separately available on CTAN.
-%%
-%% Look at the sample-*-biblatex.tex files for templates showcasing
-%% the biblatex styles.
-%%
-%%
-%% The majority of ACM publications use numbered citations and
-%% references.  The command \citestyle{authoryear} switches to the
-%% "author year" style.
-%%
-%% If you are preparing content for an event
-%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
-%% citations and references.
-%% Uncommenting
-%% the next command will enable that style.
-%%\citestyle{acmauthoryear}
+% AML internal review helpers; intentionally unused in the anonymous submission.
+\newcommand{\zxy}[1]{{\color{blue} [#1 -- Xy]}}
+\newcommand{\zc}{\textcolor{blue}{[cite]}\xspace}
 
+\title{HCPM: Discovering Latent Habits for Controlled Proactive Memory in LLM Agents}
 
-%%
-%% end of the preamble, start of the body of the document source.
+\author{Anonymous Author(s)}
+\affiliation{\institution{Anonymous Institution}}
+
 \begin{document}
 
-%%
-%% The "title" command has an optional parameter,
-%% allowing the author to define a "short title" to be used in page headers.
-\title{The Name of the Title Is Hope}
-
-%%
-%% The "author" command and its associated commands are used to define
-%% the authors and their affiliations.
-%% Of note is the shared affiliation of the first two authors, and the
-%% "authornote" and "authornotemark" commands
-%% used to denote shared contribution to the research.
-\author{Ben Trovato}
-\authornote{Both authors contributed equally to this research.}
-\email{trovato@corporation.com}
-\orcid{1234-5678-9012}
-\author{G.K.M. Tobin}
-\correspondingauthor
-\authornotemark[1]
-\email{webmaster@marysville-ohio.com}
-\affiliation{%
-  \institution{Institute for Clarity in Documentation}
-  \city{Dublin}
-  \state{Ohio}
-  \country{USA}
-}
-
-\author{Lars Th{\o}rv{\"a}ld}
-\affiliation{%
-  \institution{The Th{\o}rv{\"a}ld Group}
-  \city{Hekla}
-  \country{Iceland}}
-\email{larst@affiliation.org}
-
-\author{Valerie B\'eranger}
-\affiliation{%
-  \institution{Inria Paris-Rocquencourt}
-  \city{Rocquencourt}
-  \country{France}
-}
-
-\author{Aparna Patel}
-\affiliation{%
- \institution{Rajiv Gandhi University}
- \city{Doimukh}
- \state{Arunachal Pradesh}
- \country{India}}
-
-\author{Huifen Chan}
-\affiliation{%
-  \institution{Tsinghua University}
-  \city{Haidian Qu}
-  \state{Beijing Shi}
-  \country{China}}
-
-\author{Charles Palmer}
-\affiliation{%
-  \institution{Palmer Research Laboratories}
-  \city{San Antonio}
-  \state{Texas}
-  \country{USA}}
-\email{cpalmer@prl.com}
-
-\author{John Smith}
-\affiliation{%
-  \institution{The Th{\o}rv{\"a}ld Group}
-  \city{Hekla}
-  \country{Iceland}}
-\email{jsmith@affiliation.org}
-
-\author{Julius P. Kumquat}
-\correspondingauthor
-\affiliation{%
-  \institution{The Kumquat Consortium}
-  \city{New York}
-  \country{USA}}
-\email{jpkumquat@consortium.net}
-
-%%
-%% By default, the full list of authors will be used in the page
-%% headers. Often, this list is too long, and will overlap
-%% other information printed in the page headers. This command allows
-%% the author to define a more concise list
-%% of authors' names for this purpose.
-\renewcommand{\shortauthors}{Trovato et al.}
-
-%%
-%% The abstract is a short summary of the work to be presented in the
-%% article.
 \begin{abstract}
-  A clear and well-documented \LaTeX\ document is presented as an
-  article formatted for publication by ACM in a conference proceedings
-  or journal publication. Based on the ``acmart'' document class, this
-  article presents and explains many of the common variations, as well
-  as many of the formatting elements an author may use in the
-  preparation of the documentation of their work.
+Long-term memory allows large language model agents to retain information beyond a single interaction, but retrieval alone does not determine when remembered information should interrupt an ongoing task.
+This distinction is important for web-facing and tool-using agents: users may not fully articulate their recurring workflows, while an agent that surfaces every related memory becomes distracting.
+We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
+\system{} consolidates repeated event--consequence patterns into typed habits, generalizes variable event forms, generates candidates from multiple trigger families, and applies scoring, phase-aware gating, and per-habit cooldown before producing a structured Push or no-Push decision.
+Across six domain adaptations covering code, smart home, shopping, email, calendar, and project management, \system{} reaches a macro F1 of 0.653, compared with 0.392 for an oracle that selects the strongest evaluated proxy baseline independently in each domain.
+It also reduces false positives from 604 to 176 and proactive pushes from 822 to 408 relative to those selected proxies.
+Ablations show that generalized habit matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
+Cooldown exposes a measurable recall--intervention trade-off rather than universally maximizing F1.
+These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
 \end{abstract}
 
-%%
-%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
-%% Please copy and paste the code instead of the example below.
-%%
-\begin{CCSXML}
-<ccs2012>
- <concept>
-  <concept_id>00000000.0000000.0000000</concept_id>
-  <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
-  <concept_significance>500</concept_significance>
- </concept>
- <concept>
-  <concept_id>00000000.00000000.00000000</concept_id>
-  <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
-  <concept_significance>300</concept_significance>
- </concept>
- <concept>
-  <concept_id>00000000.00000000.00000000</concept_id>
-  <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
-  <concept_significance>100</concept_significance>
- </concept>
- <concept>
-  <concept_id>00000000.00000000.00000000</concept_id>
-  <concept_desc>Do Not Use This Code, Generate the Correct Terms for Your Paper</concept_desc>
-  <concept_significance>100</concept_significance>
- </concept>
-</ccs2012>
-\end{CCSXML}
+\ccsdesc[500]{Information systems~Information retrieval}
+\ccsdesc[300]{Computing methodologies~Artificial intelligence}
+\ccsdesc[300]{Human-centered computing~Human computer interaction (HCI)}
 
-\ccsdesc[500]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
-\ccsdesc[300]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
-\ccsdesc{Do Not Use This Code~Generate the Correct Terms for Your Paper}
-\ccsdesc[100]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+\keywords{LLM agents, long-term memory, habit discovery, proactive assistance, intervention control}
 
-%% A "teaser" image appears between the author and affiliation
-%% information and the body of the document, and typically spans the
-%% page.
-\begin{teaserfigure}
- \includegraphics[width=\textwidth]{sampleteaser}
-  \caption{Seattle Mariners at Spring Training, 2010.}
-  \Description{Enjoying the baseball game from the third-base
-  seats. Ichiro Suzuki preparing to bat.}
-  \label{fig:teaser}
-\end{teaserfigure}
-
-\received{20 February 2007}
-\received[revised]{12 March 2009}
-\received[accepted]{5 June 2009}
-
-%%
-%% This command processes the author and affiliation and title
-%% information and builds the first part of the formatted document.
 \maketitle
 
-
 \section{Introduction}
-ACM's consolidated article template, introduced in 2017, provides a
-consistent \LaTeX\ style for use across ACM publications, and
-incorporates accessibility and metadata-extraction functionality
-necessary for future Digital Library endeavors. Numerous ACM and
-SIG-specific \LaTeX\ templates have been examined, and their unique
-features incorporated into this single new template.
+\label{sec:introduction}
 
-If you are new to publishing with ACM, this document is a valuable
-guide to the process of preparing your work for publication. If you
-have published with ACM before, this document provides insight and
-instruction into more recent changes to the article template.
+Large language model (LLM) agents increasingly operate over web applications, workplace tools, software repositories, and personal services.
+In these settings, an agent may interact with the same user and environment over many sessions.
+Persistent-memory systems address this setting through complementary mechanisms, including storing and retrieving prior events, consolidating conversational facts, producing higher-level reflections, and organizing memories in hierarchical or graph-structured stores~\citep{park2023generative,packer2023memgpt,zhong2024memorybank,chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
+These mechanisms answer an important question: \emph{what past information is relevant now?}
+They do not, by themselves, answer a second question: \emph{should that information be surfaced at the current turn?}
 
-The ``\verb|acmart|'' document class can be used to prepare articles
-for any ACM publication --- conference or journal, and for any stage
-of publication, from review to final ``camera-ready'' copy, to the
-author's own version, with {\itshape very} few changes to the source.
+The second question becomes central when memory is proactive.
+A reactive system waits for a query; a proactive system may interrupt an ongoing workflow.
+The cost of an incorrect decision is therefore asymmetric.
+Missing a useful reminder loses an opportunity, while an unnecessary reminder consumes attention, may expose an incorrect inference about the user, and can steer an agent toward an action that was never intended.
+Relevance is not enough: a memory can be related to the current task but premature, already satisfied, inconsistent with an explicit exception, or repeated too soon after an earlier intervention.
 
-\section{Template Overview}
-As noted in the introduction, the ``\verb|acmart|'' document class can
-be used to prepare many different kinds of documentation --- a
-double-anonymous initial submission of a full-length technical paper, a
-two-page SIGGRAPH Emerging Technologies abstract, a ``camera-ready''
-journal article, a SIGCHI Extended Abstract, and more --- all by
-selecting the appropriate {\itshape template style} and {\itshape
-  template parameters}.
+Recent preprints have begun to study streaming latent-need detection with hybrid memory, reasoning-integrated memory exploration, and selective reminder injection~\citep{xie2026pask,li2026memcog,wu2026remember}.
+We focus on a complementary gap.
+Users may not enumerate their own recurring workflows or express them as stable rules.
+For example, a developer may regularly commit only after tests pass, a shopper may repeatedly avoid a class of ingredients, or a calendar user may follow a scheduling preference without ever declaring it as a memory.
+An agent should be able to infer such regularities from interaction traces.
+At the same time, the inferred habit must not become an unconditional notification rule.
 
-This document will explain the major features of the document
-class. For further information, the {\itshape \LaTeX\ User's Guide} is
-available from
-\url{https://www.acm.org/publications/proceedings-template}.
+We introduce \system{} (Habit-Consolidated Proactive Memory), a modular middleware for discovering latent habits and controlling their delivery.
+\system{} observes structured user and agent events, accumulates repeated evidence, and consolidates trigger--context--consequence regularities into typed habit records.
+It generalizes semantically equivalent event forms, generates proactive candidates through several trigger families, and exposes an auditable controller that scores candidates, checks workflow phase, optionally consults an LLM for high-risk cases, and enforces cooldown.
+Its evaluated output is a structured Push or no-Push decision; optional natural-language realization occurs only after this decision and is outside the core mechanism.
 
-\subsection{Template Styles}
+This formulation is relevant to web search and data mining in two ways.
+First, web agents and intelligent assistants must mine longitudinal interaction traces rather than treat each request independently.
+Second, the utility of retrieved behavioral evidence depends on decision timing: the system must rank candidate memories and decide whether any candidate should enter the current agent context.
+The resulting problem joins behavioral pattern mining, retrieval, and selective intervention for agentic systems.
 
-The primary parameter given to the ``\verb|acmart|'' document class is
-the {\itshape template style} which corresponds to the kind of publication
-or SIG publishing the work. This parameter is enclosed in square
-brackets and is a part of the {\verb|documentclass|} command:
-\begin{verbatim}
-  \documentclass[STYLE]{acmart}
-\end{verbatim}
-
-Journals use one of three template styles. All but three ACM journals
-use the {\verb|acmsmall|} template style:
+We make four contributions:
 \begin{itemize}
-\item {\texttt{acmsmall}}: The default journal template style.
-\item {\texttt{acmlarge}}: Used by JOCCH and TAP.
-\item {\texttt{acmtog}}: Used by TOG.
+    \item We formulate proactive memory as a turn-level decision problem and construct six controlled domain adaptations grounded in public commit histories and public WorkBench, $\tau$-bench Retail, and SmartBench sources. These are adaptations, not official-protocol benchmark scores.
+    \item We present \system{}, which discovers habits that need not be explicitly declared and couples generalized habit matching with an auditable intervention controller.
+    \item We provide six-domain effectiveness, ablation, statistical, repeatability, and error evidence. \system{} improves macro F1 from 0.392 for the strongest evaluated per-domain proxy baselines to 0.653, while its mechanisms activate under different domain structures.
+    \item We test targeted mechanism effects across four model configurations and report absolute call and token composition without claiming matched-baseline efficiency superiority.
 \end{itemize}
 
-The majority of conference proceedings documentation will use the {\verb|acmconf|} template style.
+\section{Problem Formulation}
+\label{sec:problem}
+
+\subsection{Events, Habits, and Decisions}
+
+Let a session be an ordered stream of events $E=(e_1,\ldots,e_T)$.
+Each event is represented as
+\begin{equation}
+e_t=(\tau_t,a_t,v_t,o_t,m_t)
+\end{equation}
+Here, $\tau_t$ is time, $a_t$ is the actor, $v_t$ is an action verb, $o_t$ is an object or entity, and $m_t$ contains domain metadata.
+Structured tool calls are mapped deterministically; free-form language can be parsed into the same schema by an LLM.
+The benchmark uses pre-structured events so event parsing is not part of the reported decision accuracy.
+
+A habit $h$ represents a recurring behavioral regularity:
+\begin{equation}
+h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h)
+\end{equation}
+Here, $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics over observed typical outcomes, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ is a set of generalized variants.
+Habit types include workflow, temporal, emotional, and associative patterns.
+
+At each turn, the system observes the current event and memory state $M_t$, and outputs
+\begin{equation}
+\hat{y}_t = \pi(e_{\leq t},M_t) \in \{0,1\}
+\end{equation}
+Here, $1$ denotes a structured Push decision.
+When $\hat{y}_t=1$, the decision also identifies its trigger, supporting habit, candidate score, and control trace.
+Natural-language wording is a downstream host-system concern and does not change $\hat{y}_t$.
+
+\subsection{Evaluation Objective}
+
+Each evaluation turn has a ground-truth label $y_t$ indicating whether an intervention is useful at that stage.
+We report precision, recall, F1, false positives (FP), and Push count in the main text; complete traces additionally retain accuracy and true-positive, false-negative, and true-negative counts.
+F1 captures the balance between recovering useful interventions and avoiding false ones, while FP and Push count directly report false and total intervention frequency; they are offline proxies for potential intervention burden rather than measurements of perceived burden, satisfaction, trust, or helpfulness.
+No single metric fully represents user utility: the relative cost of one missed intervention and one unnecessary interruption is deployment dependent.
+We therefore treat threshold and cooldown as an operating policy rather than tune them solely to maximize test F1.
+
+\section{HCPM Framework}
+\label{sec:framework}
+
+\subsection{Overview}
+
+Figure~\ref{fig:architecture} summarizes the pipeline.
+\system{} separates two responsibilities.
+The \emph{discovery layer} turns repeated interaction evidence into typed, persistent habits.
+The \emph{control layer} decides whether a habit-derived candidate is actionable at the current turn.
+This separation prevents ``memory found'' from becoming synonymous with ``notification sent.''
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth,page=1]{sampleteaser.pdf}
+    \Description{A two-band HCPM architecture diagram. The upper band discovers typed habits from interaction events; the lower band generates, scores, suppresses, or delivers proactive candidates. A dashed boundary separates the evaluated Push/no-Push decision from optional language realization, and a feedback arrow returns observed outcomes to habit and cooldown state.}
+    \caption{\system{} architecture and evaluated decision boundary. The framework separates discovery of recurring, unspoken habits from control of proactive intervention. Seven trigger families produce candidates; selective phase/Think checks, weighted scoring, a threshold, and cooldowns yield a structured Push/no-Push decision. Optional natural-language realization lies outside the evaluated decision boundary, while observed use or non-use feeds back to habit and cooldown state.}
+    \label{fig:architecture}
+\end{figure*}
+
+\subsection{Event Accumulation and Habit Discovery}
+
+An event counter maintains frequencies of $(o,v)$ pairs and a sliding buffer of recent event summaries.
+Every discovery batch filters out conversational, terminal, and verification actions that should not independently define a habit.
+Candidates must have at least $n_{\min}=3$ supporting events in the default configuration.
+For coding events, deterministic preprocessing merges repeated files with the same extension (e.g., several Python edits can become \texttt{edit *.py}); domains with normalized entities retain their verb--object keys.
+
+The remaining evidence is passed to an LLM with a constrained schema.
+The output proposes a habit type, trigger, trigger context, consequence, and variants.
+The parser removes reasoning blocks, scans for a schema-valid JSON payload, and retries malformed outputs before applying domain-specific fallbacks.
+Thus, the LLM proposes structured regularities, while deterministic checks govern admissible evidence and the representation written to memory.
+Users need not state ``this is my habit,'' but the system still requires repeated observational evidence and does not claim zero-history personalization.
+
+\subsection{Habit Confidence and Lifecycle}
+
+Each record tracks frequency, last observation, consequence statistics, confidence, and lifecycle state.
+Let
+\begin{align}
+F(h) &= \min(f_h/f_{\max},1)\\
+R(h) &= \exp(-\lambda \Delta_h)
+\end{align}
+Here, $\Delta_h$ is days since the last observation.
+We use $f_{\max}=20$. The consistency term is $C(h)=1.0$ for at most two distinct consequences, $0.7$ for three to four, and $0.4$ for five or more.
+The implementation computes
+\begin{equation}
+q_h=\sigma\!\left(6\left[w_fF(h)+w_rR(h)+w_cC(h)-0.5\right]\right)
+\end{equation}
+Here, $\sigma$ is the logistic sigmoid, $(w_f,w_r,w_c)=(0.5,0.3,0.2)$, and $\lambda=0.1$.
+Records transition among active, fading, forgotten, and abandoned states; repeated evidence can reinforce a fading record.
+The current implementation persists the Habit Store; counters and queues are maintained as runtime state and could in principle be rebuilt by replaying the event stream.
+
+\subsection{Generalized Habit Matching}
+
+Exact matching is brittle when behavior is stable but surface forms vary.
+\system{} therefore stores generalized trigger patterns and variants.
+A coding habit may match a glob pattern, while preference-oriented domains can map an observed conflict key to a normalized habit entity.
+At runtime, Variant Match selects the highest-confidence supported variant and emits a candidate describing the typical consequence.
+The Exact-only ablation retains habit discovery but disables generalized runtime matching, isolating the value of abstraction beyond literal event equality.
+
+\subsection{Multi-Source Candidate Generation}
+
+The controller supports seven trigger families:
 \begin{itemize}
-\item {\texttt{sigconf}}: The default proceedings template style.
-\item{\texttt{sigchi}}: Used for SIGCHI conference articles.
-\item{\texttt{sigplan}}: Used for SIGPLAN conference articles.
+    \item \textbf{Semantic}: queries an optional external vector store with \texttt{top\_k=3} and emits a candidate from the best returned item only when its score strictly exceeds $0.75$.
+    \item \textbf{Pattern}: fires when an expected consequence remains unfulfilled past its time window.
+    \item \textbf{Anomaly}: detects a structurally related action that deviates from a high-confidence habit.
+    \item \textbf{Variant Match}: matches the current action to a discovered exact or generalized habit variant.
+    \item \textbf{Temporal}: activates a typed temporal habit at a compatible time.
+    \item \textbf{Emotional}: matches stored emotional cues or keywords.
+    \item \textbf{Associative}: surfaces a habit through an associated concept.
 \end{itemize}
 
-\subsection{Template Parameters}
+Each candidate $c$ has relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$.
+The score is
+\begin{equation}
+s(c)=0.35r_c+0.25u_c+0.25q_c+0.15n_c
+\end{equation}
+The highest-scoring candidate proceeds only if $s(c)>\theta_{\mathrm{push}}$, with $\theta_{\mathrm{push}}=0.6$ by default.
 
-In addition to specifying the {\itshape template style} to be used in
-formatting your work, there are a number of {\itshape template parameters}
-which modify some part of the applied template style. A complete list
-of these parameters can be found in the {\itshape \LaTeX\ User's Guide.}
+\subsection{Phase-Aware and Confidence-Aware Control}
 
-Frequently-used parameters, or combinations of parameters, include:
-\begin{itemize}
-\item {\texttt{anonymous,review}}: Suitable for a ``double-anonymous''
-  conference submission. Anonymizes the work and includes line
-  numbers. Use with the \texttt{\string\acmSubmissionID} command to print the
-  submission's unique ID on each page of the work.
-\item{\texttt{authorversion}}: Produces a version of the work suitable
-  for posting by the author.
-\item{\texttt{screen}}: Produces colored hyperlinks.
-\end{itemize}
+Related behavior is not necessarily actionable behavior.
+For workflow domains with observable execution stages, \system{} derives a compact phase from recent events.
+In Code, for example, current test status and edit/run/debug activity distinguish early work, implementation, debugging, documentation work, and wrap-up.
+A matching habit can be suppressed during early work or active debugging and allowed after stable verification.
+For non-coding domains where those signals do not apply, the phase module returns an active state rather than imposing coding-specific rules.
 
-This document uses the following string as the first command in the
-source file:
-\begin{verbatim}
-\documentclass[sigconf]{acmart}
-\end{verbatim}
+Pattern and Anomaly candidates may pass through the optional LLM Think check when Think is enabled and an LLM is available.
+In the Code workflow path, a Variant Match candidate may also invoke Think when the detected phase is early or implementing; with Think disabled or no LLM available, that branch applies deterministic phase suppression.
+For Variant Match, debugging is suppressed directly by the phase gate; candidates admitted in any other phase remain subject to the score threshold and cooldown rather than being pushed unconditionally.
+The checker receives current phase, recent actions, test state, and the candidate, then returns PUSH or SUPPRESS with a confidence value.
+An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream candidate selection, thresholding, and cooldown.
+As Section~\ref{sec:ablation} shows, this checker has only weak and unstable marginal evidence in the current experiments; it is retained as an optional safeguard rather than presented as the central contribution.
 
-\section{Modifications}
+\subsection{Cooldown and Feedback Control}
 
-Modifying the template --- including but not limited to: adjusting
-margins, typeface sizes, line spacing, paragraph and list definitions,
-and the use of the \verb|\vspace| command to manually adjust the
-vertical spacing between elements of your work --- is not allowed.
+After thresholding, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
+Habit-backed candidates can therefore maintain independent cooldowns, while candidates without a habit identifier use the trigger--source key as a fallback.
+The frozen experiments use a three-event cooldown, reset at session boundaries.
+After an observed response to a Push, a global feedback cooldown can also suppress immediate follow-up notifications, whether the suggestion was used or ignored.
 
-{\bfseries Your document will be returned to you for revision if
-  modifications are discovered.}
+Cooldown determines an intervention operating point.
+It is not a categorical user-interface label and is not expected to maximize F1 in every domain.
+The complete decision trace stores the candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
 
-\section{Typefaces}
+\subsection{Deployment Boundary}
 
-The ``\verb|acmart|'' document class requires the use of the
-``Libertine'' typeface family. Your \TeX\ installation should include
-this set of packages. Please do not substitute other typefaces. The
-``\verb|lmodern|'' and ``\verb|ltimes|'' packages should not be used,
-as they will override the built-in typeface families.
+The structured decision is middleware output.
+An agent host may inject it directly, transform it into a notification, request confirmation, or suppress it under an application policy.
+Optional LLM rewriting occurs after selection and cooldown and therefore does not alter decision F1.
+We report this cost separately in Section~\ref{sec:efficiency}.
 
-\section{Title Information}
+\section{Experimental Setup}
+\label{sec:setup}
 
-The title of your work should use capital letters appropriately -
-\url{https://capitalizemytitle.com/} has useful rules for
-capitalization. Use the {\verb|title|} command to define the title of
-your work. If your work has a subtitle, define it with the
-{\verb|subtitle|} command.  Do not insert line breaks in your title.
+\subsection{Research Questions}
 
-If your title is lengthy, you must define a short version to be used
-in the page headers, to prevent overlapping text. The \verb|title|
-command has a ``short title'' parameter:
-\begin{verbatim}
-  \title[short title]{full title}
-\end{verbatim}
+We study four questions: (RQ1) Does \system{} improve proactive decision quality over the evaluated memory proxies? (RQ2) Which mechanisms contribute under different domain structures? (RQ3) Are the effects stable across repetitions, protocols, and model configurations? (RQ4) What is the measured call and token composition of the framework?
 
-\section{Authors and Affiliations}
+\subsection{Domains and Data Construction}
 
-Each author must be defined separately for accurate metadata
-identification.  As an exception, multiple authors may share one
-affiliation. Authors' names should not be abbreviated; use full first
-names wherever possible. Include authors' e-mail addresses whenever
-possible.
+Table~\ref{tab:data} summarizes the evaluation data.
+Code is a real-world-grounded controlled adaptation rather than a direct replay of raw developer logs.
+We mined public commit histories from five open-source repositories---Requests, Flask, HTTPX, tqdm, and FastAPI---and used representative bug-fix, feature, documentation, configuration, and refactoring activities to inform the scenario design.
+We then expanded these activities into multi-turn repository workflows with explicit edit, test, debug, and commit stages.
+Code Push labels follow pre-specified observable workflow rules that are independent of \system{}'s predictions and internal phase detector.
+Email, Calendar, and Project Management are HCPM adaptations of records and task structures from WorkBench~\citep{styles2024workbench}; Shopping is an HCPM adaptation of the Retail domain in $\tau$-bench~\citep{yao2025taubench}; SmartHome is an HCPM adaptation of the public SmartBench repository (accessed July 14, 2026; local snapshot commit \texttt{98bec394})~\citep{horizonsinzqs2026smartbench}.
+We transform these sources into longitudinal event sessions and assign turn-level intervention labels using domain-specific construction rules.
+The evaluated sessions contain 51 positive turns in Code, 42 in SmartHome, and 52 in each of the other four domains.
+These controlled labels make intervention timing reproducible but are not annotations of naturally occurring longitudinal agent--user interactions.
+The reported numbers are not directly comparable to official, unmodified benchmark leaderboards.
 
-Grouping authors' names or e-mail addresses, or providing an ``e-mail
-alias,'' as shown below, is not acceptable:
-\begin{verbatim}
-  \author{Brooke Aster, David Mehldau}
-  \email{dave,judy,steve@university.edu}
-  \email{firstname.lastname@phillips.org}
-\end{verbatim}
-
-The \verb|authornote| and \verb|authornotemark| commands allow a note
-to apply to multiple authors --- for example, if the first two authors
-of an article contributed equally to the work.
-
-If your author list is lengthy, you must define a shortened version of
-the list of authors to be used in the page headers, to prevent
-overlapping text. The following command should be placed just after
-the last \verb|\author{}| definition:
-\begin{verbatim}
-  \renewcommand{\shortauthors}{McCartney, et al.}
-\end{verbatim}
-Omitting this command will force the use of a concatenated list of all
-of the authors' names, which may result in overlapping text in the
-page headers.
-
-The article template's documentation, available at
-\url{https://www.acm.org/publications/proceedings-template}, has a
-complete explanation of these commands and tips for their effective
-use.
-
-Note that authors' addresses are mandatory for journal articles.
-
-\section{Rights Information}
-
-Authors of any work published by ACM will need to complete a rights
-form. Depending on the kind of work, and the rights management choice
-made by the author, this may be copyright transfer, permission,
-license, or an OA (open access) agreement.
-
-Regardless of the rights management choice, the author will receive a
-copy of the completed rights form once it has been submitted. This
-form contains \LaTeX\ commands that must be copied into the source
-document. When the document source is compiled, these commands and
-their parameters add formatted text to several areas of the final
-document:
-\begin{itemize}
-\item the ``ACM Reference Format'' text on the first page.
-\item the ``rights management'' text on the first page.
-\item the conference information in the page header(s).
-\end{itemize}
-
-Rights information is unique to the work; if you are preparing several
-works for an event, make sure to use the correct set of commands with
-each of the works.
-
-The ACM Reference Format text is required for all articles over one
-page in length, and is optional for one-page articles (abstracts).
-
-\section{CCS Concepts and User-Defined Keywords}
-
-Two elements of the ``acmart'' document class provide powerful
-taxonomic tools for you to help readers find your work in an online
-search.
-
-The ACM Computing Classification System ---
-\url{https://www.acm.org/publications/class-2012} --- is a set of
-classifiers and concepts that describe the computing
-discipline. Authors can select entries from this classification
-system, via \url{https://dl.acm.org/ccs/ccs.cfm}, and generate the
-commands to be included in the \LaTeX\ source.
-
-User-defined keywords are a comma-separated list of words and phrases
-of the authors' choosing, providing a more flexible way of describing
-the research being presented.
-
-CCS concepts and user-defined keywords are required for for all
-articles over two pages in length, and are optional for one- and
-two-page articles (or abstracts).
-
-\section{Sectioning Commands}
-
-Your work should use standard \LaTeX\ sectioning commands:
-\verb|\section|, \verb|\subsection|, \verb|\subsubsection|,
-\verb|\paragraph|, and \verb|\subparagraph|. The sectioning levels up to
-\verb|\subsubsection| should be numbered; do not remove the numbering
-from the commands.
-
-Simulating a sectioning command by setting the first word or words of
-a paragraph in boldface or italicized text is {\bfseries not allowed.}
-
-Below are examples of sectioning commands.
-
-\subsection{Subsection}
-\label{sec:subsection}
-
-This is a subsection.
-
-\subsubsection{Subsubsection}
-\label{sec:subsubsection}
-
-This is a subsubsection.
-
-\paragraph{Paragraph}
-
-This is a paragraph.
-
-\subparagraph{Subparagraph}
-
-This is a subparagraph.
-
-\section{Tables}
-
-The ``\verb|acmart|'' document class includes the ``\verb|booktabs|''
-package --- \url{https://ctan.org/pkg/booktabs} --- for preparing
-high-quality tables.
-
-Table captions are placed {\itshape above} the table.
-
-Because tables cannot be split across pages, the best placement for
-them is typically the top of the page nearest their initial cite.  To
-ensure this proper ``floating'' placement of tables, use the
-environment \textbf{table} to enclose the table's contents and the
-table caption.  The contents of the table itself must go in the
-\textbf{tabular} environment, to be aligned properly in rows and
-columns, with the desired horizontal and vertical rules.  Again,
-detailed instructions on \textbf{tabular} material are found in the
-\textit{\LaTeX\ User's Guide}.
-
-Immediately following this sentence is the point at which
-Table~\ref{tab:freq} is included in the input file; compare the
-placement of the table here with the table in the printed output of
-this document.
-
-\begin{table}
-  \caption{Frequency of Special Characters}
-  \label{tab:freq}
-  \begin{tabular}{ccl}
-    \toprule
-    Non-English or Math&Frequency&Comments\\
-    \midrule
-    \O & 1 in 1,000& For Swedish names\\
-    $\pi$ & 1 in 5& Common in math\\
-    \$ & 4 in 5 & Used in business\\
-    $\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-  \bottomrule
+\begin{table}[t]
+\centering
+\caption{Dataset statistics. C/H denote clean/hard subsets. Warm-up events are excluded from evaluated turns.}
+\label{tab:data}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Domain & C sess. & H sess. & Turns & Warm-up \\
+\midrule
+Code & 20 & 12 & 448 & 34 \\
+SmartHome & 20 & 12 & 440 & 50 \\
+Shopping & 20 & 12 & 495 & 54 \\
+Email & 25 & 12 & 684 & 54 \\
+Calendar & 25 & 12 & 684 & 54 \\
+Project Mgmt. & 25 & 12 & 684 & 54 \\
+\bottomrule
 \end{tabular}
 \end{table}
 
-To set a wider table, which takes up the whole width of the page's
-live area, use the environment \textbf{table*} to enclose the table's
-contents and the table caption.  As with a single-column table, this
-wide table will ``float'' to a location deemed more
-desirable. Immediately following this sentence is the point at which
-Table~\ref{tab:commands} is included in the input file; again, it is
-instructive to compare the placement of the table here with the table
-in the printed output of this document.
+Clean sessions contain clearer evidence and expected intervention stages.
+Hard sessions add premature cues, implicit positives, aligned actions, and explicit exceptions.
+The main \texttt{all} condition is a continual stateful clean-to-hard run: the Habit Store, counter state, and learned variants persist across the subset boundary, while session-local cooldown is reset.
+We separately audited split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
 
-\begin{table*}
-  \caption{Some Typical Commands}
-  \label{tab:commands}
-  \begin{tabular}{ccl}
-    \toprule
-    Command &A Number & Comments\\
-    \midrule
-    \texttt{{\char'134}author} & 100& Author \\
-    \texttt{{\char'134}table}& 300 & For tables\\
-    \texttt{{\char'134}table*}& 400& For wider tables\\
-    \bottomrule
-  \end{tabular}
+\subsection{Baselines}
+
+All methods receive the same domain data and current event, use the same ground-truth labels, and produce the same Push/no-Push output under protocol-aligned evaluators; \system{} and the baseline families are executed by separate implementations rather than a shared internal execution path.
+\textbf{No Memory} uses only the current event and short local context.
+\textbf{Retrieval-augmented generation (RAG)-only} stores raw historical events and retrieves similar observations.
+\textbf{Summary-Reflection} compresses observations into a long-term natural-language summary and reflections.
+\textbf{Generative Memory} follows a relevance--recency--importance retrieval scheme inspired by Generative Agents~\citep{park2023generative}.
+These baselines are local proxy implementations constructed for this study, not official reproductions of the named systems.
+Across all baseline agents, the decision prompt includes at most 10 recent events in addition to the current event.
+RAG-only ranks raw events by Jaccard token overlap; RAG-only and Generative Memory cap retrieval at \texttt{top\_k}=8.
+Summary-Reflection updates every 20 observations, flushes any nonempty remainder at the end of warm-up, and retains at most 12 reflections.
+Generative Memory uses Jaccard overlap as relevance and scores observations as $0.55\,\mathrm{relevance}+0.25\exp(-\mathrm{age}/80)+0.20\,\mathrm{importance}$, where age is observation-index distance.
+Importance starts at 0.45, adds 0.25 for predefined action verbs, 0.20 for predefined salient terms, and 0.10 for user-authored events, and is capped at 1.0.
+The baselines intentionally exclude \system{}'s typed Habit Store, generalized preference abstraction, and consolidation mechanism.
+Warm-up and a per-memory cooldown of three events are applied where supported to avoid giving \system{} an intervention-frequency advantage by protocol alone.
+
+\subsection{Metrics and Statistical Tests}
+
+We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces, while the main table presents precision, recall, F1, FP, and Push count.
+For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and clean/hard stratum sizes, with fixed seed \texttt{20260713}.
+Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
+For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces as references because the original Full logs predate structured tracing; the reference traces reproduce the frozen Full predictions and confusion matrices.
+
+\subsection{Implementation and Reproducibility}
+
+The main matrix uses DeepSeek-V4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
+The package requires Python 3.10 or newer; the current bundled audit runtime reports Python 3.12.13, while exact historical environments are not recoverable for every run.
+Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The frozen evaluators use a 50-event discovery window and override the candidate cooldown to three events.
+The instrumented HCPM ablation, repeatability, cross-model, and efficiency evaluators write one JSON Lines (JSONL) decision trace per evaluated turn, containing trigger hits, candidates, score components, phase, Think output, cooldown state, ground truth, and TP/FP/FN/TN classification.
+The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
+Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
+None of the six frozen benchmark evaluators supplies \texttt{query\_vector\_store}; consequently, the external-vector Semantic branch is inactive in all reported experiments.
+The gains observed in the four domains with semantic surface variation---Shopping, Calendar, Email, and Project Management---come from generalized Habit Variant Match rather than Semantic vector retrieval.
+
+\section{Results and Analysis}
+\label{sec:results}
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
+\system{} has the highest F1 in all six domains.
+Its macro F1 is 0.653, compared with 0.388 for RAG-only and 0.392 for an oracle that chooses the strongest evaluated proxy baseline separately in each domain.
+
+% Auto-generated from formal_results.csv by paper/assets/asset_build.py.
+% Requires: booktabs, multirow, ulem (or soul) for underline.
+\begin{table*}[t]
+\centering
+\caption{Six-domain continual stateful (\texttt{all}) results with DeepSeek-V4-Flash and cooldown 3. The datasets include task-specific adaptations and these values must not be interpreted as official benchmark scores. Best domain F1 is bold; second-best is underlined.}
+\label{tab:main_results}
+\footnotesize
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{llrrrrr}
+\toprule
+Domain & Method & P & R & F1 & FP & Pushes \\
+\midrule
+\multirow{5}{*}{Code} & No Memory & 0.000 & 0.000 & 0.000 & 1 & 1 \\
+ & RAG-only & 0.161 & 0.529 & \underline{0.247} & 141 & 168 \\
+ & Summary-Reflection & 0.120 & 0.333 & 0.176 & 125 & 142 \\
+ & Generative Memory & 0.132 & 0.392 & 0.197 & 132 & 152 \\
+ & HCPM & 0.617 & 0.725 & \textbf{0.667} & 23 & 60 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{SmartHome} & No Memory & 0.500 & 0.048 & 0.087 & 2 & 4 \\
+ & RAG-only & 0.248 & 0.810 & \underline{0.380} & 103 & 137 \\
+ & Summary-Reflection & 0.203 & 0.690 & 0.314 & 114 & 143 \\
+ & Generative Memory & 0.238 & 0.738 & 0.360 & 99 & 130 \\
+ & HCPM & 0.550 & 0.786 & \textbf{0.647} & 27 & 60 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Shopping} & No Memory & 0.281 & 0.481 & 0.355 & 64 & 89 \\
+ & RAG-only & 0.281 & 1.000 & \underline{0.439} & 133 & 185 \\
+ & Summary-Reflection & 0.283 & 0.500 & 0.361 & 66 & 92 \\
+ & Generative Memory & 0.273 & 0.981 & 0.427 & 136 & 187 \\
+ & HCPM & 0.569 & 0.635 & \textbf{0.600} & 25 & 58 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Email} & No Memory & 0.533 & 0.154 & 0.239 & 7 & 15 \\
+ & RAG-only & 0.349 & 0.846 & \underline{0.494} & 82 & 126 \\
+ & Summary-Reflection & 0.357 & 0.385 & 0.370 & 36 & 56 \\
+ & Generative Memory & 0.262 & 0.731 & 0.386 & 107 & 145 \\
+ & HCPM & 0.581 & 0.827 & \textbf{0.683} & 31 & 74 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Calendar} & No Memory & 0.326 & 0.269 & 0.295 & 29 & 43 \\
+ & RAG-only & 0.247 & 0.827 & 0.381 & 131 & 174 \\
+ & Summary-Reflection & 0.435 & 0.385 & \underline{0.408} & 26 & 46 \\
+ & Generative Memory & 0.253 & 0.885 & 0.393 & 136 & 182 \\
+ & HCPM & 0.566 & 0.827 & \textbf{0.672} & 33 & 76 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Project Management} & No Memory & 0.167 & 0.019 & 0.034 & 5 & 6 \\
+ & RAG-only & 0.256 & 0.788 & \underline{0.387} & 119 & 160 \\
+ & Summary-Reflection & 0.267 & 0.385 & 0.315 & 55 & 75 \\
+ & Generative Memory & 0.214 & 0.769 & 0.335 & 147 & 187 \\
+ & HCPM & 0.537 & 0.827 & \textbf{0.652} & 37 & 80 \\
+\midrule
+\multicolumn{7}{l}{\footnotesize Macro F1: No Memory 0.168; RAG-only 0.388; Summary-Reflection 0.324; Generative Memory 0.350; HCPM 0.653} \\
+\bottomrule
+\end{tabular}
 \end{table*}
 
-Always use midrule to separate table header rows from data rows, and
-use it only for this purpose. This enables assistive technologies to
-recognise table headers and support their users in navigating tables
-more easily.
+Compared with the strongest evaluated proxy baseline in each domain, the F1 gains are 0.420 (Code), 0.267 (SmartHome), 0.161 (Shopping), 0.188 (Email), 0.264 (Calendar), and 0.265 (Project Management).
+The selected baselines produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
 
-\section{Math Equations}
-You may want to display math equations in three distinct styles:
-inline, numbered or non-numbered display.  Each of the three are
-discussed in the next sections.
+The aggregate does not imply uniform metric dominance.
+In Shopping, recall-heavy RAG-only reaches 1.000 recall but produces 133 false positives; \system{} reaches 0.635 recall with 25 false positives.
+In Calendar, \system{} improves F1 and recall but produces 33 false positives, seven more than the best-F1 Summary-Reflection baseline.
+These cases motivate reporting intervention count alongside F1.
 
-\subsection{Inline (In-text) Equations}
-A formula that appears in the running text is called an inline or
-in-text formula.  It is produced by the \textbf{math} environment,
-which can be invoked with the usual
-\texttt{{\char'134}begin\,\ldots{\char'134}end} construction or with
-the short form \texttt{\$\,\ldots\$}. You can use any of the symbols
-and structures, from $\alpha$ to $\omega$, available in
-\LaTeX~\cite{Lamport:LaTeX}; this section will simply show a few
-examples of in-text equations in context. Notice how this equation:
-\begin{math}
-  \lim_{n\rightarrow \infty}x=0
-\end{math},
-set here in in-line math style, looks slightly different when
-set in display style.  (See next section).
+\subsection{Mechanism Ablations}
+\label{sec:ablation}
 
-\subsection{Display Equations}
-A numbered display equation---one set off by vertical space from the
-text and centered horizontally---is produced by the \textbf{equation}
-environment. An unnumbered display equation is produced by the
-\textbf{displaymath} environment.
+Table~\ref{tab:ablations} shows a modular rather than universally additive system; Full denotes the complete \system{} configuration under the frozen protocol.
+Exact-only retains discovered habits but removes generalized runtime matching.
+Removing the phase gate changes Code substantially but is prediction-identical in four other tested domains.
 
-Again, in either environment, you can use any of the symbols and
-structures available in \LaTeX\@; this section will just give a couple
-of examples of display equations in context.  First, consider the
-equation, shown as an inline equation above:
-\begin{equation}
-  \lim_{n\rightarrow \infty}x=0
-\end{equation}
-Notice how it is formatted somewhat differently in
-the \textbf{displaymath}
-environment.  Now, we'll enter an unnumbered equation:
-\begin{displaymath}
-  \sum_{i=0}^{\infty} x + 1
-\end{displaymath}
-and follow it with another numbered equation:
-\begin{equation}
-  \sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f
-\end{equation}
-just to demonstrate \LaTeX's able handling of numbering.
+% Auto-generated from final_ablation_table.csv by paper/assets/asset_build.py.
+% Requires: booktabs.
+\begin{table*}[t]
+\centering
+\caption{Mechanism ablations. Cells report F1 (change from Full); an em dash denotes an untested setting. Generalized matching is active in Shopping, Calendar, Email, and Project Management; Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
+\label{tab:ablations}
+\footnotesize
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{lccccc}
+\toprule
+Domain & Full & Exact-only & w/o Phase Gate & w/o LLM Think & w/o Cooldown \\
+\midrule
+Code & 0.667 (ref.) & 0.667 (+0.000) & 0.462 (-0.205) & 0.642 (-0.024) & \textemdash \\
+SmartHome & 0.647 (ref.) & 0.647 (+0.000) & 0.647 (+0.000) & \textemdash & \textemdash \\
+Shopping & 0.600 (ref.) & 0.429 (-0.171) & 0.600 (+0.000) & 0.600 (+0.000) & 0.701 (+0.101) \\
+Email & 0.683 (ref.) & 0.197 (-0.486) & 0.683 (+0.000) & \textemdash & \textemdash \\
+Calendar & 0.672 (ref.) & 0.133 (-0.539) & \textemdash & \textemdash & \textemdash \\
+Project Management & 0.652 (ref.) & 0.143 (-0.509) & 0.652 (+0.000) & \textemdash & \textemdash \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-\section{Figures}
+\textbf{Generalized matching.}
+Full exceeds Exact-only in Shopping, Calendar, Email, and Project Management, with session-bootstrap intervals excluding zero: $[0.061,0.298]$, $[0.351,0.700]$, $[0.292,0.668]$, and $[0.311,0.677]$, respectively.
+Code and SmartHome are exact negative controls with identical predictions.
+Thus abstraction is most useful when preferences or workflow entities vary semantically, not when normalized events already match literally.
 
-The ``\verb|figure|'' environment should be used for figures. One or
-more images can be placed within a figure. If your figure contains
-third-party material, you must clearly identify it as such, as shown
-in the example below.
-\begin{figure}[h]
-  \centering
- \includegraphics[width=\linewidth]{sample-franklin}
-  \caption{1907 Franklin Model D roadster. Photograph by Harris \&
-    Ewing, Inc. [Public domain], via Wikimedia
-    Commons. (\url{https://goo.gl/VLCRBB}).}
-  \Description{A woman and a girl in white dresses sit in an open car.}
+\textbf{Phase gate.}
+Removing the gate lowers Code F1 by 0.205 (95\% CI $[0.131,0.276]$) and increases FP from 23 to 59.
+The effect is repeatable across three runs, while four non-Code domains are prediction-identical with and without the gate.
+
+\textbf{Think.}
+Code w/o Think has a three-run mean F1 of 0.659 versus 0.667 for Full, and two repeats are prediction-identical to Full.
+We therefore do not claim a robust aggregate contribution from the optional LLM checker.
+
+\textbf{Cooldown.}
+Removing Shopping cooldown raises turn-level F1 from 0.600 to 0.701 by increasing recall, but pushes rise from 58 to 85 and false positives from 25 to 37.
+At cooldown three, 27 candidates are suppressed: 15 potential true positives and 12 potential false positives.
+Cooldown therefore encodes an intervention-cost policy rather than an accuracy-only improvement.
+
+Figure~\ref{fig:cooldown} makes the corresponding operating-point trade-off explicit.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth,page=2]{sampleteaser.pdf}
+    \Description{A single-column plot of tested Shopping cooldown settings. Cooldowns zero through two share one operating point; cooldown three lowers pushes and false positives while also reducing recall and F1. An inset decomposes 27 suppressed candidates into 15 potential true positives and 12 potential false positives.}
+    \caption{Shopping cooldown operating points. Cooldown 0--2 and cooldown 3 are the discrete tested points; the connector is only a visual guide. Cooldown 3 suppresses both potential true and false interventions, illustrating an intervention-cost operating point rather than a setting that universally improves F1.}
+    \label{fig:cooldown}
 \end{figure}
 
-Your figures should contain a caption which describes the figure to
-the reader.
+\subsection{Stability Across Models and Protocols}
 
-Figure captions are placed {\itshape below} the figure.
+We repeat targeted Full--ablation comparisons with DeepSeek-V4-Pro, a gateway-reported GPT-5.5 endpoint, and MiniMax-M3.
+Table~\ref{tab:cross_model} reports $\Delta\mathrm{F1}=\mathrm{Full}-\mathrm{Ablation}$.
+All six selected effects replicate, including SmartHome as a zero-effect control.
+Exact score equality across several configurations reflects identical decision traces under the tested structured protocol; it should not be interpreted as independent verification of endpoint identity.
 
-Every figure should also have a figure description unless it is purely
-decorative. These descriptions convey what’s in the image to someone
-who cannot see it. They are also used by search engine crawlers for
-indexing images, and when images cannot be loaded.
+% Auto-generated from four_model_comparison.csv by paper/assets/asset_build.py.
+% Requires: booktabs.
+\begin{table*}[t]
+\centering
+\caption{Cross-model replication of the selected mechanism effect. Effect is Full F1 minus ablated F1, so positive values indicate the same degradation after ablation. SmartHome Exact-only is a zero-effect control.}
+\label{tab:cross_model}
+\footnotesize
+\setlength{\tabcolsep}{4.4pt}
+\begin{tabular}{llrrrrc}
+\toprule
+Domain & Ablation & Flash & Pro & GPT-5.5 & MiniMax-M3 & Effect replicated \\
+\midrule
+Code & w/o Phase Gate & +0.205 & +0.184 & +0.184 & +0.184 & Yes \\
+SmartHome & Exact-only & +0.000 & +0.000 & +0.000 & +0.000 & Yes \\
+Shopping & Exact-only & +0.171 & +0.171 & +0.171 & +0.171 & Yes \\
+Email & Exact-only & +0.486 & +0.486 & +0.486 & +0.486 & Yes \\
+Calendar & Exact-only & +0.539 & +0.539 & +0.539 & +0.539 & Yes \\
+Project Management & Exact-only & +0.509 & +0.509 & +0.509 & +0.509 & Yes \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+\parbox{0.98\textwidth}{\footnotesize The GPT-5.5 model identity is gateway-reported and was not independently verified. The table supports replication of the selected effect, including the zero-effect control, not universal component effectiveness.}
+\end{table*}
 
-A figure description must be unformatted plain text less than 2000
-characters long (including spaces).  {\bfseries Figure descriptions
-  should not repeat the figure caption – their purpose is to capture
-  important information that is not already provided in the caption or
-  the main text of the paper.} For figures that convey important and
-complex new information, a short text description may not be
-adequate. More complex alternative descriptions can be placed in an
-appendix and referenced in a short figure description. For example,
-provide a data table capturing the information in a bar chart, or a
-structured list representing a graph.  For additional information
-regarding how best to write figure descriptions and why doing this is
-so important, please see
-\url{https://www.acm.org/publications/taps/describing-figures/}.
+Code Full and Calendar Full each produce identical F1 in three observed repeats.
+The Shopping protocol audit additionally compares continual, split-reset, and reversed orderings; these checks preserve the principal conclusion while clarifying that the main \texttt{all} run is stateful and must not be reconstructed by summing standalone splits.
 
-\subsection{The ``Teaser Figure''}
+\subsection{Efficiency Composition}
+\label{sec:efficiency}
 
-A ``teaser figure'' is an image, or set of images in one figure, that
-are placed after all author and affiliation information, and before
-the body of the article, spanning the page. If you wish to have such a
-figure in your article, place the command immediately before the
-\verb|\maketitle| command:
-\begin{verbatim}
-  \begin{teaserfigure}
- \includegraphics[width=\textwidth]{sampleteaser}
-    \caption{figure caption}
-    \Description{figure description}
-  \end{teaserfigure}
-\end{verbatim}
+Table~\ref{tab:efficiency} reports absolute \system{} telemetry.
+Across six Full runs, the framework makes 496 logical calls and observes 732,409 provider-reported tokens.
+Discovery and Think account for 88 calls; optional Push formatting accounts for 408 calls (82.3\%) and 272,043 tokens (37.1\%).
+Because formatting follows the structured decision, a host can replace it without changing F1.
 
-\section{Citations and Bibliographies}
+\begin{table}[t]
+\centering
+\caption{Absolute Full-run telemetry under MiniMax-M3. Tokens are provider-reported observations.}
+\label{tab:efficiency}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Domain & Turns & Calls & Tokens \\
+\midrule
+Code & 448 & 105 & 112,287 \\
+Shopping & 495 & 70 & 164,066 \\
+Calendar & 684 & 85 & 125,510 \\
+Email & 684 & 83 & 119,712 \\
+Project Mgmt. & 684 & 89 & 123,218 \\
+SmartHome & 440 & 64 & 87,616 \\
+\midrule
+Total & 3,435 & 496 & 732,409 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-The use of \BibTeX\ for the preparation and formatting of one's
-references is strongly recommended. Authors' names should be complete
---- use full first names (``Donald E. Knuth'') not initials
-(``D. E. Knuth'') --- and the salient identifying features of a
-reference should be included: title, year, volume, number, pages,
-article DOI, etc.
+Two optional Calendar formatting calls fail without usage payloads, so the token total is a lower bound.
+Three serial Code measurements have an identical 105-call decomposition and identical decisions; the mean observed token count is 116,758 (sample standard deviation 4,514).
+We do not compare these values with matched-model baseline telemetry and therefore make no baseline-relative efficiency claim.
 
-The bibliography is included in your source document with these two
-commands, placed just before the \verb|\end{document}| command:
-\begin{verbatim}
-  \bibliographystyle{ACM-Reference-Format}
-  \bibliography{bibfile}
-\end{verbatim}
-where ``\verb|bibfile|'' is the name, without the ``\verb|.bib|''
-suffix, of the \BibTeX\ file.
+\subsection{Error Analysis}
 
-Citations and references are numbered by default. A small number of
-ACM publications have citations and references formatted in the
-``author year'' style; for these exceptions, please include this
-command in the {\bfseries preamble} (before the command
-``\verb|\begin{document}|'') of your \LaTeX\ source:
-\begin{verbatim}
-  \citestyle{acmauthoryear}
-\end{verbatim}
+Errors concentrate at the boundary between retrieving a related habit and deciding that it is actionable.
+In Code-hard, 11/17 false positives occur in aligned or exception negatives, while other errors push on early edits and miss the valid wrap-up stage.
+Shopping-hard similarly contains premature pushes before final decision points and false positives on preference-aligned actions.
+In Calendar-all, at least 20/33 false positives are directly verified as aligned or exception cases.
 
+These errors identify three remaining weaknesses.
+First, stage cues outside Code are less explicit, so relevant habits can fire before an actionable decision.
+Second, a related preference is sometimes mistaken for a violated preference.
+Third, implicit semantic evidence is weaker than explicit normalized conflict keys.
+The findings support the architectural separation in Figure~\ref{fig:architecture}: habit discovery can succeed while push control still fails.
 
-  Some examples.  A paginated journal article \cite{Abril07}, an
-  enumerated journal article \cite{Cohen07}, a reference to an entire
-  issue \cite{JCohen96}, a monograph (whole book) \cite{Kosiur01}, a
-  monograph/whole book in a series (see 2a in spec. document)
-  \cite{Harel79}, a divisible-book such as an anthology or compilation
-  \cite{Editor00} followed by the same example, however we only output
-  the series if the volume number is given \cite{Editor00a} (so
-  Editor00a's series should NOT be present since it has no vol. no.),
-  a chapter in a divisible book \cite{Spector90}, a chapter in a
-  divisible book in a series \cite{Douglass98}, a multi-volume work as
-  book \cite{Knuth97}, a couple of articles in a proceedings (of a
-  conference, symposium, workshop for example) (paginated proceedings
-  article) \cite{Andler79, Hagerup1993}, a proceedings article with
-  all possible elements \cite{Smith10}, an example of an enumerated
-  proceedings article \cite{VanGundy07}, an informally published work
-  \cite{Harel78}, a couple of preprints \cite{Bornmann2019,
-    AnzarootPBM14}, a doctoral dissertation \cite{Clarkson85}, a
-  master's thesis: \cite{anisi03}, an online document / world wide web
-  resource \cite{Thornburg01, Ablamowicz07, Poker06}, a video game
-  (Case 1) \cite{Obama08} and (Case 2) \cite{Novak03} and \cite{Lee05}
-  and (Case 3) a patent \cite{JoeScientist001}, work accepted for
-  publication \cite{rous08}, 'YYYYb'-test for prolific author
-  \cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might
-  contain 'duplicate' DOI and URLs (some SIAM articles)
-  \cite{Kirschmer:2010:AEI:1958016.1958018}. Boris / Barbara Beeton:
-  multi-volume works as books \cite{MR781536} and \cite{MR781537}. A
-  presentation~\cite{Reiser2014}. An article under
-  review~\cite{Baggett2025}. A
-  couple of citations with DOIs:
-  \cite{2004:ITE:1009386.1010128,Kirschmer:2010:AEI:1958016.1958018}. Online
-  citations: \cite{TUGInstmem, Thornburg01, CTANacmart}.
-  Artifacts: \cite{R} and \cite{UMassCitations}.
+\section{Related Work}
+\label{sec:related}
 
-\section{Acknowledgments}
+\subsection{Long-Term Memory for LLM Agents}
 
-Identification of funding sources and other support, and thanks to
-individuals and groups that assisted in the research and the
-preparation of the work should be included in an acknowledgment
-section, which is placed just before the reference section in your
-document.
+Generative Agents store observations, retrieve memories by relevance, recency, and importance, and synthesize higher-level reflections~\citep{park2023generative}.
+Reflexion maintains reflective textual feedback in episodic memory across trials~\citep{shinn2023reflexion}, while MemoryBank maintains persistent conversational memories and updates their strength as interactions evolve over time~\citep{zhong2024memorybank}.
+MemGPT treats limited context as a hierarchy of memory tiers~\citep{packer2023memgpt}.
+Mem0 dynamically extracts, consolidates, and retrieves conversational memories and includes a graph-based variant~\citep{chhikara2025mem0}, whereas A-Mem organizes memory notes through dynamically generated links and updates existing representations as new memories arrive~\citep{xu2025amem}.
+HippoRAG uses graph structure and personalized PageRank for cross-passage integration~\citep{gutierrez2024hipporag}.
+These works motivate persistent and structured memory, but their principal evaluation target is storage, retrieval, response quality, or memory organization rather than turn-level intervention timing.
 
-This section has a special environment:
-\begin{verbatim}
-  \begin{acks}
-  ...
-  \end{acks}
-\end{verbatim}
-so that the information contained therein can be more easily collected
-during the article metadata extraction phase, and to ensure
-consistency in the spelling of the section heading.
+\subsection{Memory Evaluation}
 
-Authors should not prepare this section as a numbered or unnumbered {\verb|\section|}; please use the ``{\verb|acks|}'' environment.
+LoCoMo evaluates long-term conversational memory through question answering, event summarization, and multimodal dialogue generation~\citep{maharana2024locomo}.
+LongMemEval analyzes long-term interactive memory and design choices across indexing, retrieval, and reading~\citep{wu2025longmemeval}.
+Our evaluation differs in its output variable: each turn asks whether memory should be proactively delivered, with false positives and Push count treated as first-class outcomes.
 
-\section{Appendices}
+\subsection{Proactive Memory and Agents}
 
-If your work needs an appendix, add it before the
-``\verb|\end{document}|'' command at the conclusion of your source
-document.
+PASK~\citep{xie2026pask} combines streaming latent-need detection with hybrid memory in an end-to-end proactive agent.
+MemCog~\citep{li2026memcog} supports reasoning-driven memory traversal.
+The concurrent preprint Remember When It Matters~\citep{wu2026remember} runs a separate memory agent that decides whether to inject a memory-grounded reminder or remain silent during long-horizon tasks.
+These systems establish that proactive memory is broader than \system{}.
+Our focus is the combination of (i) discovering typed habits from repeated behavior that users need not articulate, and (ii) exposing an auditable, phase- and cooldown-aware intervention controller.
 
-Start the appendix with the ``\verb|appendix|'' command:
-\begin{verbatim}
-  \appendix
-\end{verbatim}
-and note that in the appendix, sections are lettered, not
-numbered. This document has two appendices, demonstrating the section
-and subsection identification method.
+\subsection{Habit and Intervention Control}
 
-\section{Multi-language papers}
+Prior human--computer interaction studies show that interruption cost depends on delivery timing and ongoing-task structure, and that perceptually meaningful task breakpoints can sometimes be detected from interaction traces~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
+These findings motivate, without validating, \system{}'s separation of a matched regularity from the decision to intervene; the framework operationalizes this distinction through trigger--consequence habits, phase gating, thresholding, and cooldown.
+The present work evaluates offline decision labels and intervention counts; it does not replace a user study of perceived helpfulness or annoyance.
 
-Papers may be written in languages other than English or include
-titles, subtitles, keywords and abstracts in different languages (as a
-rule, a paper in a language other than English should include an
-English title and an English abstract).  Use \verb|language=...| for
-every language used in the paper.  The last language indicated is the
-main language of the paper.  For example, a French paper with
-additional titles and abstracts in English and German may start with
-the following command
-\begin{verbatim}
-\documentclass[sigconf, language=english, language=german,
-               language=french]{acmart}
-\end{verbatim}
+\section{Limitations}
+\label{sec:limitations}
 
-The title, subtitle, keywords and abstract will be typeset in the main
-language of the paper.  The commands \verb|\translatedXXX|, \verb|XXX|
-begin title, subtitle and keywords, can be used to set these elements
-in the other languages.  The environment \verb|translatedabstract| is
-used to set the translation of the abstract.  These commands and
-environment have a mandatory first argument: the language of the
-second argument.  See \verb|sample-sigconf-i13n.tex| file for examples
-of their usage.
+Our six domains are adaptations designed for proactive-memory decisions, not official WorkBench, $\tau$-bench, or SmartBench protocol evaluations.
+The Code workflows are programmatically expanded from real open-source development activities rather than replayed raw developer logs; their controlled labels improve reproducibility but do not establish ecological validity in naturally occurring development sessions.
+The ground truth represents designed useful-intervention cases rather than longitudinal user satisfaction.
+False positives and Push count are intervention proxies; fewer pushes do not necessarily imply a better user experience.
 
-%%
-%% The acknowledgments section is defined using the "acks" environment
-%% (and NOT an unnumbered section). This ensures the proper
-%% identification of the section in the article metadata, and the
-%% consistent spelling of the heading.
-\begin{acks}
-To Robert, for the bagels and explaining CMYK and color spaces.
-\end{acks}
+Mechanism activation is domain dependent.
+Generalized matching is inactive in Code and SmartHome, the phase gate is active primarily in Code, and the optional Think step has no robust aggregate effect in the current matrix.
+The cooldown study identifies a discrete operating-point change, not a smooth or universal intervention-cost curve.
 
+The cross-model study tests four endpoint configurations, but one identity is gateway-reported and not independently verified.
+Efficiency is measured only for \system{} under MiniMax-M3, so comparisons with baseline cost or latency remain unsupported.
+Finally, the system infers habits from repeated evidence but does not solve zero-history personalization, causal habit discovery, or user-facing correction and consent by itself.
 
-\section*{Ethics and Privacy Statement}
+\section{Conclusion}
+\label{sec:conclusion}
 
-This section of your ACM work should discuss the potential societal
-risks that might result from its publication; two to three sentences
-related to the findings of your study, or new advancements made
-possible by their developed methods. The privacy and ethics statement
-should clearly address the broader impacts of their work as it relates
-to the authors' interpretation of privacy, fairness, safety, human
-rights, data sovereignty, or future misuse and any benefit/risk
-trade-off resulting from this research. We acknowledge that some
-papers may have minimal societal risks beyond those considered by
-institutional review boards, and the dimensions considered by any
-review of the user study design or dataset licenses could be provided
-in this statement.
+We studied proactive memory as a decision problem rather than retrieval followed by unconditional injection.
+\system{} discovers typed habits from repeated interaction evidence and separately controls whether a habit should be surfaced through generalized matching, candidate scoring, phase checks, thresholding, and cooldown.
+Across six domain adaptations, \system{} improves macro F1 and reduces false positives and total Push count relative to the strongest evaluated per-domain proxy baselines.
+Ablations and error traces show that habit abstraction and delivery control solve different problems and activate under different task structures.
+This separation offers a practical direction for web agents and intelligent assistants that must learn from longitudinal behavior without turning every related memory into an interruption.
 
-%%
-%% The next two lines define the bibliography style to be used, and
-%% the bibliography file.
+\section*{Ethical Considerations}
+
+Inferring habits creates privacy risks beyond storing explicit user statements.
+The system may derive routines, preferences, schedules, emotional cues, or associations that a user did not knowingly designate as memory.
+Such profiles could reveal sensitive behavior if exposed, transferred across contexts, or accessed by an unauthorized party.
+A deployment should therefore require informed opt-in and provide a visible habit inspector, correction, per-habit deletion, retention limits, and a global disable control.
+
+Proactive interventions can also be unwanted, manipulative, mistimed, or unsafe.
+Threshold, phase checks, and cooldown reduce intervention frequency but do not eliminate incorrect inferences.
+High-impact actions should require confirmation and application-specific policy checks.
+The offline labels in this work do not establish user trust or perceived helpfulness, and the benchmark adaptations may not transfer directly to live use.
+
+Benchmark-derived prompts were sent to external model APIs during the experiments.
+A released artifact must exclude credentials and personal paths, document which benchmark fields are transmitted, and state provider retention assumptions where available.
+The structured traces used for audit can themselves contain behavioral evidence and should receive the same access, retention, and deletion protections as the Habit Store.
+
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sample-base}
 
-
-%%
-%% If your work has an appendix, this is the place to put it.
-\appendix
-
-\section{Research Methods}
-
-\subsection{Part One}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-malesuada, quam in pulvinar varius, metus nunc fermentum urna, id
-sollicitudin purus odio sit amet enim. Aliquam ullamcorper eu ipsum
-vel mollis. Curabitur quis dictum nisl. Phasellus vel semper risus, et
-lacinia dolor. Integer ultricies commodo sem nec semper.
-
-\subsection{Part Two}
-
-Etiam commodo feugiat nisl pulvinar pellentesque. Etiam auctor sodales
-ligula, non varius nibh pulvinar semper. Suspendisse nec lectus non
-ipsum convallis congue hendrerit vitae sapien. Donec at laoreet
-eros. Vivamus non purus placerat, scelerisque diam eu, cursus
-ante. Etiam aliquam tortor auctor efficitur mattis.
-
-\section{Online Resources}
-
-Nam id fermentum dui. Suspendisse sagittis tortor a nulla mollis, in
-pulvinar ex pretium. Sed interdum orci quis metus euismod, et sagittis
-enim maximus. Vestibulum gravida massa ut felis suscipit
-congue. Quisque mattis elit a risus ultrices commodo venenatis eget
-dui. Etiam sagittis eleifend elementum.
-
-Nam interdum magna at lectus dignissim, ac dignissim lorem
-rhoncus. Maecenas eu arcu ac neque placerat aliquam. Nunc pulvinar
-massa et mattis lacinia.
-
 \end{document}
-\endinput
-%%
-%% End of file `sigconf.tex'.
