@@ -1,0 +1,78 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Research Questions}
+
+We study four questions: (RQ1) Does \system{} improve proactive decision quality over the evaluated memory proxies? (RQ2) Which mechanisms contribute under different domain structures? (RQ3) Are the effects stable across repetitions, protocols, and model configurations? (RQ4) What is the measured call and token composition of the framework?
+
+\subsection{Domains and Data Construction}
+
+Table~\ref{tab:data} summarizes the evaluation data.
+Code is a real-world-grounded controlled adaptation rather than a direct replay of raw developer logs.
+We mined public commit histories from five open-source repositories---Requests, Flask, HTTPX, tqdm, and FastAPI---and used representative bug-fix, feature, documentation, configuration, and refactoring activities to inform the scenario design.
+We then expanded these activities into multi-turn repository workflows with explicit edit, test, debug, and commit stages.
+Code Push labels follow pre-specified observable workflow rules that are independent of \system{}'s predictions and internal phase detector.
+Email, Calendar, and Project Management are HCPM adaptations of records and task structures from WorkBench~\citep{styles2024workbench}; Shopping is an HCPM adaptation of the Retail domain in $\tau$-bench~\citep{yao2025taubench}; SmartHome is an HCPM adaptation of the public SmartBench repository (accessed July 14, 2026; local snapshot commit \texttt{98bec394})~\citep{horizonsinzqs2026smartbench}.
+We transform these sources into longitudinal event sessions and assign turn-level intervention labels using domain-specific construction rules.
+The evaluated sessions contain 51 positive turns in Code, 42 in SmartHome, and 52 in each of the other four domains.
+These controlled labels make intervention timing reproducible but are not annotations of naturally occurring longitudinal agent--user interactions.
+The reported numbers are not directly comparable to official, unmodified benchmark leaderboards.
+
+\begin{table}[t]
+\centering
+\caption{Dataset statistics. C/H denote clean/hard subsets. Warm-up events are excluded from evaluated turns.}
+\label{tab:data}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Domain & C sess. & H sess. & Turns & Warm-up \\
+\midrule
+Code & 20 & 12 & 448 & 34 \\
+SmartHome & 20 & 12 & 440 & 50 \\
+Shopping & 20 & 12 & 495 & 54 \\
+Email & 25 & 12 & 684 & 54 \\
+Calendar & 25 & 12 & 684 & 54 \\
+Project Mgmt. & 25 & 12 & 684 & 54 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Clean sessions contain clearer evidence and expected intervention stages.
+Hard sessions add premature cues, implicit positives, aligned actions, and explicit exceptions.
+The main \texttt{all} condition is a continual stateful clean-to-hard run: the Habit Store, counter state, and learned variants persist across the subset boundary, while session-local cooldown is reset.
+We separately audited split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
+
+\subsection{Baselines}
+
+All methods receive the same domain data and current event, use the same ground-truth labels, and produce the same Push/no-Push output under protocol-aligned evaluators; \system{} and the baseline families are executed by separate implementations rather than a shared internal execution path.
+\textbf{No Memory} uses only the current event and short local context.
+\textbf{Retrieval-augmented generation (RAG)-only} stores raw historical events and retrieves similar observations.
+\textbf{Summary-Reflection} compresses observations into a long-term natural-language summary and reflections.
+\textbf{Generative Memory} follows a relevance--recency--importance retrieval scheme inspired by Generative Agents~\citep{park2023generative}.
+These baselines are local proxy implementations constructed for this study, not official reproductions of the named systems.
+Across all baseline agents, the decision prompt includes at most 10 recent events in addition to the current event.
+RAG-only ranks raw events by Jaccard token overlap; RAG-only and Generative Memory cap retrieval at \texttt{top\_k}=8.
+Summary-Reflection updates every 20 observations, flushes any nonempty remainder at the end of warm-up, and retains at most 12 reflections.
+Generative Memory uses Jaccard overlap as relevance and scores observations as $0.55\,\mathrm{relevance}+0.25\exp(-\mathrm{age}/80)+0.20\,\mathrm{importance}$, where age is observation-index distance.
+Importance starts at 0.45, adds 0.25 for predefined action verbs, 0.20 for predefined salient terms, and 0.10 for user-authored events, and is capped at 1.0.
+The baselines intentionally exclude \system{}'s typed Habit Store, generalized preference abstraction, and consolidation mechanism.
+Warm-up and a per-memory cooldown of three events are applied where supported to avoid giving \system{} an intervention-frequency advantage by protocol alone.
+
+\subsection{Metrics and Statistical Tests}
+
+We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces, while the main table presents precision, recall, F1, FP, and Push count.
+For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and clean/hard stratum sizes, with fixed seed \texttt{20260713}.
+Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
+For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces as references because the original Full logs predate structured tracing; the reference traces reproduce the frozen Full predictions and confusion matrices.
+
+\subsection{Implementation and Reproducibility}
+
+The main matrix uses DeepSeek-V4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
+The package requires Python 3.10 or newer; the current bundled audit runtime reports Python 3.12.13, while exact historical environments are not recoverable for every run.
+Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The frozen evaluators use a 50-event discovery window and override the candidate cooldown to three events.
+The instrumented HCPM ablation, repeatability, cross-model, and efficiency evaluators write one JSON Lines (JSONL) decision trace per evaluated turn, containing trigger hits, candidates, score components, phase, Think output, cooldown state, ground truth, and TP/FP/FN/TN classification.
+The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
+Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
+None of the six frozen benchmark evaluators supplies \texttt{query\_vector\_store}; consequently, the external-vector Semantic branch is inactive in all reported experiments.
+The gains observed in the four domains with semantic surface variation---Shopping, Calendar, Email, and Project Management---come from generalized Habit Variant Match rather than Semantic vector retrieval.
+

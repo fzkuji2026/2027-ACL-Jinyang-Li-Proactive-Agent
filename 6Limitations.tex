@@ -1,0 +1,16 @@
+\section{Limitations}
+\label{sec:limitations}
+
+Our six domains are adaptations designed for proactive-memory decisions, not official WorkBench, $\tau$-bench, or SmartBench protocol evaluations.
+The Code workflows are programmatically expanded from real open-source development activities rather than replayed raw developer logs; their controlled labels improve reproducibility but do not establish ecological validity in naturally occurring development sessions.
+The ground truth represents designed useful-intervention cases rather than longitudinal user satisfaction.
+False positives and Push count are intervention proxies; fewer pushes do not necessarily imply a better user experience.
+
+Mechanism activation is domain dependent.
+Generalized matching is inactive in Code and SmartHome, the phase gate is active primarily in Code, and the optional Think step has no robust aggregate effect in the current matrix.
+The cooldown study identifies a discrete operating-point change, not a smooth or universal intervention-cost curve.
+
+The cross-model study tests four endpoint configurations, but one identity is gateway-reported and not independently verified.
+Efficiency is measured only for \system{} under MiniMax-M3, so comparisons with baseline cost or latency remain unsupported.
+Finally, the system infers habits from repeated evidence but does not solve zero-history personalization, causal habit discovery, or user-facing correction and consent by itself.
+

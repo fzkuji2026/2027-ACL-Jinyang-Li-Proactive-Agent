@@ -1,0 +1,56 @@
+\documentclass[sigconf,anonymous,review]{acmart}
+
+\usepackage{multirow}
+
+\setcopyright{none}
+\acmDOI{}
+\acmISBN{}
+\acmConference[WSDM '27]{The Twentieth ACM International Conference on Web Search and Data Mining}{February 15--19, 2027}{Hong Kong, China}
+\acmYear{2027}
+\copyrightyear{2027}
+
+\newcommand{\system}{HCPM}
+
+\title{HCPM: Discovering Latent Habits for Controlled Proactive Memory in LLM Agents}
+
+\author{Anonymous Author(s)}
+\affiliation{\institution{Anonymous Institution}}
+
+\begin{document}
+
+\begin{abstract}
+Long-term memory allows large language model agents to retain information beyond a single interaction, but retrieval alone does not determine when remembered information should interrupt an ongoing task.
+This distinction is important for web-facing and tool-using agents: users may not fully articulate their recurring workflows, while an agent that surfaces every related memory becomes distracting.
+We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
+\system{} consolidates repeated event--consequence patterns into typed habits, generalizes variable event forms, generates candidates from multiple trigger families, and applies scoring, phase-aware gating, and per-habit cooldown before producing a structured Push or no-Push decision.
+Across six domain adaptations covering code, smart home, shopping, email, calendar, and project management, \system{} reaches a macro F1 of 0.653, compared with 0.392 for an oracle that selects the strongest evaluated proxy baseline independently in each domain.
+It also reduces false positives from 604 to 176 and proactive pushes from 822 to 408 relative to those selected proxies.
+Ablations show that generalized habit matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
+Cooldown exposes a measurable recall--intervention trade-off rather than universally maximizing F1.
+These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
+\end{abstract}
+
+\ccsdesc[500]{Information systems~Information retrieval}
+\ccsdesc[300]{Computing methodologies~Artificial intelligence}
+\ccsdesc[300]{Human-centered computing~Human computer interaction (HCI)}
+
+\keywords{LLM agents, long-term memory, habit discovery, proactive assistance, intervention control}
+
+\maketitle
+
+\input{1Introduction}
+\input{2ProblemFormulation}
+\input{3Framework}
+\input{4aExperimentalSetup}
+\input{4bResultsAndAnalysis}
+\input{5RelatedWork}
+\input{6Limitations}
+\input{7Conclusion}
+\input{8EthicalConsiderations}
+
+\clearpage
+\balance
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{9Reference}
+
+\end{document}

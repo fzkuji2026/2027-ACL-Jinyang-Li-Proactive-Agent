@@ -1,0 +1,32 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Long-Term Memory for LLM Agents}
+
+Generative Agents store observations, retrieve memories by relevance, recency, and importance, and synthesize higher-level reflections~\citep{park2023generative}.
+Reflexion maintains reflective textual feedback in episodic memory across trials~\citep{shinn2023reflexion}, while MemoryBank maintains persistent conversational memories and updates their strength as interactions evolve over time~\citep{zhong2024memorybank}.
+MemGPT treats limited context as a hierarchy of memory tiers~\citep{packer2023memgpt}.
+Mem0 dynamically extracts, consolidates, and retrieves conversational memories and includes a graph-based variant~\citep{chhikara2025mem0}, whereas A-Mem organizes memory notes through dynamically generated links and updates existing representations as new memories arrive~\citep{xu2025amem}.
+HippoRAG uses graph structure and personalized PageRank for cross-passage integration~\citep{gutierrez2024hipporag}.
+These works motivate persistent and structured memory, but their principal evaluation target is storage, retrieval, response quality, or memory organization rather than turn-level intervention timing.
+
+\subsection{Memory Evaluation}
+
+LoCoMo evaluates long-term conversational memory through question answering, event summarization, and multimodal dialogue generation~\citep{maharana2024locomo}.
+LongMemEval analyzes long-term interactive memory and design choices across indexing, retrieval, and reading~\citep{wu2025longmemeval}.
+Our evaluation differs in its output variable: each turn asks whether memory should be proactively delivered, with false positives and Push count treated as first-class outcomes.
+
+\subsection{Proactive Memory and Agents}
+
+PASK~\citep{xie2026pask} combines streaming latent-need detection with hybrid memory in an end-to-end proactive agent.
+MemCog~\citep{li2026memcog} supports reasoning-driven memory traversal.
+The concurrent preprint Remember When It Matters~\citep{wu2026remember} runs a separate memory agent that decides whether to inject a memory-grounded reminder or remain silent during long-horizon tasks.
+These systems establish that proactive memory is broader than \system{}.
+Our focus is the combination of (i) discovering typed habits from repeated behavior that users need not articulate, and (ii) exposing an auditable, phase- and cooldown-aware intervention controller.
+
+\subsection{Habit and Intervention Control}
+
+Prior human--computer interaction studies show that interruption cost depends on delivery timing and ongoing-task structure, and that perceptually meaningful task breakpoints can sometimes be detected from interaction traces~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
+These findings motivate, without validating, \system{}'s separation of a matched regularity from the decision to intervene; the framework operationalizes this distinction through trigger--consequence habits, phase gating, thresholding, and cooldown.
+The present work evaluates offline decision labels and intervention counts; it does not replace a user study of perceived helpfulness or annoyance.
+

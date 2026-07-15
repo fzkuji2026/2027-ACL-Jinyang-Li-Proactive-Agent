@@ -1,0 +1,37 @@
+\section{Problem Formulation}
+\label{sec:problem}
+
+\subsection{Events, Habits, and Decisions}
+
+Let a session be an ordered stream of events $E=(e_1,\ldots,e_T)$.
+Each event is represented as
+\begin{equation}
+e_t=(\tau_t,a_t,v_t,o_t,m_t)
+\end{equation}
+Here, $\tau_t$ is time, $a_t$ is the actor, $v_t$ is an action verb, $o_t$ is an object or entity, and $m_t$ contains domain metadata.
+Structured tool calls are mapped deterministically; free-form language can be parsed into the same schema by an LLM.
+The benchmark uses pre-structured events so event parsing is not part of the reported decision accuracy.
+
+A habit $h$ represents a recurring behavioral regularity:
+\begin{equation}
+h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h)
+\end{equation}
+Here, $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics over observed typical outcomes, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ is a set of generalized variants.
+Habit types include workflow, temporal, emotional, and associative patterns.
+
+At each turn, the system observes the current event and memory state $M_t$, and outputs
+\begin{equation}
+\hat{y}_t = \pi(e_{\leq t},M_t) \in \{0,1\}
+\end{equation}
+Here, $1$ denotes a structured Push decision.
+When $\hat{y}_t=1$, the decision also identifies its trigger, supporting habit, candidate score, and control trace.
+Natural-language wording is a downstream host-system concern and does not change $\hat{y}_t$.
+
+\subsection{Evaluation Objective}
+
+Each evaluation turn has a ground-truth label $y_t$ indicating whether an intervention is useful at that stage.
+We report precision, recall, F1, false positives (FP), and Push count in the main text; complete traces additionally retain accuracy and true-positive, false-negative, and true-negative counts.
+F1 captures the balance between recovering useful interventions and avoiding false ones, while FP and Push count directly report false and total intervention frequency; they are offline proxies for potential intervention burden rather than measurements of perceived burden, satisfaction, trust, or helpfulness.
+No single metric fully represents user utility: the relative cost of one missed intervention and one unnecessary interruption is deployment dependent.
+We therefore treat threshold and cooldown as an operating policy rather than tune them solely to maximize test F1.
+

@@ -1,0 +1,206 @@
+\section{Results and Analysis}
+\label{sec:results}
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
+\system{} has the highest F1 in all six domains.
+Its macro F1 is 0.653, compared with 0.388 for RAG-only and 0.392 for an oracle that chooses the strongest evaluated proxy baseline separately in each domain.
+
+% Auto-generated from formal_results.csv by paper/assets/asset_build.py.
+% Requires: booktabs, multirow, ulem (or soul) for underline.
+\begin{table*}[t]
+\centering
+\caption{Six-domain continual stateful (\texttt{all}) results with DeepSeek-V4-Flash and cooldown 3. The datasets include task-specific adaptations and these values must not be interpreted as official benchmark scores. Best domain F1 is bold; second-best is underlined.}
+\label{tab:main_results}
+\footnotesize
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{llrrrrr}
+\toprule
+Domain & Method & P & R & F1 & FP & Pushes \\
+\midrule
+\multirow{5}{*}{Code} & No Memory & 0.000 & 0.000 & 0.000 & 1 & 1 \\
+ & RAG-only & 0.161 & 0.529 & \underline{0.247} & 141 & 168 \\
+ & Summary-Reflection & 0.120 & 0.333 & 0.176 & 125 & 142 \\
+ & Generative Memory & 0.132 & 0.392 & 0.197 & 132 & 152 \\
+ & HCPM & 0.617 & 0.725 & \textbf{0.667} & 23 & 60 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{SmartHome} & No Memory & 0.500 & 0.048 & 0.087 & 2 & 4 \\
+ & RAG-only & 0.248 & 0.810 & \underline{0.380} & 103 & 137 \\
+ & Summary-Reflection & 0.203 & 0.690 & 0.314 & 114 & 143 \\
+ & Generative Memory & 0.238 & 0.738 & 0.360 & 99 & 130 \\
+ & HCPM & 0.550 & 0.786 & \textbf{0.647} & 27 & 60 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Shopping} & No Memory & 0.281 & 0.481 & 0.355 & 64 & 89 \\
+ & RAG-only & 0.281 & 1.000 & \underline{0.439} & 133 & 185 \\
+ & Summary-Reflection & 0.283 & 0.500 & 0.361 & 66 & 92 \\
+ & Generative Memory & 0.273 & 0.981 & 0.427 & 136 & 187 \\
+ & HCPM & 0.569 & 0.635 & \textbf{0.600} & 25 & 58 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Email} & No Memory & 0.533 & 0.154 & 0.239 & 7 & 15 \\
+ & RAG-only & 0.349 & 0.846 & \underline{0.494} & 82 & 126 \\
+ & Summary-Reflection & 0.357 & 0.385 & 0.370 & 36 & 56 \\
+ & Generative Memory & 0.262 & 0.731 & 0.386 & 107 & 145 \\
+ & HCPM & 0.581 & 0.827 & \textbf{0.683} & 31 & 74 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Calendar} & No Memory & 0.326 & 0.269 & 0.295 & 29 & 43 \\
+ & RAG-only & 0.247 & 0.827 & 0.381 & 131 & 174 \\
+ & Summary-Reflection & 0.435 & 0.385 & \underline{0.408} & 26 & 46 \\
+ & Generative Memory & 0.253 & 0.885 & 0.393 & 136 & 182 \\
+ & HCPM & 0.566 & 0.827 & \textbf{0.672} & 33 & 76 \\
+\addlinespace[1.5pt]
+\multirow{5}{*}{Project Management} & No Memory & 0.167 & 0.019 & 0.034 & 5 & 6 \\
+ & RAG-only & 0.256 & 0.788 & \underline{0.387} & 119 & 160 \\
+ & Summary-Reflection & 0.267 & 0.385 & 0.315 & 55 & 75 \\
+ & Generative Memory & 0.214 & 0.769 & 0.335 & 147 & 187 \\
+ & HCPM & 0.537 & 0.827 & \textbf{0.652} & 37 & 80 \\
+\midrule
+\multicolumn{7}{l}{\footnotesize Macro F1: No Memory 0.168; RAG-only 0.388; Summary-Reflection 0.324; Generative Memory 0.350; HCPM 0.653} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Compared with the strongest evaluated proxy baseline in each domain, the F1 gains are 0.420 (Code), 0.267 (SmartHome), 0.161 (Shopping), 0.188 (Email), 0.264 (Calendar), and 0.265 (Project Management).
+The selected baselines produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
+
+The aggregate does not imply uniform metric dominance.
+In Shopping, recall-heavy RAG-only reaches 1.000 recall but produces 133 false positives; \system{} reaches 0.635 recall with 25 false positives.
+In Calendar, \system{} improves F1 and recall but produces 33 false positives, seven more than the best-F1 Summary-Reflection baseline.
+These cases motivate reporting intervention count alongside F1.
+
+\subsection{Mechanism Ablations}
+\label{sec:ablation}
+
+Table~\ref{tab:ablations} shows a modular rather than universally additive system; Full denotes the complete \system{} configuration under the frozen protocol.
+Exact-only retains discovered habits but removes generalized runtime matching.
+Removing the phase gate changes Code substantially but is prediction-identical in four other tested domains.
+
+% Auto-generated from final_ablation_table.csv by paper/assets/asset_build.py.
+% Requires: booktabs.
+\begin{table*}[t]
+\centering
+\caption{Mechanism ablations. Cells report F1 (change from Full); an em dash denotes an untested setting. Generalized matching is active in Shopping, Calendar, Email, and Project Management; Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
+\label{tab:ablations}
+\footnotesize
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{lccccc}
+\toprule
+Domain & Full & Exact-only & w/o Phase Gate & w/o LLM Think & w/o Cooldown \\
+\midrule
+Code & 0.667 (ref.) & 0.667 (+0.000) & 0.462 (-0.205) & 0.642 (-0.024) & \textemdash \\
+SmartHome & 0.647 (ref.) & 0.647 (+0.000) & 0.647 (+0.000) & \textemdash & \textemdash \\
+Shopping & 0.600 (ref.) & 0.429 (-0.171) & 0.600 (+0.000) & 0.600 (+0.000) & 0.701 (+0.101) \\
+Email & 0.683 (ref.) & 0.197 (-0.486) & 0.683 (+0.000) & \textemdash & \textemdash \\
+Calendar & 0.672 (ref.) & 0.133 (-0.539) & \textemdash & \textemdash & \textemdash \\
+Project Management & 0.652 (ref.) & 0.143 (-0.509) & 0.652 (+0.000) & \textemdash & \textemdash \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{Generalized matching.}
+Full exceeds Exact-only in Shopping, Calendar, Email, and Project Management, with session-bootstrap intervals excluding zero: $[0.061,0.298]$, $[0.351,0.700]$, $[0.292,0.668]$, and $[0.311,0.677]$, respectively.
+Code and SmartHome are exact negative controls with identical predictions.
+Thus abstraction is most useful when preferences or workflow entities vary semantically, not when normalized events already match literally.
+
+\textbf{Phase gate.}
+Removing the gate lowers Code F1 by 0.205 (95\% CI $[0.131,0.276]$) and increases FP from 23 to 59.
+The effect is repeatable across three runs, while four non-Code domains are prediction-identical with and without the gate.
+
+\textbf{Think.}
+Code w/o Think has a three-run mean F1 of 0.659 versus 0.667 for Full, and two repeats are prediction-identical to Full.
+We therefore do not claim a robust aggregate contribution from the optional LLM checker.
+
+\textbf{Cooldown.}
+Removing Shopping cooldown raises turn-level F1 from 0.600 to 0.701 by increasing recall, but pushes rise from 58 to 85 and false positives from 25 to 37.
+At cooldown three, 27 candidates are suppressed: 15 potential true positives and 12 potential false positives.
+Cooldown therefore encodes an intervention-cost policy rather than an accuracy-only improvement.
+
+Figure~\ref{fig:cooldown} makes the corresponding operating-point trade-off explicit.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{Fig2_Cooldown_Operating_Points.pdf}
+    \Description{A single-column plot of tested Shopping cooldown settings. Cooldowns zero through two share one operating point; cooldown three lowers pushes and false positives while also reducing recall and F1. An inset decomposes 27 suppressed candidates into 15 potential true positives and 12 potential false positives.}
+    \caption{Shopping cooldown operating points. Cooldown 0--2 and cooldown 3 are the discrete tested points; the connector is only a visual guide. Cooldown 3 suppresses both potential true and false interventions, illustrating an intervention-cost operating point rather than a setting that universally improves F1.}
+    \label{fig:cooldown}
+\end{figure}
+
+\subsection{Stability Across Models and Protocols}
+
+We repeat targeted Full--ablation comparisons with DeepSeek-V4-Pro, a gateway-reported GPT-5.5 endpoint, and MiniMax-M3.
+Table~\ref{tab:cross_model} reports $\Delta\mathrm{F1}=\mathrm{Full}-\mathrm{Ablation}$.
+All six selected effects replicate, including SmartHome as a zero-effect control.
+Exact score equality across several configurations reflects identical decision traces under the tested structured protocol; it should not be interpreted as independent verification of endpoint identity.
+
+% Auto-generated from four_model_comparison.csv by paper/assets/asset_build.py.
+% Requires: booktabs.
+\begin{table*}[t]
+\centering
+\caption{Cross-model replication of the selected mechanism effect. Effect is Full F1 minus ablated F1, so positive values indicate the same degradation after ablation. SmartHome Exact-only is a zero-effect control.}
+\label{tab:cross_model}
+\footnotesize
+\setlength{\tabcolsep}{4.4pt}
+\begin{tabular}{llrrrrc}
+\toprule
+Domain & Ablation & Flash & Pro & GPT-5.5 & MiniMax-M3 & Effect replicated \\
+\midrule
+Code & w/o Phase Gate & +0.205 & +0.184 & +0.184 & +0.184 & Yes \\
+SmartHome & Exact-only & +0.000 & +0.000 & +0.000 & +0.000 & Yes \\
+Shopping & Exact-only & +0.171 & +0.171 & +0.171 & +0.171 & Yes \\
+Email & Exact-only & +0.486 & +0.486 & +0.486 & +0.486 & Yes \\
+Calendar & Exact-only & +0.539 & +0.539 & +0.539 & +0.539 & Yes \\
+Project Management & Exact-only & +0.509 & +0.509 & +0.509 & +0.509 & Yes \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+\parbox{0.98\textwidth}{\footnotesize The GPT-5.5 model identity is gateway-reported and was not independently verified. The table supports replication of the selected effect, including the zero-effect control, not universal component effectiveness.}
+\end{table*}
+
+Code Full and Calendar Full each produce identical F1 in three observed repeats.
+The Shopping protocol audit additionally compares continual, split-reset, and reversed orderings; these checks preserve the principal conclusion while clarifying that the main \texttt{all} run is stateful and must not be reconstructed by summing standalone splits.
+
+\subsection{Efficiency Composition}
+\label{sec:efficiency}
+
+Table~\ref{tab:efficiency} reports absolute \system{} telemetry.
+Across six Full runs, the framework makes 496 logical calls and observes 732,409 provider-reported tokens.
+Discovery and Think account for 88 calls; optional Push formatting accounts for 408 calls (82.3\%) and 272,043 tokens (37.1\%).
+Because formatting follows the structured decision, a host can replace it without changing F1.
+
+\begin{table}[t]
+\centering
+\caption{Absolute Full-run telemetry under MiniMax-M3. Tokens are provider-reported observations.}
+\label{tab:efficiency}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Domain & Turns & Calls & Tokens \\
+\midrule
+Code & 448 & 105 & 112,287 \\
+Shopping & 495 & 70 & 164,066 \\
+Calendar & 684 & 85 & 125,510 \\
+Email & 684 & 83 & 119,712 \\
+Project Mgmt. & 684 & 89 & 123,218 \\
+SmartHome & 440 & 64 & 87,616 \\
+\midrule
+Total & 3,435 & 496 & 732,409 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two optional Calendar formatting calls fail without usage payloads, so the token total is a lower bound.
+Three serial Code measurements have an identical 105-call decomposition and identical decisions; the mean observed token count is 116,758 (sample standard deviation 4,514).
+We do not compare these values with matched-model baseline telemetry and therefore make no baseline-relative efficiency claim.
+
+\subsection{Error Analysis}
+
+Errors concentrate at the boundary between retrieving a related habit and deciding that it is actionable.
+In Code-hard, 11/17 false positives occur in aligned or exception negatives, while other errors push on early edits and miss the valid wrap-up stage.
+Shopping-hard similarly contains premature pushes before final decision points and false positives on preference-aligned actions.
+In Calendar-all, at least 20/33 false positives are directly verified as aligned or exception cases.
+
+These errors identify three remaining weaknesses.
+First, stage cues outside Code are less explicit, so relevant habits can fire before an actionable decision.
+Second, a related preference is sometimes mistaken for a violated preference.
+Third, implicit semantic evidence is weaker than explicit normalized conflict keys.
+The findings support the architectural separation in Figure~\ref{fig:architecture}: habit discovery can succeed while push control still fails.
+
