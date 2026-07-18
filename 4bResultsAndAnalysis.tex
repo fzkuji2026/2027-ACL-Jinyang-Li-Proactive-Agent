@@ -5,68 +5,73 @@
 
 Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
 \system{} has the highest F1 in all six domains.
-Its macro F1 is 0.653, compared with 0.388 for RAG-only and 0.392 for an oracle that chooses the strongest evaluated proxy baseline separately in each domain.
+Its macro F1 is 0.653, compared with 0.388 for RAG-only, 0.323 for the Mem0-backed condition, and 0.248 for ProactiveAgent-Prompt.
 
-% Auto-generated from formal_results.csv by paper/assets/asset_build.py.
-% Requires: booktabs, multirow, ulem (or soul) for underline.
 \begin{table*}[t]
 \centering
-\caption{Six-domain continual stateful (\texttt{all}) results with DeepSeek-V4-Flash and cooldown 3. The datasets include task-specific adaptations and these values must not be interpreted as official benchmark scores. Best domain F1 is bold; second-best is underlined.}
+\caption{Six-domain F1 under the continual stateful \texttt{all} protocol. Local rows are diagnostic proxies; external rows exercise released artifacts through our adapters and are not official end-to-end system scores. \system{} and the Mem0-backed controller use cooldown 3; ProactiveAgent-Prompt adds none. Best is bold and second-best is underlined.}
 \label{tab:main_results}
 \footnotesize
-\setlength{\tabcolsep}{5.0pt}
-\begin{tabular}{llrrrrr}
+\setlength{\tabcolsep}{4.8pt}
+\begin{tabular}{lrrrrrrr}
 \toprule
-Domain & Method & P & R & F1 & FP & Pushes \\
+Method & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. & Macro \\
 \midrule
-\multirow{5}{*}{Code} & No Memory & 0.000 & 0.000 & 0.000 & 1 & 1 \\
- & RAG-only & 0.161 & 0.529 & \underline{0.247} & 141 & 168 \\
- & Summary-Reflection & 0.120 & 0.333 & 0.176 & 125 & 142 \\
- & Generative Memory & 0.132 & 0.392 & 0.197 & 132 & 152 \\
- & HCPM & 0.617 & 0.725 & \textbf{0.667} & 23 & 60 \\
-\addlinespace[1.5pt]
-\multirow{5}{*}{SmartHome} & No Memory & 0.500 & 0.048 & 0.087 & 2 & 4 \\
- & RAG-only & 0.248 & 0.810 & \underline{0.380} & 103 & 137 \\
- & Summary-Reflection & 0.203 & 0.690 & 0.314 & 114 & 143 \\
- & Generative Memory & 0.238 & 0.738 & 0.360 & 99 & 130 \\
- & HCPM & 0.550 & 0.786 & \textbf{0.647} & 27 & 60 \\
-\addlinespace[1.5pt]
-\multirow{5}{*}{Shopping} & No Memory & 0.281 & 0.481 & 0.355 & 64 & 89 \\
- & RAG-only & 0.281 & 1.000 & \underline{0.439} & 133 & 185 \\
- & Summary-Reflection & 0.283 & 0.500 & 0.361 & 66 & 92 \\
- & Generative Memory & 0.273 & 0.981 & 0.427 & 136 & 187 \\
- & HCPM & 0.569 & 0.635 & \textbf{0.600} & 25 & 58 \\
-\addlinespace[1.5pt]
-\multirow{5}{*}{Email} & No Memory & 0.533 & 0.154 & 0.239 & 7 & 15 \\
- & RAG-only & 0.349 & 0.846 & \underline{0.494} & 82 & 126 \\
- & Summary-Reflection & 0.357 & 0.385 & 0.370 & 36 & 56 \\
- & Generative Memory & 0.262 & 0.731 & 0.386 & 107 & 145 \\
- & HCPM & 0.581 & 0.827 & \textbf{0.683} & 31 & 74 \\
-\addlinespace[1.5pt]
-\multirow{5}{*}{Calendar} & No Memory & 0.326 & 0.269 & 0.295 & 29 & 43 \\
- & RAG-only & 0.247 & 0.827 & 0.381 & 131 & 174 \\
- & Summary-Reflection & 0.435 & 0.385 & \underline{0.408} & 26 & 46 \\
- & Generative Memory & 0.253 & 0.885 & 0.393 & 136 & 182 \\
- & HCPM & 0.566 & 0.827 & \textbf{0.672} & 33 & 76 \\
-\addlinespace[1.5pt]
-\multirow{5}{*}{Project Management} & No Memory & 0.167 & 0.019 & 0.034 & 5 & 6 \\
- & RAG-only & 0.256 & 0.788 & \underline{0.387} & 119 & 160 \\
- & Summary-Reflection & 0.267 & 0.385 & 0.315 & 55 & 75 \\
- & Generative Memory & 0.214 & 0.769 & 0.335 & 147 & 187 \\
- & HCPM & 0.537 & 0.827 & \textbf{0.652} & 37 & 80 \\
-\midrule
-\multicolumn{7}{l}{\footnotesize Macro F1: No Memory 0.168; RAG-only 0.388; Summary-Reflection 0.324; Generative Memory 0.350; HCPM 0.653} \\
+No Memory & 0.000 & 0.087 & 0.355 & 0.239 & 0.295 & 0.034 & 0.168 \\
+RAG-only & \underline{0.247} & \underline{0.380} & 0.439 & \underline{0.494} & 0.381 & \underline{0.387} & \underline{0.388} \\
+Summary-Reflection & 0.176 & 0.314 & 0.361 & 0.370 & \underline{0.408} & 0.315 & 0.324 \\
+Generative Memory & 0.197 & 0.360 & 0.427 & 0.386 & 0.393 & 0.335 & 0.350 \\
+Mem0-v2.0.12-backed & 0.216 & 0.339 & 0.398 & 0.408 & 0.321 & 0.258 & 0.323 \\
+ProactiveAgent-Prompt & 0.174 & 0.219 & \underline{0.463} & 0.170 & 0.190 & 0.269 & 0.248 \\
+\system{} & \textbf{0.667} & \textbf{0.647} & \textbf{0.600} & \textbf{0.683} & \textbf{0.672} & \textbf{0.652} & \textbf{0.653} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-Compared with the strongest evaluated proxy baseline in each domain, the F1 gains are 0.420 (Code), 0.267 (SmartHome), 0.161 (Shopping), 0.188 (Email), 0.264 (Calendar), and 0.265 (Project Management).
+The strongest local diagnostic varies by domain, producing a per-domain envelope with macro F1 0.392 rather than one runnable system.
+Compared with that envelope, the F1 gains are 0.420 (Code), 0.267 (SmartHome), 0.161 (Shopping), 0.188 (Email), 0.264 (Calendar), and 0.265 (Project Management).
 The selected baselines produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
 
-The aggregate does not imply uniform metric dominance.
-In Shopping, recall-heavy RAG-only reaches 1.000 recall but produces 133 false positives; \system{} reaches 0.635 recall with 25 false positives.
-In Calendar, \system{} improves F1 and recall but produces 33 false positives, seven more than the best-F1 Summary-Reflection baseline.
-These cases motivate reporting intervention count alongside F1.
+The external conditions expose a different failure mode.
+Mem0-backed yields 141 TP, 417 FP, 160 FN, and 2,717 TN (558 pushes; micro F1 0.328).
+ProactiveAgent-Prompt yields 189 TP, 1,143 FP, 112 FN, and 1,991 TN (1,332 pushes; micro F1 0.231).
+The latter recovers 62.8\% of positive turns but has micro precision 0.142, so its low F1 primarily reflects over-proposal under the frozen proposal/null policy.
+This result characterizes the prompt adaptation, not the released trained ProactiveAgent system; similarly, the Mem0 row characterizes our memory-backed decision interface rather than all Mem0 configurations.
+
+\subsection{Intervention Controls}
+\label{sec:intervention_controls}
+
+We next compose exact retrieved-memory records from validated Mem0 traces with ProactiveAgent-Prompt.
+The raw composition adds no fixed-length cooldown and uses session-local prompt history and memory-only warm-up, so this three-domain replay is a study-built diagnostic rather than a one-factor retrieval ablation.
+Table~\ref{tab:intervention_controls} reports the frozen composition and intervention-control results.
+
+\begin{table}[t]
+\centering
+\caption{Shopping, Email, and SmartHome intervention controls. Macro F1 averages domain F1; $\mu$ metrics pool turns. Cooldown-3 is a session-local one-habit proxy, not \system{}'s native per-habit key.}
+\label{tab:intervention_controls}
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Macro F1 & $\mu$P & $\mu$R & $\mu$F1 & Pushes \\
+\midrule
+Mem0 + Prompt & 0.253 & 0.148 & 0.870 & 0.253 & 858 \\
+$+$ Necessity verifier & 0.396 & 0.322 & 0.514 & 0.396 & 233 \\
+$+$ Cooldown-3 & 0.279 & 0.195 & 0.486 & 0.278 & 365 \\
+$+$ Verifier + cooldown & 0.345 & 0.340 & 0.349 & 0.345 & 150 \\
+\system{} (native) & \textbf{0.643} & \textbf{0.568} & 0.747 & \textbf{0.645} & 192 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The study-built Necessity Verifier is applied only to non-null proposals and is distinct from ProactiveAgent's learned evaluator.
+It removes 573 of 731 false positives (78.4\%) but also loses 52 of 127 true positives (40.9\%), raising micro F1 from 0.253 to 0.396 while lowering recall from 0.870 to 0.514.
+It adds a model call and cannot recover stage-one abstentions, so it is not an equal-compute baseline.
+The approximate cooldown changes the operating point but does not close the gap to \system{}; because it lacks native per-habit keys, it does not isolate cooldown as the sole cause.
+
+A separate frozen profile-shuffle control tests profile ownership on 30 sessions and 479 paired turns.
+The aligned arm reaches F1 0.600 and the shuffled arm 0.000, a paired session-bootstrap difference of 0.600 (95\% CI $[0.444,0.719]$); the aggregate exact McNemar test is nonsignificant ($p=0.568$).
+Every shuffled profile abstains because donor trigger keys do not match, so this verifies dependence on the assigned profile rather than fine-grained semantic discrimination, and it does not replace the continual Full result.
 
 \subsection{Mechanism Ablations}
 \label{sec:ablation}

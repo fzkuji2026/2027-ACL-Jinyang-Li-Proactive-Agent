@@ -58,12 +58,10 @@ We study four questions: (RQ1) Does \system{} improve proactive decision quality
 
 \subsection{Baselines}
 
-All methods receive the same domain data and current event, use the same ground-truth labels, and produce the same Push/no-Push output under protocol-aligned evaluators; \system{} and the baseline families are executed by separate implementations rather than a shared internal execution path.
-\textbf{No Memory} uses only the current event and short local context.
-\textbf{Retrieval-augmented generation (RAG)-only} stores raw historical events and retrieves similar observations.
-\textbf{Summary-Reflection} compresses observations into a long-term natural-language summary and reflections.
-\textbf{Generative Memory} follows a relevance--recency--importance retrieval scheme inspired by Generative Agents~\citep{park2023generative}.
-These baselines are local proxy implementations constructed for this study, not official reproductions of the named systems.
+We separate \emph{local diagnostic baselines} from \emph{external artifact-backed conditions}.
+All methods receive the same domain stream and ground-truth labels and produce a Push/no-Push decision under protocol-aligned evaluators, but they use separate implementations.
+The local group contains \textbf{No Memory}, which uses the current event and short context; \textbf{RAG-only}, which retrieves similar raw events; \textbf{Summary-Reflection}, which maintains bounded natural-language reflections; and \textbf{Generative Memory}, which follows a relevance--recency--importance scheme inspired by Generative Agents~\citep{park2023generative}.
+These are diagnostic proxy implementations rather than official reproductions of the named systems.
 Across all baseline agents, the decision prompt includes at most 10 recent events in addition to the current event.
 RAG-only ranks raw events by Jaccard token overlap; RAG-only and Generative Memory cap retrieval at \texttt{top\_k}=8.
 Summary-Reflection updates every 20 observations, flushes any nonempty remainder at the end of warm-up, and retains at most 12 reflections.
@@ -71,13 +69,21 @@ Generative Memory uses Jaccard overlap as relevance and scores observations as $
 Importance starts at 0.45, adds 0.25 for predefined action verbs, 0.20 for predefined salient terms, and 0.10 for user-authored events, and is capped at 1.0.
 The baselines intentionally exclude \system{}'s typed Habit Store, generalized preference abstraction, and consolidation mechanism.
 
+The external group contains a \textbf{Mem0-v2.0.12-backed adapter} and \textbf{ProactiveAgent-Prompt}.
+The former calls the official open-source \texttt{mem0.Memory} library, while event serialization, model configuration, the proactive controller, and cooldown are defined by our study~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
+Each run starts from fresh storage; warm-up is written before evaluation, and each turn retrieves at most eight memories before the current event can be observed by Mem0.
+ProactiveAgent-Prompt copies the released evaluation system prompt and four-field proposal/null contract byte-for-byte from a pinned repository commit~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+Our adaptation supplies event serialization, a 20-pair history cap, the DeepSeek-v4-Flash backbone, parsing, retries, and benchmark evaluation.
+It does not use the authors' fine-tuned checkpoint or reward-model evaluator, and our frozen prompt-only condition adds no fixed-length cooldown.
+Section~\ref{sec:intervention_controls} separately studies a three-domain, study-built Mem0 + ProactiveAgent-Prompt composition and downstream controls; these are diagnostic conditions rather than upstream systems.
+
 \subsection{Evaluation Protocol}
 
 The main \texttt{all} condition is a continual stateful Easy-to-Hard run: long-term method state persists across the subset boundary, while session-local cooldown is reset.
 We separately audit split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
 Before evaluated turns, Code receives 34 initialization events, SmartHome receives 50, and each remaining domain receives 54.
 These warm-up events initialize longitudinal state, are excluded from Table~\ref{tab:data} and all reported metrics, and are provided to every stateful method where supported.
-A per-memory cooldown of three events is likewise applied where supported to avoid giving \system{} an intervention-frequency advantage by protocol alone.
+A three-event cooldown is applied to local memory baselines and the standalone Mem0-backed controller where supported; \system{} uses its native per-habit key, while the frozen prompt-only condition adds no fixed-length cooldown.
 
 \subsection{Metrics and Statistical Tests}
 
@@ -85,14 +91,18 @@ We compute precision, recall, F1, accuracy, true positives (TP), false positives
 For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and Easy/Hard stratum sizes, with fixed seed \texttt{20260713}.
 Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
 For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces as references because the original Full logs predate structured tracing; the reference traces reproduce the frozen Full predictions and confusion matrices.
+The profile-shuffle control uses the same session-level bootstrap and additionally reports a two-sided exact McNemar test on paired turn correctness; because its shuffled arm universally abstains, we treat it as a mechanism sanity check rather than a general discrimination test.
 
 \subsection{Implementation and Reproducibility}
 
-The main matrix uses DeepSeek-V4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
+The main matrix uses DeepSeek-v4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
+The Mem0-backed condition uses \texttt{mem0ai==2.0.12} with inference enabled, \texttt{all-MiniLM-L6-v2} 384-dimensional embeddings, fresh run-local Qdrant storage, and a search threshold of 0.1.
+The prompt condition uses temperature zero, fail-closed parsing with at most five retries, and a continual 20-pair history tail over warm-up and the Easy-to-Hard stream.
 The package requires Python 3.10 or newer; the current bundled audit runtime reports Python 3.12.13, while exact historical environments are not recoverable for every run.
 Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The frozen evaluators use a 50-event discovery window and override the candidate cooldown to three events.
 The instrumented HCPM ablation, repeatability, cross-model, and efficiency evaluators write one JSON Lines (JSONL) decision trace per evaluated turn, containing trigger hits, candidates, score components, phase, Think output, cooldown state, ground truth, and TP/FP/FN/TN classification.
 The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
+The supplemental audit contains 69 manifest records, including 39 domain/arm rows recomputed from selected decision traces, with zero validation failures.
 Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
 None of the six frozen benchmark evaluators supplies \texttt{query\_vector\_store}; consequently, the external-vector Semantic branch is inactive in all reported experiments.
 The gains observed in the four domains with semantic surface variation---Shopping, Calendar, Email, and Project Management---come from generalized Habit Variant Match rather than Semantic vector retrieval.

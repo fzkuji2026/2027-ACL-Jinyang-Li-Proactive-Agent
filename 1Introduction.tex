@@ -34,7 +34,7 @@ We make four contributions:
 \begin{itemize}
     \item We formulate proactive memory as a turn-level decision problem and construct a source-documented benchmark with 207 longitudinal sessions and 3,435 evaluated turns across six controlled domain adaptations grounded in public commit histories, WorkBench, $\tau$-bench Retail, and SmartBench. These are adaptations, not official-protocol benchmark scores.
     \item We present \system{}, which discovers habits that need not be explicitly declared and couples generalized habit matching with an auditable intervention controller.
-    \item We provide six-domain effectiveness, ablation, statistical, repeatability, and error evidence. \system{} improves macro F1 from 0.392 for the strongest evaluated per-domain proxy baselines to 0.653, while its mechanisms activate under different domain structures.
-    \item We test targeted mechanism effects across four model configurations and report absolute call and token composition without claiming matched-baseline efficiency superiority.
+    \item We provide six-domain comparisons against local diagnostic baselines and adapted external memory/proactive artifacts. \system{} improves macro F1 from 0.392 for the local diagnostic envelope, 0.323 for Mem0-backed memory, and 0.248 for ProactiveAgent-Prompt to 0.653.
+    \item We add necessity, matched-cooldown, and profile-shuffle controls, test targeted mechanism effects across four model configurations, and report absolute call and token composition without claiming matched-baseline efficiency superiority.
 \end{itemize}
 

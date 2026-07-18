@@ -12,5 +12,8 @@ The cooldown study identifies a discrete operating-point change, not a smooth or
 
 The cross-model study tests four endpoint configurations, but one identity is gateway-reported and not independently verified.
 Efficiency is measured only for \system{} under MiniMax-M3, so comparisons with baseline cost or latency remain unsupported.
+The Mem0 and ProactiveAgent-Prompt rows are adapted artifact-backed conditions rather than official end-to-end system scores; in particular, the prompt row does not use the released fine-tuned ProactiveAgent checkpoint.
+The composition, Necessity Verifier, and matched-cooldown analyses cover only Shopping, Email, and SmartHome and reuse archived upstream-stage traces.
+The profile shuffle uses coarse, nonoverlapping trigger keys and universal shuffled abstention, so it verifies ownership dependence rather than subtle profile discrimination.
 Finally, the system infers habits from repeated evidence but does not solve zero-history personalization, causal habit discovery, or user-facing correction and consent by itself.
 
