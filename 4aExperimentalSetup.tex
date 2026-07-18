@@ -1,7 +1,10 @@
-\section{Benchmark and Experimental Setup}
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental Settings}
 \label{sec:setup}
 
-\subsection{Benchmark Task and Construction}
+\subsubsection{Benchmark Task and Construction}
 
 We construct a controlled benchmark for longitudinal proactive intervention with 207 sessions, 3,435 evaluated turns, and 301 positive intervention opportunities across six domains.
 Each source-grounded record or scenario template is converted into the event representation from Section~\ref{sec:problem} and expanded into a multi-turn session in which a method must either Push or abstain at every turn.
@@ -23,7 +26,7 @@ Each domain's 12 Hard sessions comprise four ambiguous late positives, four impl
 Turn-level labels follow pre-specified domain construction rules that are independent of \system{}'s predictions and internal phase detector.
 This controlled construction makes intervention timing reproducible, but the labels are not annotations of naturally occurring longitudinal agent--user interactions and the resulting scores are not official scores on the unmodified source benchmarks.
 
-\subsection{Dataset Statistics}
+\subsubsection{Dataset Statistics}
 
 Table~\ref{tab:data} reports only evaluated benchmark sessions and turns.
 
@@ -52,11 +55,11 @@ Total & 135 & 72 & 12--20 & 3,435 & 301 \\
 
 The released artifact retains \texttt{clean} as the internal split identifier for Easy; this is a presentation alias and does not change any frozen data or result.
 
-\subsection{Research Questions}
+\subsubsection{Research Questions}
 
 We study four questions: (RQ1) Does \system{} improve proactive decision quality over the evaluated memory proxies? (RQ2) Which mechanisms contribute under different domain structures? (RQ3) Are the effects stable across repetitions, protocols, and model configurations? (RQ4) What is the measured call and token composition of the framework?
 
-\subsection{Baselines}
+\subsubsection{Baselines}
 
 We separate \emph{local diagnostic baselines} from \emph{external artifact-backed conditions}.
 All methods receive the same domain stream and ground-truth labels and produce a Push/no-Push decision under protocol-aligned evaluators, but they use separate implementations.
@@ -77,7 +80,7 @@ Our adaptation supplies event serialization, a 20-pair history cap, the DeepSeek
 It does not use the authors' fine-tuned checkpoint or reward-model evaluator, and our frozen prompt-only condition adds no fixed-length cooldown.
 Section~\ref{sec:intervention_controls} separately studies a three-domain, study-built Mem0 + ProactiveAgent-Prompt composition and downstream controls; these are diagnostic conditions rather than upstream systems.
 
-\subsection{Evaluation Protocol}
+\subsubsection{Evaluation Protocol}
 
 The main \texttt{all} condition is a continual stateful Easy-to-Hard run: long-term method state persists across the subset boundary, while session-local cooldown is reset.
 We separately audit split-reset and reversed-order protocols rather than treating \texttt{all} as a simple arithmetic union.
@@ -85,18 +88,22 @@ Before evaluated turns, Code receives 34 initialization events, SmartHome receiv
 These warm-up events initialize longitudinal state, are excluded from Table~\ref{tab:data} and all reported metrics, and are provided to every stateful method where supported.
 A three-event cooldown is applied to local memory baselines and the standalone Mem0-backed controller where supported; \system{} uses its native per-habit key, while the frozen prompt-only condition adds no fixed-length cooldown.
 
-\subsection{Metrics and Statistical Tests}
+\subsubsection{Metrics and Statistical Tests}
 
 We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces, while the main table presents precision, recall, F1, FP, and Push count.
+For paired main-result inference, we compare \system{} with the strongest single local baseline by macro F1 (RAG-only) and the two external conditions (Mem0-v2.0.12-backed and ProactiveAgent-Prompt).
+Predictions are aligned by domain, session, and turn; macro-F1 differences use 10,000 paired session-bootstrap resamples stratified by domain and Easy/Hard, with fixed seed \texttt{20260717}.
+These F1 intervals are primary, while complementary two-sided exact McNemar tests on turn-level correctness use Holm correction across the 18 domain-by-comparator tests.
 For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and Easy/Hard stratum sizes, with fixed seed \texttt{20260713}.
 Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
 For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces as references because the original Full logs predate structured tracing; the reference traces reproduce the frozen Full predictions and confusion matrices.
 The profile-shuffle control uses the same session-level bootstrap and additionally reports a two-sided exact McNemar test on paired turn correctness; because its shuffled arm universally abstains, we treat it as a mechanism sanity check rather than a general discrimination test.
 
-\subsection{Implementation and Reproducibility}
+\subsubsection{Implementation and Reproducibility}
 
 The main matrix uses DeepSeek-v4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
-The Mem0-backed condition uses \texttt{mem0ai==2.0.12} with inference enabled, \texttt{all-MiniLM-L6-v2} 384-dimensional embeddings, fresh run-local Qdrant storage, and a search threshold of 0.1.
+The Mem0-backed condition uses Mem0 v2.0.12 with inference enabled.
+It uses 384-dimensional all-MiniLM-L6-v2 embeddings, fresh run-local Qdrant storage, and a search threshold of 0.1.
 The prompt condition uses temperature zero, fail-closed parsing with at most five retries, and a continual 20-pair history tail over warm-up and the Easy-to-Hard stream.
 The package requires Python 3.10 or newer; the current bundled audit runtime reports Python 3.12.13, while exact historical environments are not recoverable for every run.
 Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The frozen evaluators use a 50-event discovery window and override the candidate cooldown to three events.

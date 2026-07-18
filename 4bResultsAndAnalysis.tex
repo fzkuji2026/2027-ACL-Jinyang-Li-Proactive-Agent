@@ -1,7 +1,5 @@
-\section{Results and Analysis}
-\label{sec:results}
-
 \subsection{Overall Performance}
+\label{sec:results}
 
 Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
 \system{} has the highest F1 in all six domains.
@@ -29,7 +27,9 @@ ProactiveAgent-Prompt & 0.174 & 0.219 & \underline{0.463} & 0.170 & 0.190 & 0.26
 \end{table*}
 
 The strongest local diagnostic varies by domain, producing a per-domain envelope with macro F1 0.392 rather than one runnable system.
-Compared with that envelope, the F1 gains are 0.420 (Code), 0.267 (SmartHome), 0.161 (Shopping), 0.188 (Email), 0.264 (Calendar), and 0.265 (Project Management).
+Relative to RAG-only, Mem0-backed, and the prompt adaptation, paired session bootstraps give macro-F1 gains of 0.265 (95\% CI [0.216, 0.306]), 0.330 ([0.275, 0.379]), and 0.406 ([0.359, 0.445]), respectively.
+Each of the 18 domain-level intervals excludes zero, and Holm-adjusted exact McNemar tests give the same directional conclusion.
+These intervals condition on the frozen sessions rather than new benchmark constructions or user populations.
 The selected baselines produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
 
 The external conditions expose a different failure mode.
