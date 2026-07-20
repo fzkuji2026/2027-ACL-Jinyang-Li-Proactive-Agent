@@ -129,39 +129,11 @@ Figure~\ref{fig:cooldown} makes the corresponding operating-point trade-off expl
     \label{fig:cooldown}
 \end{figure}
 
-\subsection{Stability Across Models and Protocols}
+\subsection{Repeatability and Protocol Checks}
 
-We repeat targeted Full--ablation comparisons with DeepSeek-V4-Pro, a gateway-reported GPT-5.5 endpoint, and MiniMax-M3.
-Table~\ref{tab:cross_model} reports $\Delta\mathrm{F1}=\mathrm{Full}-\mathrm{Ablation}$.
-All six selected effects replicate, including SmartHome as a zero-effect control.
-Exact score equality across several configurations reflects identical decision traces under the tested structured protocol; it should not be interpreted as independent verification of endpoint identity.
-
-% Auto-generated from four_model_comparison.csv by paper/assets/asset_build.py.
-% Requires: booktabs.
-\begin{table*}[t]
-\centering
-\caption{Cross-model replication of the selected mechanism effect. Effect is Full F1 minus ablated F1, so positive values indicate the same degradation after ablation. SmartHome Exact-only is a zero-effect control.}
-\label{tab:cross_model}
-\footnotesize
-\setlength{\tabcolsep}{4.4pt}
-\begin{tabular}{llrrrrc}
-\toprule
-Domain & Ablation & Flash & Pro & GPT-5.5 & MiniMax-M3 & Effect replicated \\
-\midrule
-Code & w/o Phase Gate & +0.205 & +0.184 & +0.184 & +0.184 & Yes \\
-SmartHome & Exact-only & +0.000 & +0.000 & +0.000 & +0.000 & Yes \\
-Shopping & Exact-only & +0.171 & +0.171 & +0.171 & +0.171 & Yes \\
-Email & Exact-only & +0.486 & +0.486 & +0.486 & +0.486 & Yes \\
-Calendar & Exact-only & +0.539 & +0.539 & +0.539 & +0.539 & Yes \\
-Project Management & Exact-only & +0.509 & +0.509 & +0.509 & +0.509 & Yes \\
-\bottomrule
-\end{tabular}
-\vspace{2pt}
-\parbox{0.98\textwidth}{\footnotesize The GPT-5.5 model identity is gateway-reported and was not independently verified. The table supports replication of the selected effect, including the zero-effect control, not universal component effectiveness.}
-\end{table*}
-
-Code Full and Calendar Full each produce identical F1 in three observed repeats.
-The Shopping protocol audit additionally compares continual, split-reset, and reversed orderings; these checks preserve the principal conclusion while clarifying that the main \texttt{all} run is stateful and must not be reconstructed by summing standalone splits.
+Code Full and Calendar Full each produce identical F1 across three observed runs, providing a prediction-level repeatability check for the frozen evaluators.
+The Shopping protocol audit compares continual, split-reset, and reversed orderings.
+These checks preserve the principal conclusion while clarifying that the main \texttt{all} run is stateful and must not be reconstructed by summing standalone splits.
 
 \subsection{Efficiency Composition}
 \label{sec:efficiency}
