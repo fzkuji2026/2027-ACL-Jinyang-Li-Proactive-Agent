@@ -107,10 +107,10 @@ It uses 384-dimensional all-MiniLM-L6-v2 embeddings, fresh run-local Qdrant stor
 The prompt condition uses temperature zero, fail-closed parsing with at most five retries, and a continual 20-pair history tail over warm-up and the Easy-to-Hard stream.
 The package requires Python 3.10 or newer; the current bundled audit runtime reports Python 3.12.13, while exact historical environments are not recoverable for every run.
 Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The frozen evaluators use a 50-event discovery window and override the candidate cooldown to three events.
-The instrumented HCPM ablation, repeatability, protocol-audit, and efficiency evaluators write one JSON Lines (JSONL) decision trace per evaluated turn, containing trigger hits, candidates, score components, phase, Think output, cooldown state, ground truth, and TP/FP/FN/TN classification.
+The instrumented HCPM ablation, repeatability, protocol-audit, and efficiency evaluators write one JSON Lines (JSONL) decision trace per evaluated turn, containing legacy trigger-hit fields, candidates, score components, phase, Think output, cooldown state, ground truth, and TP/FP/FN/TN classification.
 The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
 The supplemental audit contains 69 manifest records, including 39 domain/arm rows recomputed from selected decision traces, with zero validation failures.
 Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
-None of the six frozen benchmark evaluators supplies \texttt{query\_vector\_store}; consequently, the external-vector Semantic branch is inactive in all reported experiments.
-The gains observed in the four domains with semantic surface variation---Shopping, Calendar, Email, and Project Management---come from generalized Habit Variant Match rather than Semantic vector retrieval.
+Across the six selected Full traces, only Generalized Habit Matching produces matches: 486 hit turns, 436 post-check candidates, and 408 Pushes. The released traces retain \texttt{variant\_match} as the legacy label.
+None of the six optional prototype hooks produces a candidate; in particular, the Semantic hook is structurally unavailable because no evaluator supplies \texttt{query\_vector\_store}. We exclude these hooks from evaluated architecture and effectiveness claims and disclose their trace counts in Appendix~\ref{app:implementation_scope}.
 

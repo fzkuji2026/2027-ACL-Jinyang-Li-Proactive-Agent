@@ -1,4 +1,4 @@
-\documentclass[sigconf,anonymous,review]{acmart}
+\documentclass[sigconf]{acmart}
 
 \usepackage{multirow}
 
@@ -13,8 +13,11 @@
 
 \title{HCPM: Discovering Latent Habits for Controlled Proactive Memory in LLM Agents}
 
-\author{Anonymous Author(s)}
-\affiliation{\institution{Anonymous Institution}}
+\author{Jinyang Li}
+\author{Zichuan Fu}
+\author{Xiangyu Zhao}
+\authornote{Corresponding author.}
+\renewcommand{\shortauthors}{Li et al.}
 
 \begin{document}
 
@@ -22,13 +25,13 @@
 Long-term memory allows large language model agents to retain information beyond a single interaction, but retrieval alone does not determine when remembered information should interrupt an ongoing task.
 This distinction is important for web-facing and tool-using agents: users may not fully articulate their recurring workflows, while an agent that surfaces every related memory becomes distracting.
 We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
-\system{} consolidates repeated event--consequence patterns into typed habits, generalizes variable event forms, generates candidates from multiple trigger families, and applies scoring, phase-aware gating, and per-habit cooldown before producing a structured Push or no-Push decision.
+\system{} consolidates repeated event--consequence patterns into persistent habits, applies Generalized Habit Matching across exact and normalized action--entity forms, and uses phase-aware checks and per-habit cooldown before producing a structured Push or no-Push decision.
 To evaluate both discovery and selective intervention, we construct a source-documented benchmark with 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives across six controlled domain adaptations.
 Its implicit and late positives and its aligned or explicit-exception negatives jointly test latent-habit discovery, intervention timing, and restraint.
 On this benchmark, \system{} reaches a macro F1 of 0.653, compared with 0.392 for a per-domain local diagnostic envelope, 0.323 for a Mem0-v2.0.12-backed condition, and 0.248 for a ProactiveAgent prompt adaptation.
 Relative to the selected local diagnostics, it also reduces false positives from 604 to 176 and proactive pushes from 822 to 408.
 A study-built necessity verifier, a matched-cooldown sensitivity analysis, and a habit-profile shuffle control further separate selective intervention from retrieval and profile ownership.
-Ablations show that generalized habit matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
+Ablations show that Generalized Habit Matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
 Cooldown exposes a measurable recall--intervention trade-off rather than universally maximizing F1.
 These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
 \end{abstract}
@@ -55,5 +58,8 @@ These results support a modular view of proactive memory: useful systems must di
 \balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{9Reference}
+
+\appendix
+\input{10ImplementationScope}
 
 \end{document}

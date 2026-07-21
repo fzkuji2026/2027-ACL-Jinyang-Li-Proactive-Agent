@@ -10,8 +10,8 @@ This separation prevents ``memory found'' from becoming synonymous with ``notifi
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{Fig1_HCPM_Architecture.pdf}
-    \Description{A two-band HCPM architecture diagram. The upper band discovers typed habits from interaction events; the lower band generates, scores, suppresses, or delivers proactive candidates. A dashed boundary separates the evaluated Push/no-Push decision from optional language realization, and a feedback arrow returns observed outcomes to habit and cooldown state.}
-    \caption{\system{} architecture and evaluated decision boundary. The framework separates discovery of recurring, unspoken habits from control of proactive intervention. Seven trigger families produce candidates; selective phase/Think checks, weighted scoring, a threshold, and cooldowns yield a structured Push/no-Push decision. Optional natural-language realization lies outside the evaluated decision boundary, while observed use or non-use feeds back to habit and cooldown state.}
+    \Description{A two-band HCPM architecture diagram. The upper band aggregates behavioral evidence, induces persistent habits, and stores generalized variants. The lower band applies Generalized Habit Matching, selective Code phase and Think checks, and per-habit cooldown before a structured Push or no-Push decision. A dashed boundary separates the evaluated decision from optional language realization.}
+    \caption{\system{} architecture and evaluated decision boundary. Repeated behavioral evidence is consolidated into persistent habits. Generalized Habit Matching connects exact and normalized action--entity forms to selective phase/Think checks and per-habit cooldown, yielding a structured Push or no-Push decision. Optional natural-language realization lies outside the evaluated boundary.}
     \label{fig:architecture}
 \end{figure*}
 
@@ -22,7 +22,7 @@ In \system{}, a habit is a method-specific record
 h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h),
 \end{equation}
 where $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ contains generalized variants.
-Habit types include workflow, temporal, emotional, and associative patterns.
+The evaluated candidate path operates over these induced action--entity habits and their exact or generalized variants.
 
 \paragraph{Event accumulation.}
 
@@ -55,35 +55,29 @@ Here, $\sigma$ is the logistic sigmoid, $(w_f,w_r,w_c)=(0.5,0.3,0.2)$, and $\lam
 Records transition among active, fading, forgotten, and abandoned states; repeated evidence can reinforce a fading record.
 The current implementation persists the Habit Store; counters and queues are maintained as runtime state and could in principle be rebuilt by replaying the event stream.
 
-\paragraph{Generalized variants.}
+\paragraph{Generalized Habit Matching.}
 
 Exact matching is brittle when behavior is stable but surface forms vary.
 \system{} therefore stores generalized trigger patterns and variants.
 A coding habit may match a glob pattern, while preference-oriented domains can map an observed conflict key to a normalized habit entity.
-At runtime, Variant Match selects the highest-confidence supported variant and emits a candidate describing the typical consequence.
-The Exact-only ablation retains habit discovery but disables generalized runtime matching, isolating the value of abstraction beyond literal event equality.
+At runtime, Generalized Habit Matching first checks the exact action--entity key and then any supported glob or normalized variant, selecting the highest-confidence matched habit and emitting its typical consequence as a candidate.
+Released decision traces retain \texttt{variant\_match} as the legacy machine-readable label for this evaluated path.
+The Exact-only Match ablation retains habit discovery and literal matching but disables the generalized fallback, isolating abstraction beyond event equality.
 
 \subsection{Proactive Intervention Control}
 
-\paragraph{Candidate generation and scoring.}
+\paragraph{Habit-derived candidates.}
 
-The controller supports seven trigger families:
-\begin{itemize}
-    \item \textbf{Semantic}: queries an optional external vector store with \texttt{top\_k=3} and emits a candidate from the best returned item only when its score strictly exceeds $0.75$.
-    \item \textbf{Pattern}: fires when an expected consequence remains unfulfilled past its time window.
-    \item \textbf{Anomaly}: detects a structurally related action that deviates from a high-confidence habit.
-    \item \textbf{Variant Match}: matches the current action to a discovered exact or generalized habit variant.
-    \item \textbf{Temporal}: activates a typed temporal habit at a compatible time.
-    \item \textbf{Emotional}: matches stored emotional cues or keywords.
-    \item \textbf{Associative}: surfaces a habit through an associated concept.
-\end{itemize}
+The evaluated controller receives candidates from Generalized Habit Matching.
+Across the six selected Full traces, this path records 486 hit turns, of which 436 survive the phase/Think checks to become candidates and 408 become Pushes after cooldown.
+The repository also retains six optional prototype hooks, but none produces a candidate in these runs; Appendix~\ref{app:implementation_scope} reports their status rather than treating them as evaluated contributions.
 
-Each candidate $c$ has relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$.
-The score is
+For implementation completeness, each matched candidate $c$ carries relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$, with fixed score
 \begin{equation}
 s(c)=0.35r_c+0.25u_c+0.25q_c+0.15n_c
 \end{equation}
-The highest-scoring candidate proceeds only if $s(c)>\theta_{\mathrm{push}}$, with $\theta_{\mathrm{push}}=0.6$ by default.
+and threshold $s(c)>\theta_{\mathrm{push}}$, where $\theta_{\mathrm{push}}=0.6$.
+All 436 post-check candidates exceed this threshold in the frozen Full runs, so scoring preserves the protocol but is not claimed as an empirically discriminative component.
 
 \paragraph{Phase- and confidence-aware control.}
 
@@ -93,23 +87,22 @@ In Code, for example, current test status and edit/run/debug activity distinguis
 A matching habit can be suppressed during early work or active debugging and allowed after stable verification.
 For non-coding domains where those signals do not apply, the phase module returns an active state rather than imposing coding-specific rules.
 
-Pattern and Anomaly candidates may pass through the optional LLM Think check when Think is enabled and an LLM is available.
-In the Code workflow path, a Variant Match candidate may also invoke Think when the detected phase is early or implementing; with Think disabled or no LLM available, that branch applies deterministic phase suppression.
-For Variant Match, debugging is suppressed directly by the phase gate; candidates admitted in any other phase remain subject to the score threshold and cooldown rather than being pushed unconditionally.
+In the Code workflow path, a Generalized Habit Matching candidate may invoke the optional LLM Think check when the detected phase is early or implementing; with Think disabled or no LLM available, that branch applies deterministic phase suppression.
+Debugging is suppressed directly by the phase gate; candidates admitted in other phases remain subject to the fixed threshold and cooldown rather than being pushed unconditionally.
 The checker receives current phase, recent actions, test state, and the candidate, then returns PUSH or SUPPRESS with a confidence value.
-An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream candidate selection, thresholding, and cooldown.
+An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream thresholding and cooldown.
 As Section~\ref{sec:ablation} shows, this checker has only weak and unstable marginal evidence in the current experiments; it is retained as an optional safeguard rather than presented as the central contribution.
 
 \paragraph{Cooldown.}
 
-After thresholding, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
+After the fixed threshold, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
 Habit-backed candidates can therefore maintain independent cooldowns, while candidates without a habit identifier use the trigger--source key as a fallback.
 The frozen experiments use a three-event cooldown, reset at session boundaries.
-After an observed response to a Push, a global feedback cooldown can also suppress immediate follow-up notifications, whether the suggestion was used or ignored.
+The implementation also exposes a global feedback cooldown, but the frozen benchmark does not supply post-Push response feedback; this hook is outside the reported decision effects.
 
 Cooldown determines an intervention operating point.
 It is not a categorical user-interface label and is not expected to maximize F1 in every domain.
-The complete decision trace stores the candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
+The complete decision trace stores the habit match, candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
 
 \paragraph{Deployment boundary.}
 

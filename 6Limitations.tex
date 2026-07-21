@@ -7,8 +7,11 @@ The ground truth represents designed useful-intervention cases rather than longi
 False positives and Push count are intervention proxies; fewer pushes do not necessarily imply a better user experience.
 
 Mechanism activation is domain dependent.
-Generalized matching is inactive in Code and SmartHome, the phase gate is active primarily in Code, and the optional Think step has no robust aggregate effect in the current matrix.
+The generalized fallback is inactive in Code and SmartHome.
+The phase gate is active primarily in Code, and the optional Think step has no robust aggregate effect in the current matrix.
 The cooldown study identifies a discrete operating-point change, not a smooth or universal intervention-cost curve.
+The six prototype trigger hooks retained in the repository produce no candidates in the frozen Full runs, and all post-check candidates exceed the fixed score threshold.
+Accordingly, we claim neither broad trigger-family effectiveness nor empirical threshold discrimination; these remain implementation scope for future evaluation.
 
 The repeatability checks cover Code and Calendar, while the ordering audit is limited to Shopping; they do not establish stability for every domain and protocol variation.
 Efficiency is measured only for \system{} under MiniMax-M3, so comparisons with baseline cost or latency remain unsupported.

@@ -25,7 +25,7 @@ We therefore construct a source-documented six-domain benchmark whose implicit a
 
 We introduce \system{} (Habit-Consolidated Proactive Memory), a modular middleware for discovering latent habits and controlling their delivery.
 \system{} observes structured user and agent events, accumulates repeated evidence, and consolidates trigger--context--consequence regularities into typed habit records.
-It generalizes semantically equivalent event forms, generates proactive candidates through several trigger families, and exposes an auditable controller that scores candidates, checks workflow phase, optionally consults an LLM for high-risk cases, and enforces cooldown.
+Generalized Habit Matching connects exact and normalized action--entity forms to an auditable controller that checks workflow phase, optionally consults an LLM in ambiguous Code cases, and enforces per-habit cooldown.
 Its evaluated output is a structured Push or no-Push decision; optional natural-language realization occurs only after this decision and is outside the core mechanism.
 
 This formulation is relevant to web search and data mining in two ways.
@@ -36,7 +36,7 @@ The resulting problem joins behavioral pattern mining, retrieval, and selective 
 We make four contributions:
 \begin{itemize}
     \item We formulate proactive memory as a turn-level decision problem and contribute a source-documented benchmark with 207 longitudinal sessions, 3,435 evaluated turns, and 301 positive intervention opportunities across six controlled domain adaptations. Its turn-level labels explicitly assess latent-habit discovery, intervention timing, and restraint. We document grounding in public commit histories, WorkBench, $\tau$-bench Retail, and SmartBench, and do not treat these adaptations as official-protocol benchmark scores.
-    \item We present \system{}, which discovers habits that need not be explicitly declared and couples generalized habit matching with an auditable intervention controller.
+    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention controller.
     \item We provide six-domain comparisons against local diagnostic baselines and adapted external memory/proactive artifacts. \system{} improves macro F1 from 0.392 for the local diagnostic envelope, 0.323 for Mem0-backed memory, and 0.248 for ProactiveAgent-Prompt to 0.653.
     \item We add necessity, matched-cooldown, profile-shuffle, repeatability, and protocol-order controls, and report absolute call and token composition without claiming matched-baseline efficiency superiority.
 \end{itemize}

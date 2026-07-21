@@ -77,20 +77,20 @@ Every shuffled profile abstains because donor trigger keys do not match, so this
 \label{sec:ablation}
 
 Table~\ref{tab:ablations} shows a modular rather than universally additive system; Full denotes the complete \system{} configuration under the frozen protocol.
-Exact-only retains discovered habits but removes generalized runtime matching.
+Exact-only Match retains discovered habits and literal action--entity matching but removes the generalized fallback.
 Removing the phase gate changes Code substantially but is prediction-identical in four other tested domains.
 
 % Auto-generated from final_ablation_table.csv by paper/assets/asset_build.py.
 % Requires: booktabs.
 \begin{table*}[t]
 \centering
-\caption{Mechanism ablations. Cells report F1 (change from Full); an em dash denotes an untested setting. Generalized matching is active in Shopping, Calendar, Email, and Project Management; Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
+\caption{Mechanism ablations. Cells report F1 (change from Full); an em dash denotes an untested setting. Generalized Habit Matching improves four domains; Code and SmartHome are exact-match controls with no expected Full--Exact-only difference. Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
 \label{tab:ablations}
 \footnotesize
 \setlength{\tabcolsep}{3.4pt}
 \begin{tabular}{lccccc}
 \toprule
-Domain & Full & Exact-only & w/o Phase Gate & w/o LLM Think & w/o Cooldown \\
+Domain & Full & Exact-only Match & w/o Phase Gate & w/o LLM Think & w/o Cooldown \\
 \midrule
 Code & 0.667 (ref.) & 0.667 (+0.000) & 0.462 (-0.205) & 0.642 (-0.024) & \textemdash \\
 SmartHome & 0.647 (ref.) & 0.647 (+0.000) & 0.647 (+0.000) & \textemdash & \textemdash \\
@@ -102,10 +102,10 @@ Project Management & 0.652 (ref.) & 0.143 (-0.509) & 0.652 (+0.000) & \textemdas
 \end{tabular}
 \end{table*}
 
-\textbf{Generalized matching.}
-Full exceeds Exact-only in Shopping, Calendar, Email, and Project Management, with session-bootstrap intervals excluding zero: $[0.061,0.298]$, $[0.351,0.700]$, $[0.292,0.668]$, and $[0.311,0.677]$, respectively.
-Code and SmartHome are exact negative controls with identical predictions.
-Thus abstraction is most useful when preferences or workflow entities vary semantically, not when normalized events already match literally.
+\textbf{Generalized Habit Matching.}
+Full exceeds Exact-only Match in Shopping, Calendar, Email, and Project Management, with session-bootstrap intervals excluding zero: $[0.061,0.298]$, $[0.351,0.700]$, $[0.292,0.668]$, and $[0.311,0.677]$, respectively.
+Code and SmartHome already use literal normalized keys, so disabling only the generalized fallback leaves predictions identical; the zero difference is a control result, not zero task performance.
+Thus the generalized fallback is most useful when preferences or workflow entities vary semantically, whereas exact matching remains sufficient for the two normalized-key domains.
 
 \textbf{Phase gate.}
 Removing the gate lowers Code F1 by 0.205 (95\% CI $[0.131,0.276]$) and increases FP from 23 to 59.
