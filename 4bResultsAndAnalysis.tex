@@ -3,17 +3,17 @@
 
 Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
 \system{} has the highest F1 in all six domains.
-Its macro F1 is 0.653, compared with 0.388 for RAG-only, 0.323 for the Mem0-backed condition, and 0.248 for ProactiveAgent-Prompt.
+Its six-domain average F1 is 0.653, compared with 0.388 for RAG-only, 0.323 for the Mem0-backed condition, and 0.248 for ProactiveAgent-Prompt.
 
 \begin{table*}[t]
 \centering
-\caption{Six-domain F1 under the continual stateful \texttt{all} protocol. Local rows are diagnostic proxies; external rows exercise released artifacts through our adapters and are not official end-to-end system scores. \system{} and the Mem0-backed controller use cooldown 3; ProactiveAgent-Prompt adds none. Best is bold and second-best is underlined.}
+\caption{Six-domain F1 under the continual stateful \texttt{all} protocol. Avg. is the arithmetic mean across the six unrounded domain F1 scores. Local rows are diagnostic proxies; external rows exercise released artifacts through our adapters and are not official end-to-end system scores. \system{} and the Mem0-backed controller use cooldown 3; ProactiveAgent-Prompt adds none. Best is bold and second-best is underlined.}
 \label{tab:main_results}
 \footnotesize
 \setlength{\tabcolsep}{4.8pt}
 \begin{tabular}{lrrrrrrr}
 \toprule
-Method & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. & Macro \\
+Method & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. & Avg. \\
 \midrule
 No Memory & 0.000 & 0.087 & 0.355 & 0.239 & 0.295 & 0.034 & 0.168 \\
 RAG-only & \underline{0.247} & \underline{0.380} & 0.439 & \underline{0.494} & 0.381 & \underline{0.387} & \underline{0.388} \\
@@ -26,8 +26,9 @@ ProactiveAgent-Prompt & 0.174 & 0.219 & \underline{0.463} & 0.170 & 0.190 & 0.26
 \end{tabular}
 \end{table*}
 
-The strongest local diagnostic varies by domain, producing a per-domain envelope with macro F1 0.392 rather than one runnable system.
-Relative to RAG-only, Mem0-backed, and the prompt adaptation, paired session bootstraps give macro-F1 gains of 0.265 (95\% CI [0.216, 0.306]), 0.330 ([0.275, 0.379]), and 0.406 ([0.359, 0.445]), respectively.
+The strongest local diagnostic varies by domain, producing a per-domain envelope with an average F1 of 0.392 rather than one runnable system.
+Paired session bootstraps estimate a gain in six-domain average F1 of 0.265 over RAG-only (95\% CI [0.216, 0.306]).
+The corresponding gains over Mem0-backed and the prompt adaptation are 0.330 ([0.275, 0.379]) and 0.406 ([0.359, 0.445]), respectively.
 Each of the 18 domain-level intervals excludes zero, and Holm-adjusted exact McNemar tests give the same directional conclusion.
 These intervals condition on the frozen sessions rather than new benchmark constructions or user populations.
 The selected baselines produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
@@ -80,24 +81,23 @@ Table~\ref{tab:ablations} shows a modular rather than universally additive syste
 Exact-only Match retains discovered habits and literal action--entity matching but removes the generalized fallback.
 Removing the phase gate changes Code substantially but is prediction-identical in four other tested domains.
 
-% Auto-generated from final_ablation_table.csv by paper/assets/asset_build.py.
+% Values generated from final_ablation_table.csv; transposed for presentation.
 % Requires: booktabs.
 \begin{table*}[t]
 \centering
-\caption{Mechanism ablations. Cells report F1 (change from Full); an em dash denotes an untested setting. Generalized Habit Matching improves four domains; Code and SmartHome are exact-match controls with no expected Full--Exact-only difference. Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
+\caption{Mechanism ablations. Cells report F1 (change from Full), with changes computed before rounding; an em dash denotes an untested setting. Generalized Habit Matching improves four domains; Code and SmartHome are exact-match controls with no expected Full--Exact-only difference. Phase Gate has a repeatable Code effect; the marginal Think effect is weak/unstable; cooldown selects an intervention operating point rather than universally improving F1.}
 \label{tab:ablations}
 \footnotesize
 \setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
-Domain & Full & Exact-only Match & w/o Phase Gate & w/o LLM Think & w/o Cooldown \\
+Configuration & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. \\
 \midrule
-Code & 0.667 (ref.) & 0.667 (+0.000) & 0.462 (-0.205) & 0.642 (-0.024) & \textemdash \\
-SmartHome & 0.647 (ref.) & 0.647 (+0.000) & 0.647 (+0.000) & \textemdash & \textemdash \\
-Shopping & 0.600 (ref.) & 0.429 (-0.171) & 0.600 (+0.000) & 0.600 (+0.000) & 0.701 (+0.101) \\
-Email & 0.683 (ref.) & 0.197 (-0.486) & 0.683 (+0.000) & \textemdash & \textemdash \\
-Calendar & 0.672 (ref.) & 0.133 (-0.539) & \textemdash & \textemdash & \textemdash \\
-Project Management & 0.652 (ref.) & 0.143 (-0.509) & 0.652 (+0.000) & \textemdash & \textemdash \\
+Full & 0.667 (ref.) & 0.647 (ref.) & 0.600 (ref.) & 0.683 (ref.) & 0.672 (ref.) & 0.652 (ref.) \\
+Exact-only Match & 0.667 (+0.000) & 0.647 (+0.000) & 0.429 (-0.171) & 0.197 (-0.486) & 0.133 (-0.539) & 0.143 (-0.509) \\
+w/o Phase Gate & 0.462 (-0.205) & 0.647 (+0.000) & 0.600 (+0.000) & 0.683 (+0.000) & \textemdash & 0.652 (+0.000) \\
+w/o LLM Think & 0.642 (-0.024) & \textemdash & 0.600 (+0.000) & \textemdash & \textemdash & \textemdash \\
+w/o Cooldown & \textemdash & \textemdash & 0.701 (+0.101) & \textemdash & \textemdash & \textemdash \\
 \bottomrule
 \end{tabular}
 \end{table*}

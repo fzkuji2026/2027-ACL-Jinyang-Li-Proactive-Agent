@@ -46,7 +46,7 @@ We formulate proactive memory delivery as a turn-level decision problem and intr
 \system{} consolidates repeated event--consequence patterns into persistent habits, applies Generalized Habit Matching across exact and normalized action--entity forms, and uses phase-aware checks and per-habit cooldown before producing a structured Push or no-Push decision.
 To evaluate both discovery and selective intervention, we construct a source-documented benchmark with 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives across six controlled domain adaptations.
 Its implicit and late positives and its aligned or explicit-exception negatives jointly test latent-habit discovery, intervention timing, and restraint.
-On this benchmark, \system{} reaches a macro F1 of 0.653, compared with 0.392 for a per-domain local diagnostic envelope, 0.323 for a Mem0-v2.0.12-backed condition, and 0.248 for a ProactiveAgent prompt adaptation.
+On this benchmark, \system{} reaches a six-domain average F1 of 0.653, compared with 0.392 for a per-domain local diagnostic envelope, 0.323 for a Mem0-v2.0.12-backed condition, and 0.248 for a ProactiveAgent prompt adaptation.
 Relative to the selected local diagnostics, it also reduces false positives from 604 to 176 and proactive pushes from 822 to 408.
 A study-built necessity verifier, a matched-cooldown sensitivity analysis, and a habit-profile shuffle control further separate selective intervention from retrieval and profile ownership.
 Ablations show that Generalized Habit Matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
@@ -76,8 +76,5 @@ These results support a modular view of proactive memory: useful systems must di
 \balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{9Reference}
-
-\appendix
-\input{10ImplementationScope}
 
 \end{document}
