@@ -10,8 +10,8 @@ This separation prevents ``memory found'' from becoming synonymous with ``notifi
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{Fig1_HCPM_Architecture.pdf}
-    \Description{A two-band HCPM architecture diagram. The upper band aggregates behavioral evidence, induces persistent habits, and stores generalized variants. The lower band applies Generalized Habit Matching, selective Code phase and Think checks, and per-habit cooldown before a structured Push or no-Push decision. A dashed boundary separates the evaluated decision from optional language realization.}
-    \caption{\system{} architecture and evaluated decision boundary. Repeated behavioral evidence is consolidated into persistent habits. Generalized Habit Matching connects exact and normalized action--entity forms to selective phase/Think checks and per-habit cooldown, yielding a structured Push or no-Push decision. Optional natural-language realization lies outside the evaluated boundary.}
+    \Description{A two-band HCPM architecture diagram. The upper band aggregates behavioral evidence, induces persistent habits, and stores generalized variants. The lower band applies Generalized Habit Matching, selective Code phase and Think checks, and per-habit cooldown before a structured Push or no-Push decision, followed by optional language realization.}
+    \caption{\system{} architecture. Repeated behavioral evidence is consolidated into persistent habits. Generalized Habit Matching connects exact and normalized action--entity forms to selective phase/Think checks and per-habit cooldown, yielding a structured Push or no-Push decision followed by optional natural-language realization.}
     \label{fig:architecture}
 \end{figure*}
 
@@ -35,7 +35,7 @@ The remaining evidence is passed to an LLM with a constrained schema.
 The output proposes a habit type, trigger, trigger context, consequence, and variants.
 The parser removes reasoning blocks, scans for a schema-valid JSON payload, and retries malformed outputs before applying domain-specific fallbacks.
 Thus, the LLM proposes structured regularities, while deterministic checks govern admissible evidence and the representation written to memory.
-Users need not state ``this is my habit,'' but the system still requires repeated observational evidence and does not claim zero-history personalization.
+Users need not state ``this is my habit''; repeated observational evidence anchors each induced record.
 
 \paragraph{Confidence and lifecycle.}
 
@@ -71,12 +71,13 @@ The Exact-only Match ablation retains habit discovery and literal matching but d
 The evaluated controller receives candidates from Generalized Habit Matching.
 Across the six selected Full traces, this path records 486 hit turns, of which 436 survive the phase/Think checks to become candidates and 408 become Pushes after cooldown.
 
-For implementation completeness, each matched candidate $c$ carries relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$, with fixed score
+Each matched candidate $c$ carries relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$, with fixed score
 \begin{equation}
 s(c)=0.35r_c+0.25u_c+0.25q_c+0.15n_c
 \end{equation}
 and threshold $s(c)>\theta_{\mathrm{push}}$, where $\theta_{\mathrm{push}}=0.6$.
-All 436 post-check candidates exceed this threshold in the frozen Full runs, so scoring preserves the protocol but is not claimed as an empirically discriminative component.
+All 436 post-check candidates exceed this threshold in the evaluated Full runs.
+The threshold therefore provides a stable policy boundary, while empirical variation in the evaluated path arises from matching, selective checks, and cooldown.
 
 \paragraph{Phase- and confidence-aware control.}
 
@@ -84,23 +85,21 @@ Related behavior is not necessarily actionable behavior.
 For workflow domains with observable execution stages, \system{} derives a compact phase from recent events.
 In Code, for example, current test status and edit/run/debug activity distinguish early work, implementation, debugging, documentation work, and wrap-up.
 A matching habit can be suppressed during early work or active debugging and allowed after stable verification.
-For non-coding domains where those signals do not apply, the phase module returns an active state rather than imposing coding-specific rules.
+The phase module activates selectively in workflows with observable execution stages; other domains proceed through the matching, threshold, and cooldown controls without coding-specific phase rules.
 
 In the Code workflow path, a Generalized Habit Matching candidate may invoke the optional LLM Think check when the detected phase is early or implementing; with Think disabled or no LLM available, that branch applies deterministic phase suppression.
 Debugging is suppressed directly by the phase gate; candidates admitted in other phases remain subject to the fixed threshold and cooldown rather than being pushed unconditionally.
 The checker receives current phase, recent actions, test state, and the candidate, then returns PUSH or SUPPRESS with a confidence value.
 An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream thresholding and cooldown.
-As Section~\ref{sec:ablation} shows, this checker has only weak and unstable marginal evidence in the current experiments; it is retained as an optional safeguard rather than presented as the central contribution.
+The checker provides an optional ambiguity-resolution path; Section~\ref{sec:ablation} quantifies its incremental effect.
 
 \paragraph{Cooldown.}
 
 After the fixed threshold, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
 Habit-backed candidates can therefore maintain independent cooldowns, while candidates without a habit identifier use the trigger--source key as a fallback.
-The frozen experiments use a three-event cooldown, reset at session boundaries.
-The implementation also exposes a global feedback cooldown, but the frozen benchmark does not supply post-Push response feedback; this hook is outside the reported decision effects.
+The experiments use a three-event cooldown, reset at session boundaries.
 
-Cooldown determines an intervention operating point.
-It is not a categorical user-interface label and is not expected to maximize F1 in every domain.
+Cooldown sets an explicit intervention operating point, trading repeated coverage against intervention frequency.
 The complete decision trace stores the habit match, candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
 
 \paragraph{Deployment boundary.}

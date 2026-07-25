@@ -44,13 +44,11 @@ Long-term memory allows large language model agents to retain information beyond
 This distinction is important for web-facing and tool-using agents: users may not fully articulate their recurring workflows, while an agent that surfaces every related memory becomes distracting.
 We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
 \system{} consolidates repeated event--consequence patterns into persistent habits, applies Generalized Habit Matching across exact and normalized action--entity forms, and uses phase-aware checks and per-habit cooldown before producing a structured Push or no-Push decision.
-To evaluate both discovery and selective intervention, we construct a source-documented benchmark with 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives across six controlled domain adaptations.
-Its implicit and late positives and its aligned or explicit-exception negatives jointly test latent-habit discovery, intervention timing, and restraint.
-On this benchmark, \system{} reaches a six-domain average F1 of 0.653, compared with 0.392 for a per-domain local diagnostic envelope, 0.323 for a Mem0-v2.0.12-backed condition, and 0.248 for a ProactiveAgent prompt adaptation.
-Relative to the selected local diagnostics, it also reduces false positives from 604 to 176 and proactive pushes from 822 to 408.
-A study-built necessity verifier, a matched-cooldown sensitivity analysis, and a habit-profile shuffle control further separate selective intervention from retrieval and profile ownership.
+To evaluate the two stages separately, we use a six-domain behavior-only habit-induction benchmark with 102 episodes, 238 event records, and 30 pre-specified reference habits, together with a source-documented intervention benchmark containing 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives.
+On the habit-induction benchmark, \system{} reaches habit F1 $0.899\pm0.011$ across three runs, compared with $0.825\pm0.010$ for same-model Direct Summary and 0.857 for a deterministic frequency/rule method.
+On the intervention benchmark, whose implicit and late positives and aligned or explicit-exception negatives test timing and restraint, \system{} reaches a six-domain average F1 of 0.653, compared with 0.388 for RAG-only, 0.323 for a Mem0-v2.0.12-backed baseline, and 0.248 for ProactiveAgent-Prompt.
 Ablations show that Generalized Habit Matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
-Cooldown exposes a measurable recall--intervention trade-off rather than universally maximizing F1.
+Cooldown selects an explicit operating point on the recall--intervention trade-off.
 These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
 \end{abstract}
 
@@ -72,7 +70,6 @@ These results support a modular view of proactive memory: useful systems must di
 \input{7Conclusion}
 \input{8EthicalConsiderations}
 
-\clearpage
 \balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{9Reference}

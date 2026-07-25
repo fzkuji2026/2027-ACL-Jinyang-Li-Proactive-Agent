@@ -10,7 +10,7 @@ e_t=(\tau_t,a_t,v_t,o_t,m_t)
 \end{equation}
 Here, $\tau_t$ is time, $a_t$ is the actor, $v_t$ is an action verb, $o_t$ is an object or entity, and $m_t$ contains domain metadata.
 Structured tool calls are mapped deterministically; free-form language can be parsed into the same schema by an LLM.
-The benchmark uses pre-structured events so event parsing is not part of the reported decision accuracy.
+The benchmark uses pre-structured events to isolate habit induction and intervention control from event parsing.
 
 Before turn $t$, an agent maintains a method-dependent state $S_t$ derived from prior events $e_{<t}$.
 The state may contain raw observations, retrieved memories, summaries, or learned behavioral representations; the task definition does not prescribe its form.
@@ -25,15 +25,13 @@ The current event is incorporated into persistent state only after this decision
 S_{t+1}=U(S_t,e_t).
 \end{equation}
 
-This formulation shares the observe--propose-or-abstain structure of prior proactive-agent work~\citep{lu2025proactiveagent}, but our evaluated variable is deliberately narrower.
-The benchmark provides a turn-level label for whether an intervention opportunity exists, independent of the wording of a generated task proposal.
-We therefore evaluate intervention timing and abstention rather than end-to-end natural-language proposal quality; language realization remains a downstream host-system concern.
+We adopt the observe--propose-or-abstain structure used in prior proactive agent work~\citep{lu2025proactiveagent}.
+Our benchmark labels whether an intervention opportunity exists at each turn independently of proposal wording, allowing intervention timing and abstention to be evaluated separately from downstream language realization.
 
 \subsection{Evaluation Objective}
 
 Each evaluation turn has a ground-truth label $y_t$ indicating whether an intervention is useful at that stage.
 We report precision, recall, F1, false positives (FP), and Push count in the main text; complete traces additionally retain accuracy and true-positive, false-negative, and true-negative counts.
-F1 captures the balance between recovering useful interventions and avoiding false ones, while FP and Push count directly report false and total intervention frequency; they are offline proxies for potential intervention burden rather than measurements of perceived burden, satisfaction, trust, or helpfulness.
-No single metric fully represents user utility: the relative cost of one missed intervention and one unnecessary interruption is deployment dependent.
-We therefore treat threshold and cooldown as an operating policy rather than tune them solely to maximize test F1.
+F1 captures the balance between recovering useful interventions and avoiding false ones, while FP and Push count operationalize false and total intervention frequency.
+Because the relative cost of missed and unnecessary interventions is deployment dependent, we treat threshold and cooldown as an operating policy and report their resulting accuracy--intervention trade-off.
 

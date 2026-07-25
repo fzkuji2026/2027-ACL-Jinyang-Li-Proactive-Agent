@@ -6,7 +6,7 @@
 Generative Agents store observations, retrieve memories by relevance, recency, and importance, and synthesize higher-level reflections~\citep{park2023generative}.
 Reflexion maintains reflective textual feedback in episodic memory across trials~\citep{shinn2023reflexion}, while MemoryBank maintains persistent conversational memories and updates their strength as interactions evolve over time~\citep{zhong2024memorybank}.
 MemGPT treats limited context as a hierarchy of memory tiers~\citep{packer2023memgpt}.
-Mem0 dynamically extracts, consolidates, and retrieves conversational memories and includes a graph-based variant~\citep{chhikara2025mem0}; our experiment calls its pinned open-source release through a study-built intervention adapter~\citep{mem0ai2026mem0v2012}.
+Mem0 dynamically extracts, consolidates, and retrieves conversational memories and includes a graph-based variant~\citep{chhikara2025mem0}; our experiment calls its pinned open-source release through the unified intervention adapter~\citep{mem0ai2026mem0v2012}.
 A-Mem organizes memory notes through dynamically generated links and updates existing representations as new memories arrive~\citep{xu2025amem}.
 HippoRAG uses graph structure and personalized PageRank for cross-passage integration~\citep{gutierrez2024hipporag}.
 These works motivate persistent and structured memory, but their principal evaluation target is storage, retrieval, response quality, or memory organization rather than turn-level intervention timing.
@@ -20,17 +20,17 @@ Our evaluation differs in its output variable: each turn asks whether memory sho
 \subsection{Proactive Memory and Agents}
 
 ProactiveAgent predicts tasks from streams of environment observations and explicitly evaluates whether an agent should propose assistance or remain silent~\citep{lu2025proactiveagent}.
-Our ProactiveAgent-Prompt condition reuses only its pinned evaluation-prompt artifact and proposal/null schema~\citep{thunlp2026proactiveagentrepo}, not the trained checkpoint, learned evaluator, or full interactive agent.
+We instantiate its pinned prompt artifact and proposal/null schema as the ProactiveAgent-Prompt baseline~\citep{thunlp2026proactiveagentrepo}.
 PASK~\citep{xie2026pask} combines streaming latent-need detection with hybrid memory in an end-to-end proactive agent.
 MemCog~\citep{li2026memcog} supports reasoning-driven memory traversal.
 The concurrent preprint Remember When It Matters~\citep{wu2026remember} runs a separate memory agent that decides whether to inject a memory-grounded reminder or remain silent during long-horizon tasks.
-These systems establish that proactive memory is broader than \system{}.
-Our benchmark differs from end-to-end proactive task prediction by fixing a turn-level intervention-opportunity label and evaluating timing separately from proposal wording.
+Together, these systems span end-to-end proactive task prediction, memory traversal, and selective reminder injection.
+Our benchmark complements them by fixing a turn-level intervention-opportunity label and evaluating timing separately from proposal wording.
 Our method focus is the combination of (i) discovering typed habits from repeated behavior that users need not articulate, and (ii) exposing an auditable, phase- and cooldown-aware intervention controller.
 
 \subsection{Habit and Intervention Control}
 
 Prior human--computer interaction studies show that interruption cost depends on delivery timing and ongoing-task structure, and that perceptually meaningful task breakpoints can sometimes be detected from interaction traces~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
-These findings motivate, without validating, \system{}'s separation of a matched regularity from the decision to intervene; the evaluated framework operationalizes this distinction through habit induction, Generalized Habit Matching, phase-aware checks, and per-habit cooldown.
-The present work evaluates offline decision labels and intervention counts; it does not replace a user study of perceived helpfulness or annoyance.
+These findings motivate \system{}'s separation of a matched regularity from the decision to intervene.
+The evaluated framework operationalizes this distinction through habit induction, Generalized Habit Matching, phase-aware checks, and per-habit cooldown.
 

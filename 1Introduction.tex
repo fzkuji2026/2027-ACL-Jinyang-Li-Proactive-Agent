@@ -20,13 +20,14 @@ For example, a developer may regularly commit only after tests pass, a shopper m
 An agent should be able to infer such regularities from interaction traces.
 At the same time, the inferred habit must not become an unconditional notification rule.
 
-Evaluating this setting requires longitudinal evidence and turn-level labels for both warranted and withheld interventions, rather than only scoring retrieval relevance or suggestion plausibility.
-We therefore construct a source-documented six-domain benchmark whose implicit and late positives and aligned or explicit-exception negatives jointly test latent-habit discovery, intervention timing, and restraint.
+Evaluating this setting requires evidence at two levels.
+We use a behavior-only benchmark to directly score whether repeated traces are consolidated into evidence-grounded habits, and a source-documented six-domain benchmark with turn-level labels for warranted and withheld interventions.
+The latter's implicit and late positives and aligned or explicit-exception negatives test intervention timing and restraint rather than only retrieval relevance or suggestion plausibility.
 
 We introduce \system{} (Habit-Consolidated Proactive Memory), a modular middleware for discovering latent habits and controlling their delivery.
 \system{} observes structured user and agent events, accumulates repeated evidence, and consolidates trigger--context--consequence regularities into typed habit records.
 Generalized Habit Matching connects exact and normalized action--entity forms to an auditable controller that checks workflow phase, optionally consults an LLM in ambiguous Code cases, and enforces per-habit cooldown.
-Its evaluated output is a structured Push or no-Push decision; optional natural-language realization occurs only after this decision and is outside the core mechanism.
+Its controller produces a structured Push or no-Push decision that can subsequently be rendered into application-specific natural language.
 
 This formulation is relevant to web search and data mining in two ways.
 First, web agents and intelligent assistants must mine longitudinal interaction traces rather than treat each request independently.
@@ -35,9 +36,9 @@ The resulting problem joins behavioral pattern mining, retrieval, and selective 
 
 We make four contributions:
 \begin{itemize}
-    \item We formulate proactive memory as a turn-level decision problem and contribute a source-documented benchmark with 207 longitudinal sessions, 3,435 evaluated turns, and 301 positive intervention opportunities across six controlled domain adaptations. Its turn-level labels explicitly assess latent-habit discovery, intervention timing, and restraint. We document grounding in public commit histories, WorkBench, $\tau$-bench Retail, and SmartBench, and do not treat these adaptations as official-protocol benchmark scores.
-    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention controller.
-    \item We provide six-domain comparisons against local diagnostic baselines and adapted external memory/proactive artifacts. \system{} improves average F1 from 0.392 for the local diagnostic envelope, 0.323 for Mem0-backed memory, and 0.248 for ProactiveAgent-Prompt to 0.653.
-    \item We add necessity, matched-cooldown, profile-shuffle, repeatability, and protocol-order controls, and report absolute call and token composition without claiming matched-baseline efficiency superiority.
+    \item We separate habit induction from intervention evaluation using a behavior-only benchmark (102 episodes; 30 pre-specified reference habits) and a documented intervention benchmark (207 sessions; 3,435 turns; 301 positives) spanning six domains grounded in public commit histories, WorkBench, $\tau$-bench Retail, and SmartBench.
+    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention controller. On the habit-induction benchmark, \system{} obtains habit F1 $0.899\pm0.011$ across three runs, versus $0.825\pm0.010$ for same-model Direct Summary.
+    \item We compare \system{} with retrieval, reflection, generative-memory, Mem0-backed, and ProactiveAgent-Prompt baselines under a unified six-domain protocol. \system{} improves average F1 from 0.388 for RAG-only, 0.323 for Mem0-backed memory, and 0.248 for ProactiveAgent-Prompt to 0.653.
+    \item We add necessity, cooldown, profile-shuffle, repeatability, and order controls, and characterize the framework's absolute call and token composition.
 \end{itemize}
 

@@ -3,7 +3,8 @@
 
 We studied proactive memory as a decision problem rather than retrieval followed by unconditional injection.
 \system{} discovers persistent habits from repeated interaction evidence and separately controls whether a habit should be surfaced through Generalized Habit Matching, Code-specific phase/Think checks, and per-habit cooldown.
-Across six domain adaptations, \system{} improves average F1 over both local diagnostics and adapted Mem0/ProactiveAgent artifacts, while reducing false positives and total Push count relative to the selected local diagnostics.
+On the behavior-only benchmark, its induction F1 is $0.899\pm0.011$, compared with $0.825\pm0.010$ for same-model Direct Summary and 0.857 for frequency/rule induction.
+Across six domains, \system{} improves average F1 over implementation-controlled memory baselines and pinned Mem0/ProactiveAgent artifacts, while reducing false positives and total Push count relative to the strongest per-domain baseline selections.
 Ablations, intervention controls, and error traces show that habit abstraction and delivery control solve different problems and activate under different task structures.
 This separation offers a practical direction for web agents and intelligent assistants that must learn from longitudinal behavior without turning every related memory into an interruption.
 
