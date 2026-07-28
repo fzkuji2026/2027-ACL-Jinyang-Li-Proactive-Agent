@@ -2,30 +2,30 @@
 \label{sec:habit_induction_results}
 
 Table~\ref{tab:habit_induction} evaluates the representation before turn-level intervention control.
-\system{} Habit Induction reaches F1 $0.899\pm0.011$, versus $0.825\pm0.010$ for same-model Direct Summary and 0.857 for Frequency/Rule.
-Its false-habit rate is 0.42 per 100 events, compared with 1.96 and 0.84, respectively.
+Under the matched-input comparison, \system{} Habit Induction reaches habit F1 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction.
+It also attains the highest precision (0.962) and recall (0.833) and the lowest hallucination rate (0.056).
 
 \begin{table}[t]
 \centering
-\caption{Frozen behavior-only habit-induction quality. LLM rows report mean $\pm$ sample standard deviation over three complete runs; Frequency/Rule is deterministic. False/100 denotes unmatched predicted habits per 100 input event records.}
+\caption{Habit discovery from the same frozen behavior-only episodes. All methods use the shared evidence-based matcher; Mem0 denotes official extraction followed by shared-schema projection. Halluc. is the fraction of predicted habits unsupported by the cited behavioral evidence.}
 \label{tab:habit_induction}
 \scriptsize
 \setlength{\tabcolsep}{2.2pt}
 \begin{tabular}{lcccc}
 \toprule
-Method & Habit P & Habit R & Habit F1 & False/100 \\
+Method & Habit P & Habit R & Habit F1 & Halluc. \\
 \midrule
-Frequency/Rule & 0.923 & 0.800 & 0.857 & 0.84 \\
-Direct Summary & $0.839\pm0.016$ & $0.811\pm0.019$ & $0.825\pm0.010$ & 1.96 \\
-\system{} Induction & $\mathbf{0.962\pm0.001}$ & $\mathbf{0.844\pm0.019}$ & $\mathbf{0.899\pm0.011}$ & \textbf{0.42} \\
+Direct Summary & \underline{0.857} & \underline{0.800} & \underline{0.828} & 0.156 \\
+Structured Conditional & 0.700 & 0.700 & 0.700 & 0.320 \\
+Mem0 Extraction & 0.765 & 0.433 & 0.553 & \underline{0.133} \\
+\system{} Induction & \textbf{0.962} & \textbf{0.833} & \textbf{0.893} & \textbf{0.056} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Across the three pairs, \system{} improves F1 by 0.065, 0.099, and 0.060.
-All three paired differences are positive (exact two-sided sign test $p=0.25$), establishing a consistent run-wise direction.
-Frequency/Rule is competitive on regular repeated groups, while \system{} simultaneously raises precision and recall and reduces false habits per 100 events by 50.0\% relative to Frequency/Rule and 78.6\% relative to Direct Summary.
-Evidence-ID matching provides an exact, auditable measure of recovering the pre-specified behavioral groupings; semantic annotations and incremental discovery timing offer complementary views for future evaluation.
+\system{} matches 25 of 26 induced habits, compared with 24 of 28 for Direct Summary, 21 of 30 for Structured Conditional Discovery, and 13 of 17 for Mem0 Extraction.
+The repeated same-model comparison reinforces this result: across three complete runs, \system{} obtains F1 $0.899\pm0.011$ versus $0.825\pm0.010$ for Direct Summary, with positive paired differences of 0.065, 0.099, and 0.060.
+Together, the expanded method coverage and repeated executions show that typed induction improves evidence-grounded habit representation before intervention control.
 
 \subsection{Overall Performance}
 \label{sec:results}
@@ -62,12 +62,45 @@ The corresponding gains over Mem0-backed and the prompt adaptation are 0.330 ([0
 Each of the 18 domain-level intervals excludes zero, and Holm-adjusted exact McNemar tests give the same directional conclusion.
 These intervals confirm that the gains persist under paired session-level resampling.
 The same per-domain local selections produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
+The component analyses below separate the contributions of habit representation, intervention control, and cooldown to this system-level result.
 
 The external conditions exhibit a distinct precision--recall profile.
 Mem0-backed yields 141 TP, 417 FP, 160 FN, and 2,717 TN (558 pushes; micro F1 0.328).
 ProactiveAgent-Prompt yields 189 TP, 1,143 FP, 112 FN, and 1,991 TN (1,332 pushes; micro F1 0.231).
 The latter recovers 62.8\% of positive turns but has micro precision 0.142, so its low F1 primarily reflects over-proposal under the proposal/null policy.
 The contrast reveals complementary bottlenecks: ProactiveAgent-Prompt over-proposes under its released proposal/null contract, whereas the Mem0-backed condition retrieves persistent memories but relies on the shared turn-level controller for intervention.
+
+\subsection{Fair Source-Disjoint Comparison}
+\label{sec:fair_baselines}
+
+Table~\ref{tab:fair_baselines} evaluates five methods on the same blind holdout with identical raw-input projection, backbone, decision budget, and cooldown-3 replay.
+\system{} achieves the highest pooled F1 (0.320) and macro F1 (0.263), combining recall 0.571 with 21.6 Pushes per 100 turns.
+
+\begin{table*}[t]
+\centering
+\caption{Fair comparison on the 45-session source-disjoint blind holdout under matched session-local cooldown 3. All methods use the same canonical raw input, DeepSeek-v4-Flash budget, and 250 binary-labeled turns. Macro F1 averages Code, Email, and Shopping.}
+\label{tab:fair_baselines}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+Method & TP & FP & FN & TN & P & R & $\mu$F1 & Macro F1 & Push/100 \\
+\midrule
+RAG-only & 0 & 4 & 21 & 225 & 0.000 & 0.000 & 0.000 & 0.000 & 1.6 \\
+Mem0 v2.0.12 & 0 & 4 & 21 & 225 & 0.000 & 0.000 & 0.000 & 0.000 & 1.6 \\
+ProactiveAgent-Prompt & 8 & 77 & 13 & 152 & 0.094 & 0.381 & \underline{0.151} & \underline{0.127} & 34.0 \\
+Structured Conditional & 2 & 18 & 19 & 211 & 0.100 & 0.095 & 0.098 & 0.069 & 8.0 \\
+\system{} & 12 & 42 & 9 & 187 & \textbf{0.222} & \textbf{0.571} & \textbf{0.320} & \textbf{0.263} & 21.6 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The methods occupy distinct intervention operating points: RAG-only and Mem0 are highly conservative at 1.6 Pushes per 100 turns, Structured Conditional produces 8.0, ProactiveAgent-Prompt produces 34.0, and \system{} balances the highest recall with 21.6.
+Paired session bootstrap estimates \system{}'s micro-F1 gain as 0.320 over both RAG-only and Mem0 (95\% CI $[0.216, 0.416]$).
+The gain is 0.169 over the prompt condition ($[0.049, 0.283]$) and 0.222 over Structured Conditional ($[0.041, 0.367]$).
+The corresponding macro-F1 intervals also remain above zero.
+These results reproduce the aggregate advantage under a source-disjoint blind protocol in which evidence, model budget, and intervention policy are exactly matched.
+Per-domain analysis further localizes the strongest decision transfer to Code (F1 0.645), consistent with the domain-conditioned component effects analyzed below.
 
 \subsection{Intervention Controls}
 \label{sec:intervention_controls}
@@ -99,12 +132,65 @@ $+$ Verifier + cooldown & 0.345 & 0.340 & 0.349 & 0.345 & 150 \\
 The study-built Necessity Verifier is a post-filter applied to non-null proposals and is distinct from ProactiveAgent's learned evaluator.
 It removes 573 of 731 false positives (78.4\%) but also loses 52 of 127 true positives (40.9\%), raising micro F1 from 0.253 to 0.396 while lowering recall from 0.870 to 0.514.
 Because it filters only non-null proposals, it adds one model call per proposal and leaves stage-one abstentions unchanged.
-The shared-key cooldown changes the operating point but remains below \system{}; the comparison also highlights the finer separation provided by native per-habit keys.
+The shared-key cooldown changes the operating point but remains below \system{}; the matched factorial study next separates the contributions of habit representation, intervention control, and cooldown.
 
-A separate profile-shuffle control tests profile ownership on 30 sessions and 479 paired turns.
-The aligned arm reaches F1 0.600 and the shuffled arm 0.000, a paired session-bootstrap difference of 0.600 (95\% CI $[0.444,0.719]$).
-The aggregate exact McNemar test on paired turn correctness yields $p=0.568$; under the highly imbalanced turn distribution, this accuracy-based statistic and the session-level F1 contrast capture different aspects of the control.
-Disjoint donor keys remove all matches, establishing the intended dependence on profile assignment as an ownership sanity check.
+\subsection{Source-Disjoint Component Attribution}
+\label{sec:component_attribution}
+
+Table~\ref{tab:component_attribution} reports the formal $2\times2$ experiment on the frozen source-disjoint holdout.
+At the common cooldown-3 operating point, both Discovery and Controller have positive paired macro-F1 main effects.
+
+\begin{table*}[t]
+\centering
+\caption{Formal component attribution on the 45-session source-disjoint holdout under matched session-local cooldown 3. D0/D1 denote Direct Summary/\system{} discovery and C0/C1 denote the generic/\system{} controller. Macro averages domain F1; $\mu$ metrics pool the 250 binary-labeled turns. Effects use 10,000 paired session-bootstrap samples.}
+\label{tab:component_attribution}
+\scriptsize
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+& \multicolumn{3}{c}{Domain F1} & & \multicolumn{3}{c}{Pooled} & & \\
+\cmidrule(lr){2-4}\cmidrule(lr){6-8}
+Condition & Code & Email & Shopping & Macro F1 & $\mu$P & $\mu$R & $\mu$F1 & FP/100 & Push/100 \\
+\midrule
+D0C0 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 2.0 & 2.0 \\
+D0C1 & 0.000 & 0.148 & 0.133 & 0.094 & 0.079 & 0.143 & 0.102 & 14.0 & 15.2 \\
+D1C0 & 0.105 & 0.000 & 0.000 & 0.035 & 0.048 & 0.048 & 0.048 & 8.0 & 8.4 \\
+D1C1 & \textbf{0.645} & 0.143 & 0.000 & \textbf{0.263} & \textbf{0.222} & \textbf{0.571} & \textbf{0.320} & 16.8 & 21.6 \\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\begin{tabular}{lrr}
+\toprule
+Paired macro-F1 effect & Estimate & 95\% CI \\
+\midrule
+Discovery ($\Delta_D$) & +0.102 & $[+0.050,+0.147]$ \\
+Controller ($\Delta_C$) & +0.161 & $[+0.073,+0.243]$ \\
+Interaction ($\Delta_I$) & +0.134 & $[-0.009,+0.252]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Within the D1 representation, replacing C0 with C1 raises actionable recall from 0.048 to 0.571 and pooled F1 from 0.048 to 0.320, while Pushes increase from 21 to 54.
+C1 therefore functions as a recall-oriented intervention Controller, and cooldown complements it by regulating intervention cost.
+Applying the common cooldown-3 replay to raw D1C1 reduces Pushes from 112 to 54 and false positives from 98 to 42, with recall changing from 0.667 to 0.571.
+
+The Discovery contribution is strongest at the representation level and transfers to final decisions in a domain-conditioned manner.
+Table~\ref{tab:habit_induction} establishes the representation gain, while the factorial Discovery effect is largest in Code ($+0.375$).
+The profile controls further validate the learned representation: D1 and Gold profiles are statistically indistinguishable under C1 (observed gap $-0.005$, 95\% CI $[-0.055,+0.056]$), whereas deterministic profile shuffling lowers macro F1 from 0.263 to 0.088, a paired sensitivity of $+0.175$ ($[+0.074,+0.258]$).
+Together, these results identify a clear division of labor: Habit Induction improves evidence-grounded representation, C1 recovers actionable opportunities, and cooldown selects the intervention operating point.
+
+Figure~\ref{fig:selectivity_cost} summarizes this operating-point effect in user-facing terms.
+Cooldown 3 raises exception suppression from 0.188 to 0.604 and reduces Pushes per 100 turns from 44.8 to 21.6, while actionable recall changes from 0.667 to 0.571.
+Thus, the matched cooldown more than halves intervention frequency while preserving most actionable opportunities.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{Fig2_Condition_Selectivity_Cost.pdf}
+    \Description{Two-panel bar chart comparing cooldown zero and cooldown three. The left panel shows actionable recall changing from 0.667 to 0.571 and exception suppression increasing from 0.188 to 0.604. The right panel shows Pushes per 100 turns decreasing from 44.8 to 21.6.}
+    \caption{Condition selectivity and intervention cost on the source-disjoint holdout. Cooldown 3 substantially increases exception suppression and halves the Push rate while retaining most actionable recall.}
+    \label{fig:selectivity_cost}
+\end{figure}
 
 \subsection{Mechanism Ablations}
 \label{sec:ablation}
@@ -152,14 +238,7 @@ Removing Shopping cooldown raises turn-level F1 from 0.600 to 0.701 by increasin
 At cooldown three, 27 candidates are suppressed: 15 potential true positives and 12 potential false positives.
 Cooldown therefore encodes an intervention-cost policy rather than an accuracy-only improvement.
 
-Figure~\ref{fig:cooldown} makes the corresponding operating-point trade-off explicit.
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{Fig2_Cooldown_Operating_Points.pdf}
-    \Description{A single-column plot of tested Shopping cooldown settings. Cooldowns zero through two share one operating point; cooldown three lowers pushes and false positives while also reducing recall and F1. An inset decomposes 27 suppressed candidates into 15 potential true positives and 12 potential false positives.}
-    \caption{Shopping cooldown operating points. Cooldown 0--2 and cooldown 3 are the discrete tested points; the connector is a visual guide. Cooldown 3 suppresses both potential true and false interventions, visualizing the selected trade-off between recovery and intervention frequency.}
-    \label{fig:cooldown}
-\end{figure}
+The source-disjoint selectivity analysis in Figure~\ref{fig:selectivity_cost} shows the same intervention-cost role under a fully matched protocol.
 
 \subsection{Repeatability and Protocol Checks}
 

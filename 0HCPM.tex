@@ -45,10 +45,10 @@ This distinction is important for web-facing and tool-using agents: users may no
 We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
 \system{} consolidates repeated event--consequence patterns into persistent habits, applies Generalized Habit Matching across exact and normalized action--entity forms, and uses phase-aware checks and per-habit cooldown before producing a structured Push or no-Push decision.
 To evaluate the two stages separately, we use a six-domain behavior-only habit-induction benchmark with 102 episodes, 238 event records, and 30 pre-specified reference habits, together with a source-documented intervention benchmark containing 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives.
-On the habit-induction benchmark, \system{} reaches habit F1 $0.899\pm0.011$ across three runs, compared with $0.825\pm0.010$ for same-model Direct Summary and 0.857 for a deterministic frequency/rule method.
+On the habit-induction benchmark, \system{} reaches F1 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction; three repeated runs yield $0.899\pm0.011$ versus $0.825\pm0.010$ for Direct Summary.
 On the intervention benchmark, whose implicit and late positives and aligned or explicit-exception negatives test timing and restraint, \system{} reaches a six-domain average F1 of 0.653, compared with 0.388 for RAG-only, 0.323 for a Mem0-v2.0.12-backed baseline, and 0.248 for ProactiveAgent-Prompt.
-Ablations show that Generalized Habit Matching is the broadest contributor, while phase gating has a large, repeatable Code-specific effect.
-Cooldown selects an explicit operating point on the recall--intervention trade-off.
+On a source-disjoint blind holdout with matched raw input, backbone, decision budget, and cooldown, \system{} reaches pooled F1 0.320 versus 0.151 for the strongest comparator, with a paired gain of 0.169 (95\% CI $[0.049,0.283]$).
+Component attribution shows that Habit Induction improves representation, the intervention Controller raises actionable recall, and cooldown more than halves the Push rate while increasing exception suppression.
 These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
 \end{abstract}
 

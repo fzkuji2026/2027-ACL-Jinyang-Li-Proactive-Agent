@@ -65,14 +65,34 @@ We separately define 102 behavior-only episodes (238 event records) across the s
 Ninety episodes support 30 pre-specified reference habits, while 12 are one-off distractors (two per domain).
 Each habit has at least two evidence episodes; references and matching thresholds are withheld from method inputs.
 
-We compare three methods.
-\textbf{Frequency/Rule} deterministically groups recurrent event signatures.
-\textbf{Direct Summary} uses the same LLM to infer habits directly from the behavior-only episodes.
-\textbf{\system{} Habit Induction} augments those episodes with a deterministic repeated-candidate summary and typed induction instructions.
-The comparison evaluates each complete induction procedure; the \system{} prompt is 15.6\% longer than Direct Summary, and this design attribute is reported explicitly.
+We compare four induction procedures under the same behavior-only inputs and evidence-based matcher.
+\textbf{Direct Summary} uses the same LLM to infer habits directly from the episodes.
+\textbf{Structured Conditional Discovery} is a domain-agnostic transition miner that converts recurrent condition--action patterns into the shared habit schema.
+\textbf{Mem0 Extraction} applies the official Mem0 v2.0.12 extractor and one shared-schema projection per domain.
+\textbf{\system{} Habit Induction} augments the episodes with a deterministic repeated-candidate summary and typed induction instructions.
+A matched-input comparison evaluates all four complete procedures, while three repeated Direct Summary and \system{} runs measure execution stability.
 A one-to-one match requires the reference minimum evidence count and at least two-thirds citation purity; unmatched predictions and references become false positives and false negatives.
-We report habit precision, recall, F1, and false habits per 100 event records.
-Both LLM conditions run three times on identical data to measure reproducibility across model executions.
+We report habit precision, recall, F1, evidence groundedness, and hallucination rate.
+
+\subsubsection{Source-Disjoint Component Holdout}
+
+We additionally freeze a source-disjoint, behavior-only holdout for component attribution in Code, Email, and Shopping.
+It contains 45 sessions and 251 turns drawn from sources, histories, and session templates that do not overlap the development benchmark.
+Labels were frozen before system prediction through two isolated blind LLM annotation passes, isolated LLM adjudication, and a constrained sequence-consistency check; no method prediction was visible during selection or annotation.
+The final labels contain 21 Push, 229 abstain, and one uncertain turn.
+The uncertain turn remains in state replay but is excluded from binary metrics.
+Primary-label agreement before adjudication is 0.916, with Cohen's $\kappa=0.518$.
+
+All attribution conditions receive the same canonical raw-input projection, model, temperature, history budget, session order, and one controller request per turn.
+Let D0 denote Direct Summary discovery and D1 denote \system{} Habit Induction; C0 is a generic Push/Abstain controller and C1 is the \system{} intervention controller.
+The matched $2\times2$ design evaluates D0C0, D0C1, D1C0, and D1C1.
+Gold-profile (G1) and deterministically profile-shuffled (S1) controls test whether controller predictions depend on profile content rather than condition-specific input or call budgets.
+
+\paragraph{Fair blind-holdout baseline comparison.}
+The same holdout supports a five-method comparison among RAG-only, official Mem0 v2.0.12, ProactiveAgent-Prompt, Structured Conditional, and \system{}.
+Every method receives the identical behavior-only history and canonical recent/current-event projection, uses DeepSeek-v4-Flash with temperature zero and provider thinking disabled, and makes one decision call per turn with \texttt{top\_k}=8, a 512-token completion cap, and an 8,192-token prompt cap.
+Method-native memory construction and prompts are retained, while all raw decisions use cooldown 0 and are replayed through the same session-local global cooldown 3.
+This protocol aligns the evidence, backbone, decision budget, and intervention operating point while preserving each method's defining memory representation.
 
 \subsubsection{Research Questions}
 
@@ -107,10 +127,13 @@ We additionally audit split-reset and reversed-order protocols to verify the sta
 Before evaluated turns, Code receives 34 initialization events, SmartHome receives 50, and each remaining domain receives 54.
 These warm-up events initialize longitudinal state, are excluded from Table~\ref{tab:data} and all reported metrics, and are provided to every stateful method where supported.
 A three-event cooldown is applied to memory baselines that expose persistent memory keys and to the standalone Mem0-backed controller; \system{} uses its native per-habit key, while ProactiveAgent-Prompt operates at cooldown 0.
+For the source-disjoint component holdout, every arm is evaluated both at raw cooldown 0 and through the same offline, session-local cooldown-3 replay; the matched cooldown-3 point is used for the primary attribution table.
+The five-method fair comparison uses the same replay and reports cooldown 3 as its primary operating point.
 
 \subsubsection{Metrics and Statistical Tests}
 
 We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces. The main-results table reports per-domain F1 and its six-domain average, while the intervention-control table additionally reports pooled precision, recall, F1, and Push count.
+For the source-disjoint selectivity analysis, actionable recall is recall over the 21 Push-labeled turns, exception suppression is the abstention rate over 48 explicit-exception turns, and intervention cost is reported as Pushes per 100 binary-labeled turns.
 For habit induction, LLM metrics are reported as mean and sample standard deviation over three complete runs; a two-sided exact sign test over the three paired \system{}-minus-Direct F1 differences summarizes run-level directional stability.
 For paired main-result inference, we compare \system{} with the strongest single local baseline by six-domain average F1 (RAG-only) and the two external conditions (Mem0-v2.0.12-backed and ProactiveAgent-Prompt).
 Predictions are aligned by domain, session, and turn; differences in six-domain average F1 use 10,000 paired session-bootstrap resamples stratified by domain and Easy/Hard, with fixed seed \texttt{20260717}.
@@ -118,12 +141,15 @@ These F1 intervals are primary, while complementary two-sided exact McNemar test
 For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and Easy/Hard stratum sizes, with fixed seed \texttt{20260713}.
 Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
 For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces that reproduce the reference Full predictions and confusion matrices while supplying the per-turn structure required by paired resampling.
-The profile-shuffle control uses the same session-level bootstrap and additionally reports a two-sided exact McNemar test on paired turn correctness; its disjoint-key construction serves as a mechanism sanity check for profile assignment.
+For the formal $2\times2$ holdout, macro-F1 main effects average the two matched factorial contrasts for Discovery and Controller, and the interaction is the difference of those contrasts.
+Their 95\% CIs use 10,000 paired session-bootstrap samples with fixed seed \texttt{2026072701}; Gold-profile and profile-shuffle diagnostics use the same paired session unit.
+For the fair holdout comparison, we report pooled micro F1 and three-domain macro F1.
+Differences between \system{} and each baseline use 10,000 domain-stratified paired session-bootstrap samples with fixed seed \texttt{2026072805}.
 
 \subsubsection{Implementation and Reproducibility}
 
 The main matrix uses DeepSeek-v4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
-DeepSeek-v4-Flash with temperature-zero decoding is used for both habit-induction LLM conditions; Frequency/Rule is deterministic.
+DeepSeek-v4-Flash with temperature-zero decoding is used for the LLM-based induction procedures and Mem0 schema projection; Structured Conditional Discovery is deterministic.
 The Mem0-backed condition uses Mem0 v2.0.12 with inference enabled.
 It uses 384-dimensional all-MiniLM-L6-v2 embeddings, fresh run-local Qdrant storage, and a search threshold of 0.1.
 The prompt condition uses temperature zero, fail-closed parsing with at most five retries, and a continual 20-pair history tail over warm-up and the Easy-to-Hard stream.
@@ -133,5 +159,8 @@ Package defaults are a 30-event discovery window, a 30-minute consequence window
 The instrumented ablation, repeatability, protocol-audit, and efficiency evaluators write one JSON Lines (JSONL) trace per turn with trigger hits, candidates, scores, phase/Think outputs, cooldown state, labels, and TP/FP/FN/TN class.
 The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
 The supplemental audit contains 69 manifest records, including 39 domain/arm rows recomputed from decision traces, with zero validation failures.
+The formal component run contains 1,791 successful model calls in total, including 1,757 turn-level controller calls, and one complete 251-turn trace for each of seven conditions; its metrics are independently recomputed from the traces before paper integration.
+The fair comparison contains one complete 251-turn label-free trace per method; 250 binary-labeled turns enter the metrics and the adjudicated uncertain turn remains in state replay.
+All 1,255 raw trace rows are completed before labels are joined, and their shared cooldown replay is verified independently from method inference.
 Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
 Across one validated Full trace per domain, Generalized Habit Matching is the active matching path, producing 486 hit turns, 436 post-check candidates, and 408 Pushes. The released traces retain \texttt{variant\_match} as the legacy label.

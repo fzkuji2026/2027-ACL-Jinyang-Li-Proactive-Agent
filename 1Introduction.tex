@@ -36,9 +36,9 @@ The resulting problem joins behavioral pattern mining, retrieval, and selective 
 
 We make four contributions:
 \begin{itemize}
-    \item We separate habit induction from intervention evaluation using a behavior-only benchmark (102 episodes; 30 pre-specified reference habits) and a documented intervention benchmark (207 sessions; 3,435 turns; 301 positives) spanning six domains grounded in public commit histories, WorkBench, $\tau$-bench Retail, and SmartBench.
-    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention controller. On the habit-induction benchmark, \system{} obtains habit F1 $0.899\pm0.011$ across three runs, versus $0.825\pm0.010$ for same-model Direct Summary.
-    \item We compare \system{} with retrieval, reflection, generative-memory, Mem0-backed, and ProactiveAgent-Prompt baselines under a unified six-domain protocol. \system{} improves average F1 from 0.388 for RAG-only, 0.323 for Mem0-backed memory, and 0.248 for ProactiveAgent-Prompt to 0.653.
-    \item We add necessity, cooldown, profile-shuffle, repeatability, and order controls, and characterize the framework's absolute call and token composition.
+    \item We separate habit induction from intervention evaluation using a behavior-only benchmark (102 episodes; 30 pre-specified reference habits), a documented six-domain intervention benchmark (207 sessions; 3,435 turns; 301 positives), and a 45-session source-disjoint blind holdout with 251 turns.
+    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention Controller. Under matched inputs, its habit F1 is 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction.
+    \item We compare \system{} with retrieval, reflection, generative-memory, Mem0-backed, and ProactiveAgent-Prompt baselines. \system{} reaches six-domain average F1 0.653 and retains the strongest pooled F1 on the source-disjoint holdout under matched raw input, model budget, and cooldown.
+    \item We use factorial attribution, Gold and profile-shuffle controls, paired statistics, and condition-selectivity analysis to show how habit representation, actionable recall, and cooldown-based intervention cost jointly determine proactive behavior.
 \end{itemize}
 
