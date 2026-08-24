@@ -1,111 +1,84 @@
-\section{HCPM Framework}
+\section{Event-Driven Proactive Memory}
 \label{sec:framework}
 
-Figure~\ref{fig:architecture} summarizes the pipeline.
-\system{} separates two responsibilities.
-The \emph{discovery layer} turns repeated interaction evidence into typed, persistent habits.
-The \emph{control layer} decides whether a habit-derived candidate is actionable at the current turn.
-This separation prevents ``memory found'' from becoming synonymous with ``notification sent.''
+Figure~\ref{fig:architecture} summarizes \system{}.
+The three memory levels differ by temporal resolution and validation strength, but all are scoped to one entity and contain evidence rather than intervention labels.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=\textwidth]{Fig1_HCPM_Architecture.pdf}
-    \Description{A two-band HCPM architecture diagram. The upper band aggregates behavioral evidence, induces persistent habits, and stores generalized variants. The lower band applies Generalized Habit Matching, selective Code phase and Think checks, and per-habit cooldown before a structured Push or no-Push decision, followed by optional language realization.}
-    \caption{\system{} architecture. Repeated behavioral evidence is consolidated into persistent habits. Generalized Habit Matching connects exact and normalized action--entity forms to selective phase/Think checks and per-habit cooldown, yielding a structured Push or no-Push decision followed by optional natural-language realization.}
+    \includegraphics[width=\textwidth]{Fig1_EPM_Architecture.pdf}
+    \Description{An entity-isolated event stream is read causally. The current event is staged separately, while strictly prior source-level events form bounded Source Memory and completed events enter a temporary daily buffer only after their decisions. Daily semantic consolidation followed by deterministic fact validation produces Working Memory. Weekly consolidation followed by deterministic historical replay produces Long-term Memory. Only Active long-term trajectories may enter an Evidence Card. The decision LLM proposes Push or Abstain under current-event-or-memory semantics, after which a shared Episode Controller may only suppress a repeated candidate Push for an already covered episode. Candidate trajectories remain unavailable to the decision LLM until activated, and reference labels stay evaluator-private.}
+    \caption{\system{} architecture. Source-level events are progressively abstracted into validated daily and long-term trajectories. The Decision LLM proposes \textsc{Push} or \textsc{Abstain}; the shared Episode Controller only suppresses repeated same-episode opportunities before final scoring.}
     \label{fig:architecture}
 \end{figure*}
 
-\subsection{Habit Discovery and Consolidation}
+\subsection{Source Memory: Bounded Source-Level Evidence}
 
-In \system{}, a habit is a method-specific record
+Source Memory preserves recent events exactly as represented in the public benchmark stream, without semantic rewriting.
+For current event $e_t$, let
 \begin{equation}
-h=(g_h,c_h,k_h,q_h,f_h,\rho_h,z_h,V_h),
+S_t=\operatorname{Tail}_{99}\{e_i:i<t,\ \tau_t-\tau_i\leq72\text{ h}\}.
+\label{eq:source_memory}
 \end{equation}
-where $g_h$ is a trigger action--entity pattern, $c_h$ is trigger context, $k_h$ records consequence statistics, $q_h$ is confidence, $f_h$ and $\rho_h$ encode frequency and recency, $z_h$ is lifecycle state, and $V_h$ contains generalized variants.
-The evaluated candidate path operates over these induced action--entity habits and their exact or generalized variants.
+The current event is supplied separately, so $e_t\cup S_t$ contains at most 100 events and every retained prior event satisfies the 72-hour boundary.
+The intersection is important: a sparse stream cannot reach farther back merely to fill the capacity, and a dense stream cannot exceed the item bound.
+Source Memory gives the decision model exact recent evidence and a bounded context cost, but it does not explicitly express multi-day structure.
 
-\paragraph{Event accumulation.}
+In parallel, a temporary buffer collects all events from the open local day.
+The buffer is used for memory construction rather than injected wholesale into every decision.
+When the day closes, its contents are consolidated and then cleared before the next day begins.
 
-An event counter maintains frequencies of $(o,v)$ pairs and a sliding buffer of recent event summaries.
-Every discovery batch filters out conversational, terminal, and verification actions that should not independently define a habit.
-Candidates must have at least $n_{\min}=3$ supporting events in the default configuration.
-For coding events, deterministic preprocessing merges repeated files with the same extension (e.g., several Python edits can become \texttt{edit *.py}); domains with normalized entities retain their verb--object keys.
+\subsection{Working Memory: Validated Daily Trajectories}
 
-The remaining evidence is passed to an LLM with a constrained schema.
-The output proposes a habit type, trigger, trigger context, consequence, and variants.
-The parser removes reasoning blocks, scans for a schema-valid JSON payload, and retries malformed outputs before applying domain-specific fallbacks.
-Thus, the LLM proposes structured regularities, while deterministic checks govern admissible evidence and the representation written to memory.
-Users need not state ``this is my habit''; repeated observational evidence anchors each induced record.
+At each completed-day boundary, a construction LLM converts the temporary buffer into a compact trajectory: ordered episodes, observable context, outcomes, and citations to source event identifiers.
+The construction prompt prohibits cross-day generalization and intervention decisions.
+Its purpose is semantic organization, not labeling.
 
-\paragraph{Confidence and lifecycle.}
-
-Each record tracks frequency, last observation, consequence statistics, confidence, and lifecycle state.
-Let
-\begin{align}
-F(h) &= \min(f_h/f_{\max},1)\\
-R(h) &= \exp(-\lambda \Delta_h)
-\end{align}
-Here, $\Delta_h$ is days since the last observation.
-We use $f_{\max}=20$. The consistency term is $C(h)=1.0$ for at most two distinct consequences, $0.7$ for three to four, and $0.4$ for five or more.
-The implementation computes
+A deterministic fact validator then checks the entity, time interval, citations, and observable claims of each episode against the cited source-level events.
+The LLM output is structured: the validator recursively flattens the \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields into typed scalar facts; free-text summaries and inferred fields are never treated as evidence.
+Writing $F(d)$ for the replayable facts in daily episode $d$ and $C(d)$ for its cited source events, acceptance requires
 \begin{equation}
-q_h=\sigma\!\left(6\left[w_fF(h)+w_rR(h)+w_cC(h)-0.5\right]\right)
+F(d)\subseteq\bigcup_{e\in C(d)}F(e),
+\qquad C(d)\subset E^u_{\text{completed day}}.
+\label{eq:daily_validation}
 \end{equation}
-Here, $\sigma$ is the logistic sigmoid, $(w_f,w_r,w_c)=(0.5,0.3,0.2)$, and $\lambda=0.1$.
-Records transition among active, fading, forgotten, and abandoned states; repeated evidence can reinforce a fading record.
-The current implementation persists the Habit Store; counters and queues are maintained as runtime state and could in principle be rebuilt by replaying the event stream.
+Two fields are consistent only when their canonical scalar values agree and their field paths match exactly or by a schema-preserving suffix, while every cited event exists in the same completed-day interval.
+Unsupported claims and cross-entity or out-of-range citations are rejected.
+Only accepted daily trajectories enter Working Memory.
+Working Memory holds the validated days accumulated in the current weekly cycle; it is therefore a compact temporal view rather than another copy of source-level events.
 
-\paragraph{Generalized Habit Matching.}
+\subsection{Long-term Memory: Replay-Validated Trajectories}
 
-Exact matching is brittle when behavior is stable but surface forms vary.
-\system{} therefore stores generalized trigger patterns and variants.
-A coding habit may match a glob pattern, while preference-oriented domains can map an observed conflict key to a normalized habit entity.
-At runtime, Generalized Habit Matching first checks the exact action--entity key and then any supported glob or normalized variant, selecting the highest-confidence matched habit and emitting its typical consequence as a candidate.
-Released decision traces retain \texttt{variant\_match} as the legacy machine-readable label for this evaluated path.
-The Exact-only Match ablation retains habit discovery and literal matching but disables the generalized fallback, isolating abstraction beyond event equality.
+After Working Memory covers a completed week, a second construction LLM proposes longer-horizon temporal trajectories from the accepted daily evidence.
+A proposal states a recurring context, an expected temporal pattern, its supporting days, and traceable daily evidence.
+The LLM proposes structure but does not activate a rule or recommend a Push.
 
-\subsection{Proactive Intervention Control}
+Each proposal is replayed deterministically over history available before the next decision.
+Replay counts independent supporting days, checks that the pattern occurs in its stated temporal context, and censors periods without sufficient observation rather than treating them as failures.
+A proposal becomes Active with at least three supporting days, replay confidence of at least $0.5$, and lift of at least $1.0$ over its historical base rate.
+Well-formed, evidence-linked proposals that do not yet pass this gate remain Candidate and are replayed again on later weekly windows; malformed, out-of-window, or source-unlinked proposals are filtered before storage.
+Candidate trajectories are retained only for future evidence accumulation and are never exposed in a decision Evidence Card until activated.
+Long-term Memory persistently stores Active replay-validated trajectories and retrieves only those whose trigger context, weekday, and expected temporal window match the current event.
+Because activation occurs only after a completed week, long-term evidence cannot leak from the test event into its own support.
 
-\paragraph{Habit-derived candidates.}
+\subsection{Evidence Card and Final Decision}
 
-The evaluated controller receives candidates from Generalized Habit Matching.
-Across the six selected Full traces, this path records 486 hit turns, of which 436 survive the phase/Think checks to become candidates and 408 become Pushes after cooldown.
-
-Each matched candidate $c$ carries relevance $r_c$, urgency $u_c$, confidence $q_c$, and novelty $n_c$, with fixed score
+The online context is assembled as
 \begin{equation}
-s(c)=0.35r_c+0.25u_c+0.25q_c+0.15n_c
+C_t=\big(e_t, S_t, W_t, L_t, Q_t\big),
 \end{equation}
-and threshold $s(c)>\theta_{\mathrm{push}}$, where $\theta_{\mathrm{push}}=0.6$.
-All 436 post-check candidates exceed this threshold in the evaluated Full runs.
-The threshold therefore provides a stable policy boundary, while empirical variation in the evaluated path arises from matching, selective checks, and cooldown.
+where $W_t$ contains available daily trajectories, $L_t$ contains at most three relevant Active long-term trajectories, and $Q_t$ records a deterministic semantic-episode identity and evidence phase.
+Long-term candidates are ranked first by temporal relation (deviated, pending, then not started), then by replay confidence and distance to the expected window.
+An Evidence Card presents these components in separate fields with citations and temporal scope; a persistent intervention log joins $Q_t$ with prior Pushes to determine whether the episode has already been covered.
+This prevents the decision model from confusing a current observation with a summarized trajectory or treating an unsupported interpretation as a fact.
 
-\paragraph{Phase- and confidence-aware control.}
+Source-only, Source+Working, and Full \system{} use the same decision prompt and output schema.
+They differ only in whether $W_t$ and $L_t$ are visible.
+The shared prompt implements Equation~\ref{eq:or_semantics}: it asks whether the current event itself \emph{or} validated prior trajectories provide a concrete, timely, feasible, and low-risk service opportunity.
+After the LLM proposes a decision, the shared Episode Controller applies the episode policy: it suppresses a repeated Push with the same episode identity and service intent, while a changed signature, strengthened evidence phase, changed service, or new local day opens a new opportunity.
+The controller cannot create a Push or infer a service opportunity, and the identical policy is held fixed across PA-Prompt, Source-only, Source+Working, and Full \system{}.
+The controller-finalized decision is the output used for scoring.
+After a valid output, the event is committed to the daily buffer and Source Memory according to Equation~\ref{eq:causal_update}.
 
-Related behavior is not necessarily actionable behavior.
-For workflow domains with observable execution stages, \system{} derives a compact phase from recent events.
-In Code, for example, current test status and edit/run/debug activity distinguish early work, implementation, debugging, documentation work, and wrap-up.
-A matching habit can be suppressed during early work or active debugging and allowed after stable verification.
-The phase module activates selectively in workflows with observable execution stages; other domains proceed through the matching, threshold, and cooldown controls without coding-specific phase rules.
-
-In the Code workflow path, a Generalized Habit Matching candidate may invoke the optional LLM Think check when the detected phase is early or implementing; with Think disabled or no LLM available, that branch applies deterministic phase suppression.
-Debugging is suppressed directly by the phase gate; candidates admitted in other phases remain subject to the fixed threshold and cooldown rather than being pushed unconditionally.
-The checker receives current phase, recent actions, test state, and the candidate, then returns PUSH or SUPPRESS with a confidence value.
-An LLM-call failure is recorded and returns the candidate to the structured decision path, which still applies downstream thresholding and cooldown.
-The checker provides an optional ambiguity-resolution path; Section~\ref{sec:ablation} quantifies its incremental effect.
-
-\paragraph{Cooldown.}
-
-After the fixed threshold, a candidate is checked against a cooldown key formed from trigger and source, with the habit identifier appended when available.
-Habit-backed candidates can therefore maintain independent cooldowns, while candidates without a habit identifier use the trigger--source key as a fallback.
-The experiments use a three-event cooldown, reset at session boundaries.
-
-Cooldown sets an explicit intervention operating point, trading repeated coverage against intervention frequency.
-The complete decision trace stores the habit match, candidate, phase, Think result, cooldown distance, suppression reason, and final outcome, allowing an evaluator to distinguish absent evidence from deliberate suppression.
-
-\paragraph{Deployment boundary.}
-
-The structured decision is middleware output.
-An agent host may inject it directly, transform it into a notification, request confirmation, or suppress it under an application policy.
-Optional LLM rewriting occurs after selection and cooldown and therefore does not alter decision F1.
-We report this cost separately in Section~\ref{sec:efficiency}.
-
+The full order is therefore: read strictly prior memory, stage the current event, assemble the Evidence Card, decide, commit the event, and run any newly due daily or weekly maintenance.
+Reference labels are joined only after the prediction for offline scoring.

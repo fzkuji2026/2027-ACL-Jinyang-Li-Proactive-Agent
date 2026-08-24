@@ -1,166 +1,113 @@
 \section{Experiments}
 \label{sec:experiments}
 
-\subsection{Experimental Settings}
-\label{sec:setup}
+\subsection{Benchmark Suite}
+\label{sec:benchmark}
 
-\subsubsection{Benchmark Task and Construction}
+We evaluate a common event-level question in two longitudinal domains: given the current public event and only the same entity's causal history, should the agent provide proactive service now?
+Table~\ref{tab:benchmark_stats} summarizes the frozen benchmark.
 
-We construct a benchmark for longitudinal proactive intervention with 207 sessions, 3,435 evaluated turns, and 301 positive intervention opportunities across six domains.
-Each source-grounded record or scenario template is converted into the event representation from Section~\ref{sec:problem} and expanded into a multi-turn session in which a method must either Push or abstain at every turn.
-Relative to ProactiveBench~\citep{lu2025proactiveagent}, which evaluates whether a generated proactive task would be accepted, our labels identify whether the current turn is an appropriate intervention opportunity independently of proposal wording.
-This defines a complementary protocol for isolating longitudinal evidence use, intervention timing, and abstention.
-
-\paragraph{Public-source grounding.}
-Code uses a provenance pool of 989 non-merge commits collected from Requests (179), Flask (194), HTTPX (200), tqdm (216), and FastAPI (200).
-Bug-fix, feature, documentation, configuration, and refactoring activity families from this pool inform 32 repository workflows with edit, test, debug, documentation, and commit stages.
-SmartHome lifts 20 public SmartBench traces---15 anomaly and five normal traces---into Easy event sessions while preserving their routine or anomaly semantics; 12 constructed Hard variants test less explicit or exception-bearing cues (snapshot commit \texttt{98bec394})~\citep{horizonsinzqs2026smartbench}.
-Email and Calendar are anchored to 25 distinct WorkBench email records and 25 distinct calendar events, respectively~\citep{styles2024workbench}.
-Project Management uses 18 existing WorkBench task records plus four schema-compatible create-task requests for operations without a pre-existing target record.
-Shopping uses the $\tau$-bench Retail task/tool schema and its product, order, and user resources to construct 32 schema-grounded sessions around six recurring preference or action patterns~\citep{yao2025taubench}.
-
-\paragraph{Longitudinal conversion and labels.}
-The source-grounded records and scenario families are expanded into repeated evidence, an actionable or non-actionable current stage, and observable consequences.
-Easy sessions expose clearer recurring evidence and intervention stages.
-Each domain's 12 Hard sessions comprise four ambiguous late positives, four implicit positives, and four aligned or explicit-exception negatives.
-Turn-level labels follow pre-specified domain construction rules that are independent of \system{}'s predictions and internal phase detector.
-This construction provides reproducible timing labels while preserving the provenance and task semantics of the source records.
-
-\paragraph{Unified evaluation protocol.}
-All methods are evaluated on the same fixed turn-level tasks, state progression, and labels.
-Source benchmark names identify the public data or schema provenance used to construct each domain.
-
-\subsubsection{Dataset Statistics}
-
-Table~\ref{tab:data} reports the evaluated benchmark sessions and turns.
-
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\caption{Benchmark statistics. Pos. denotes turns labeled for proactive intervention.}
-\label{tab:data}
+\caption{Frozen benchmark. An entity is the memory-isolation and replay unit. Reference positives encode episode-aware reviewed service opportunities.}
+\label{tab:benchmark_stats}
 \small
-\begin{tabular}{lccccc}
+\setlength{\tabcolsep}{5.2pt}
+\begin{tabular}{llrrlrr}
 \toprule
-& \multicolumn{2}{c}{Sessions} & & & \\
-\cmidrule(lr){2-3}
-Domain & Easy & Hard & Turns/session & Turns & Pos. \\
+Benchmark & Entity & Streams & Events & Temporal coverage & Decision unit & Reference Push \\
 \midrule
-Code & 20 & 12 & 12--17 & 448 & 51 \\
-SmartHome & 20 & 12 & 12--17 & 440 & 42 \\
-Shopping & 20 & 12 & 15--17 & 495 & 52 \\
-Email & 25 & 12 & 16--20 & 684 & 52 \\
-Calendar & 25 & 12 & 16--20 & 684 & 52 \\
-Project Mgmt. & 25 & 12 & 16--20 & 684 & 52 \\
+HeartSteps & participant & 9 & 1,456 & 367 participant-days; 41--55 days/entity & public meta-event & 365 (25.1\%) \\
+CASAS & home & 4 & 1,624 & 14 consecutive days/home; 56 home-days & 50-minute segment & 190 (11.7\%) \\
 \midrule
-Total & 135 & 72 & 12--20 & 3,435 & 301 \\
+Total & isolated stream & 13 & 3,080 & 423 entity-days & event-level Push/Abstain & 555 (18.0\%) \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
-The released artifact retains \texttt{clean} as the internal split identifier for Easy; this is a presentation alias and does not change any data or result.
+\subsubsection{HeartSteps}
 
-\subsubsection{Habit-Induction Task}
+HeartSteps is a mobile micro-randomized trial that recorded repeated decision contexts for contextually tailored physical-activity suggestions~\citep{klasnja2019heartsteps}.
+We use 1,456 public meta-events from nine complete participant streams, spanning 367 participant-days.
+The inclusion rule requires a complete longitudinal stream long enough to support repeated daily and weekly construction while keeping event-by-event LLM evaluation tractable; it is fixed before labeling and testing.
+Each event contains only decision-time-observable fields such as availability, recognized activity, recent step summaries, location category, weather, and local decision slot.
+Randomized treatment assignments, future outcomes, and private scoring fields are excluded.
+The task is not to reproduce the original randomized policy or infer a medical need; it is to identify a low-risk opportunity for optional activity support.
 
-We separately define 102 behavior-only episodes (238 event records) across the same six domains.
-Ninety episodes support 30 pre-specified reference habits, while 12 are one-off distractors (two per domain).
-Each habit has at least two evidence episodes; references and matching thresholds are withheld from method inputs.
+\subsubsection{CASAS}
 
-We compare four induction procedures under the same behavior-only inputs and evidence-based matcher.
-\textbf{Direct Summary} uses the same LLM to infer habits directly from the episodes.
-\textbf{Structured Conditional Discovery} is a domain-agnostic transition miner that converts recurrent condition--action patterns into the shared habit schema.
-\textbf{Mem0 Extraction} applies the official Mem0 v2.0.12 extractor and one shared-schema projection per domain.
-\textbf{\system{} Habit Induction} augments the episodes with a deterministic repeated-candidate summary and typed induction instructions.
-A matched-input comparison evaluates all four complete procedures, while three repeated Direct Summary and \system{} runs measure execution stability.
-A one-to-one match requires the reference minimum evidence count and at least two-thirds citation purity; unmatched predictions and references become false positives and false negatives.
-We report habit precision, recall, F1, evidence groundedness, and hallucination rate.
+CASAS provides longitudinal ambient-sensor traces from smart-home testbeds~\citep{cook2013casas}.
+We use four homes with complete source coverage for the same 14-day horizon, which is long enough to form one week of evidence and evaluate its use in the following week.
+Native ten-minute blocks are coarsened within each local day into 28 regular 50-minute segments and one 40-minute tail, giving 406 decisions per home and 1,624 in total.
+The 50-minute decision unit preserves the complete two-week chronology and every source block while balancing longitudinal sufficiency against the cost of event-by-event LLM evaluation; this aggregation rule was specified before the benchmark rows were constructed.
+Every source block is assigned to exactly one public segment.
 
-\subsubsection{Source-Disjoint Component Holdout}
+A public segment contains only actions observed inside that segment: motion counts, ordered room locations, door actions, and compact numeric summaries.
+It contains no rolling history, personal baseline, anomaly score, prior-segment state, or candidate reason.
+Consequently, cross-segment regularities must be reconstructed by the evaluated memory.
+The allowed service is a gentle, low-risk check-in; disease, falls, travel, danger, and unsupported preference claims are outside the label space.
 
-We additionally freeze a source-disjoint, behavior-only holdout for component attribution in Code, Email, and Shopping.
-It contains 45 sessions and 251 turns drawn from sources, histories, and session templates that do not overlap the development benchmark.
-Labels were frozen before system prediction through two isolated blind LLM annotation passes, isolated LLM adjudication, and a constrained sequence-consistency check; no method prediction was visible during selection or annotation.
-The final labels contain 21 Push, 229 abstain, and one uncertain turn.
-The uncertain turn remains in state replay but is excluded from binary metrics.
-Primary-label agreement before adjudication is 0.916, with Cohen's $\kappa=0.518$.
+\subsection{Reference-Label Construction}
 
-All attribution conditions receive the same canonical raw-input projection, model, temperature, history budget, session order, and one controller request per turn.
-Let D0 denote Direct Summary discovery and D1 denote \system{} Habit Induction; C0 is a generic Push/Abstain controller and C1 is the \system{} intervention controller.
-The matched $2\times2$ design evaluates D0C0, D0C1, D1C0, and D1C1.
-Gold-profile (G1) and deterministically profile-shuffled (S1) controls test whether controller predictions depend on profile content rather than condition-specific input or call budgets.
+Reference-label construction follows four stages: LLM-assisted candidate screening, entity-isolated independent annotation by three team members, cross-review and adjudication of disagreements, and a final episode-aware freeze.
+The LLM screening stage proposes cases for review but never determines a final label.
+The three team members annotate independently in parallel with model inference, but the two tracks use mutually isolated records: annotators cannot see model outputs, and model inference cannot read annotation records.
+Model outputs are not used as labeling evidence.
+All 3,080 events, rather than only LLM-screened candidates, enter final human review.
+Team members inspect only the current event and strictly earlier public evidence from the same participant or home, then apply the OR criterion from Equation~\ref{eq:or_semantics}: a reviewed service opportunity is positive if the event is intrinsically service-worthy or if earlier trajectories create a new proactive opportunity.
+Within a semantic episode, only the first reliable, actionable window is positive unless evidence strengthens, the service changes, or the episode reopens.
+The frozen map contains 365 HeartSteps and 190 CASAS positives.
+The architecture was developed before benchmark evaluation.
+We use a protocol-fixed evaluation rather than a separate development/test split: after the CASAS aggregation rule had been fixed, the public benchmark, adjudicated reference labels, decision prompt, 72-hour/100-event Source bound, and Active gate were jointly locked before the first reported benchmark inference.
+No prompt, threshold, benchmark row, or reference label was changed in response to test results.
 
-\paragraph{Fair blind-holdout baseline comparison.}
-The same holdout supports a five-method comparison among RAG-only, official Mem0 v2.0.12, ProactiveAgent-Prompt, Structured Conditional, and \system{}.
-Every method receives the identical behavior-only history and canonical recent/current-event projection, uses DeepSeek-v4-Flash with temperature zero and provider thinking disabled, and makes one decision call per turn with \texttt{top\_k}=8, a 512-token completion cap, and an 8,192-token prompt cap.
-Method-native memory construction and prompts are retained, while all raw decisions use cooldown 0 and are replayed through the same session-local global cooldown 3.
-This protocol aligns the evidence, backbone, decision budget, and intervention operating point while preserving each method's defining memory representation.
+The benchmark presented to an agent contains none of these labels or intermediate screening decisions.
+It also omits candidate tiers, stage labels, scoring masks, and any marker indicating that a row should be evaluated by an LLM.
+Thus, the benchmark input does not reveal where the evaluator expects a decision.
 
-\subsubsection{Research Questions}
+\subsection{Replay Protocol}
 
-We study five questions: (RQ1) Can \system{} induce evidence-grounded habits from behavior-only histories? (RQ2) Does it improve proactive decision quality over the evaluated memory baselines? (RQ3) Which mechanisms contribute under different domain structures? (RQ4) Are the effects stable across repeated runs and protocol orderings? (RQ5) What is the measured call and token composition of the framework?
+Each participant and home is replayed independently in timestamp order from empty method state.
+At event $t$, a method may read the current event, its own strictly prior memory, and its prior outputs if its architecture retains them.
+It may not read future events or another entity's state.
+The output is persisted before the next event, and reference labels are joined only after inference.
+All 3,080 public rows are decisions; positives and negatives use the same schema and frequency.
 
-\subsubsection{Baselines}
+\FloatBarrier
+\subsection{Compared Methods}
+\label{sec:methods}
 
-We organize comparisons into \emph{implementation-controlled memory baselines} and \emph{external artifact-backed baselines}.
-All methods receive the same domain stream and ground-truth labels and expose a common Push/no-Push interface while retaining their native state representations.
-The local group contains \textbf{No Memory}, which uses the current event and short context; \textbf{RAG-only}, which retrieves similar raw events; \textbf{Summary-Reflection}, which maintains bounded natural-language reflections; and \textbf{Generative Memory}, which follows a relevance--recency--importance scheme inspired by Generative Agents~\citep{park2023generative}.
-Together, they cover retrieval, reflection, and weighted memory under one interface.
-Across all baseline agents, the decision prompt includes at most 10 recent events in addition to the current event.
-RAG-only ranks raw events by Jaccard token overlap; RAG-only and Generative Memory cap retrieval at \texttt{top\_k}=8.
-Summary-Reflection updates every 20 observations, flushes any nonempty remainder at the end of warm-up, and retains at most 12 reflections.
-Generative Memory uses Jaccard overlap as relevance and scores observations as $0.55\,\mathrm{relevance}+0.25\exp(-\mathrm{age}/80)+0.20\,\mathrm{importance}$, where age is observation-index distance.
-Importance starts at 0.45, adds 0.25 for predefined action verbs, 0.20 for predefined salient terms, and 0.10 for user-authored events, and is capped at 1.0.
-These baselines isolate retrieval, reflection, and salience-weighted memory without \system{}'s typed Habit Store, generalized preference abstraction, or consolidation mechanism.
+\paragraph{PA-Prompt}
+This external baseline adapts the released prompt and proposal/null output contract of ProactiveAgent~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+We evaluate the released prompt-based variant, denoted PA-Prompt, without using the released fine-tuned checkpoint.
+It uses a causally accumulated event--decision history capped at 1,000 events per request and no external structured memory.
+Its candidates use the shared Episode Controller before scoring.
 
-The external group contains a \textbf{Mem0-v2.0.12-backed adapter} and \textbf{ProactiveAgent-Prompt}.
-The Mem0-backed baseline couples the official open-source \texttt{mem0.Memory} library with protocol-aligned event serialization, model configuration, proactive control, and cooldown~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
-Each run starts from fresh storage; warm-up is written before evaluation, and each turn retrieves at most eight memories before the current event can be observed by Mem0.
-ProactiveAgent-Prompt copies the released evaluation system prompt and four-field proposal/null contract byte-for-byte from a pinned repository commit~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
-The unified adapter supplies event serialization, a 20-pair history cap, the DeepSeek-v4-Flash backbone, parsing, retries, and benchmark evaluation.
-We label the condition ProactiveAgent-Prompt to identify its released prompt artifact and proposal/null contract separately from the authors' trained checkpoint and learned evaluator; it operates with its native proposal/null policy and cooldown 0.
-All external rows denote pinned, executable artifact-backed configurations under the unified turn-level interface.
-Section~\ref{sec:intervention_controls} composes these artifacts to test downstream necessity and cooldown controls.
+\paragraph{Source-only}
+The decision LLM receives the current event and Source Memory from Equation~\ref{eq:source_memory}.
+It has no daily or long-term trajectories.
 
-\subsubsection{Evaluation Protocol}
+\paragraph{Flat Retrieval Memory}
+As an auxiliary full-benchmark check, this baseline augments Source-only with the three most similar older source-level events from the same entity.
+Retrieval uses a frozen dense embedding and cosine similarity over strictly earlier events outside the current Source window; it performs no daily consolidation, historical replay, neighbor expansion, or LLM reranking.
+The current event is added to the entity-specific index only after its decision is finalized.
+It uses the same decision prompt, output protocol, and Episode Controller as the controlled \system{} variants.
 
-The main \texttt{all} condition is a continual stateful Easy-to-Hard run: long-term method state persists across the subset boundary, while session-local cooldown is reset.
-We additionally audit split-reset and reversed-order protocols to verify the stateful interpretation of \texttt{all}.
-Before evaluated turns, Code receives 34 initialization events, SmartHome receives 50, and each remaining domain receives 54.
-These warm-up events initialize longitudinal state, are excluded from Table~\ref{tab:data} and all reported metrics, and are provided to every stateful method where supported.
-A three-event cooldown is applied to memory baselines that expose persistent memory keys and to the standalone Mem0-backed controller; \system{} uses its native per-habit key, while ProactiveAgent-Prompt operates at cooldown 0.
-For the source-disjoint component holdout, every arm is evaluated both at raw cooldown 0 and through the same offline, session-local cooldown-3 replay; the matched cooldown-3 point is used for the primary attribution table.
-The five-method fair comparison uses the same replay and reports cooldown 3 as its primary operating point.
+\paragraph{Source+Working}
+This method adds the fact-validated daily trajectories currently available in Working Memory to Source-only, but excludes Long-term Memory.
 
-\subsubsection{Metrics and Statistical Tests}
+\paragraph{Full \system{}}
+The full method exposes all three memory levels and episode state through the Evidence Card.
+Source-only, Source+\allowbreak Working, and Full \system{} use the same decision prompt, output protocol, and Episode Controller; only the visible memory levels change.
 
-We compute precision, recall, F1, accuracy, true positives (TP), false positives (FP), false negatives (FN), true negatives (TN), and Push count from complete decision traces. The main-results table reports per-domain F1 and its six-domain average, while the intervention-control table additionally reports pooled precision, recall, F1, and Push count.
-For the source-disjoint selectivity analysis, actionable recall is recall over the 21 Push-labeled turns, exception suppression is the abstention rate over 48 explicit-exception turns, and intervention cost is reported as Pushes per 100 binary-labeled turns.
-For habit induction, LLM metrics are reported as mean and sample standard deviation over three complete runs; a two-sided exact sign test over the three paired \system{}-minus-Direct F1 differences summarizes run-level directional stability.
-For paired main-result inference, we compare \system{} with the strongest single local baseline by six-domain average F1 (RAG-only) and the two external conditions (Mem0-v2.0.12-backed and ProactiveAgent-Prompt).
-Predictions are aligned by domain, session, and turn; differences in six-domain average F1 use 10,000 paired session-bootstrap resamples stratified by domain and Easy/Hard, with fixed seed \texttt{20260717}.
-These F1 intervals are primary, while complementary two-sided exact McNemar tests on turn-level correctness use Holm correction across the 18 domain-by-comparator tests.
-For ablations, 95\% confidence intervals (CIs) use 10,000 paired, stratified session-level bootstrap samples, preserving within-session dependence and Easy/Hard stratum sizes, with fixed seed \texttt{20260713}.
-Because turns within a session are dependent, inferential claims rely on these paired session-level intervals rather than treating individual turns as independent observations.
-For Code and Calendar, the bootstrap analyses use validated Full repeat-2 traces that reproduce the reference Full predictions and confusion matrices while supplying the per-turn structure required by paired resampling.
-For the formal $2\times2$ holdout, macro-F1 main effects average the two matched factorial contrasts for Discovery and Controller, and the interaction is the difference of those contrasts.
-Their 95\% CIs use 10,000 paired session-bootstrap samples with fixed seed \texttt{2026072701}; Gold-profile and profile-shuffle diagnostics use the same paired session unit.
-For the fair holdout comparison, we report pooled micro F1 and three-domain macro F1.
-Differences between \system{} and each baseline use 10,000 domain-stratified paired session-bootstrap samples with fixed seed \texttt{2026072805}.
+\subsection{Implementation and Metrics}
 
-\subsubsection{Implementation and Reproducibility}
+All full-scale experiments use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero, thinking disabled, and at most 256 output tokens.
+The Source context contains at most 100 events including the current event and never crosses the 72-hour boundary.
+Daily construction runs after a local day closes; weekly construction and replay run only after a complete week.
+Every memory record, trajectory, and validation query carries an entity identifier.
 
-The main matrix uses DeepSeek-v4-Flash with temperature zero, domain-specific warm-up, LLM Think enabled, and cooldown three.
-DeepSeek-v4-Flash with temperature-zero decoding is used for the LLM-based induction procedures and Mem0 schema projection; Structured Conditional Discovery is deterministic.
-The Mem0-backed condition uses Mem0 v2.0.12 with inference enabled.
-It uses 384-dimensional all-MiniLM-L6-v2 embeddings, fresh run-local Qdrant storage, and a search threshold of 0.1.
-The prompt condition uses temperature zero, fail-closed parsing with at most five retries, and a continual 20-pair history tail over warm-up and the Easy-to-Hard stream.
-The package requires Python 3.10 or newer, and the bundled audit runtime reports Python 3.12.13.
-Run manifests, source logs, and decision traces provide artifact-level provenance for the reported evaluations.
-Package defaults are a 30-event discovery window, a 30-minute consequence window, high-confidence and forgetting thresholds of 0.8 and 0.2, a 10-event candidate cooldown, and a five-event feedback cooldown. The benchmark evaluators use a 50-event discovery window and override the candidate cooldown to three events.
-The instrumented ablation, repeatability, protocol-audit, and efficiency evaluators write one JSON Lines (JSONL) trace per turn with trigger hits, candidates, scores, phase/Think outputs, cooldown state, labels, and TP/FP/FN/TN class.
-The source-level audit validates 90/90 main-result artifacts (72 baseline JSON result files and 18 HCPM source logs), while the manifest separately validates 36,779/36,779 JSONL rows across 65 instrumented HCPM runs.
-The supplemental audit contains 69 manifest records, including 39 domain/arm rows recomputed from decision traces, with zero validation failures.
-The formal component run contains 1,791 successful model calls in total, including 1,757 turn-level controller calls, and one complete 251-turn trace for each of seven conditions; its metrics are independently recomputed from the traces before paper integration.
-The fair comparison contains one complete 251-turn label-free trace per method; 250 binary-labeled turns enter the metrics and the adjudicated uncertain turn remains in state replay.
-All 1,255 raw trace rows are completed before labels are joined, and their shared cooldown replay is verified independently from method inference.
-Application programming interface (API) keys and endpoint credentials are excluded from the artifact.
-Across one validated Full trace per domain, Generalized Habit Matching is the active matching path, producing 486 hit turns, 436 post-check candidates, and 408 Pushes. The released traces retain \texttt{variant\_match} as the legacy label.
+We compute Push rate, precision, recall, and F1 directly from TP, FP, FN, and TN.
+Micro results pool all 3,080 event decisions.
+Push rate is reported alongside F1 because two methods with similar opportunity coverage may produce very different intervention frequencies; it remains a proxy rather than a measure of perceived burden.
+We ask: (RQ1) Does \system{} improve proactive decision quality over an external proactive prompt? (RQ2) What does each memory level contribute? (RQ3) Do daily validation and historical replay enforce their intended evidence contracts? (RQ4) What failure modes and practical limitations remain?

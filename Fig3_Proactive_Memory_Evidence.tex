@@ -1,0 +1,46 @@
+\documentclass[tikz,border=2pt]{standalone}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\definecolor{accepted}{HTML}{138A72}
+\definecolor{rejected}{HTML}{D98200}
+\definecolor{navy}{HTML}{4E79A7}
+\definecolor{purple}{HTML}{8064A2}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1,horizontal sep=1.25cm},
+  width=7.9cm,height=5.2cm,
+  xtick=data,
+  x tick label style={font=\sffamily\scriptsize,align=center},
+  y tick label style={font=\sffamily\scriptsize},
+  label style={font=\sffamily\scriptsize},
+  title style={font=\sffamily\small,yshift=6mm},
+  grid=major,major grid style={draw=gray!22},
+  axis line style={gray!70},tick style={draw=none},enlarge x limits=.25
+]
+\nextgroupplot[
+  title={(a) Deterministic construction gates},
+  ylabel={Attempt share (\%)},ymin=0,ymax=108,
+  symbolic x coords={Daily validation,Weekly replay},
+  ybar stacked,bar width=18pt,
+  legend style={font=\sffamily\tiny,draw=none,at={(0.5,1.03)},anchor=south,legend columns=2},
+  legend image code/.code={\draw[#1] (0cm,-0.08cm) rectangle (0.25cm,0.08cm);},
+  nodes near coords,every node near coord/.append style={font=\sffamily\tiny,text=black}
+]
+\addplot+[fill=accepted,draw=black!45] coordinates {(Daily validation,80.4) (Weekly replay,84.3)};
+\addlegendentry{Pass / activate}
+\addplot+[fill=rejected,draw=black!45] coordinates {(Daily validation,19.6) (Weekly replay,15.7)};
+\addlegendentry{Filtered / candidate}
+
+\nextgroupplot[
+  title={(b) Median causal availability},
+  ylabel={Days from stream start},ymin=0,ymax=12.2,
+  symbolic x coords={Working,LT active,LT matched},xtick={Working,LT active,LT matched},
+  nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt,text=black}
+]
+\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=navy] coordinates {(Working,0.80)};
+\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=purple] coordinates {(LT active,6.79) (LT matched,10.46)};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

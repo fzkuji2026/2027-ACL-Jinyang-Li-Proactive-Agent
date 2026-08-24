@@ -1,6 +1,9 @@
-\documentclass[sigconf]{acmart}
+\documentclass[sigconf,anonymous,review]{acmart}
 
+\usepackage{amsmath}
+\usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{placeins}
 
 \setcopyright{none}
 \acmDOI{}
@@ -9,9 +12,9 @@
 \acmYear{2027}
 \copyrightyear{2027}
 
-\newcommand{\system}{HCPM}
+\newcommand{\system}{EPM}
 
-\title{HCPM: Discovering Latent Habits for Controlled Proactive Memory in LLM Agents}
+\title{Proactive Memory for Event-Driven LLM Agents}
 
 \author{Jinyang Li}
 \affiliation{%
@@ -40,23 +43,23 @@
 \begin{document}
 
 \begin{abstract}
-Long-term memory allows large language model agents to retain information beyond a single interaction, but retrieval alone does not determine when remembered information should interrupt an ongoing task.
-This distinction is important for web-facing and tool-using agents: users may not fully articulate their recurring workflows, while an agent that surfaces every related memory becomes distracting.
-We formulate proactive memory delivery as a turn-level decision problem and introduce \system{}, a middleware that discovers latent habits from interaction traces and controls whether they should be surfaced at the current turn.
-\system{} consolidates repeated event--consequence patterns into persistent habits, applies Generalized Habit Matching across exact and normalized action--entity forms, and uses phase-aware checks and per-habit cooldown before producing a structured Push or no-Push decision.
-To evaluate the two stages separately, we use a six-domain behavior-only habit-induction benchmark with 102 episodes, 238 event records, and 30 pre-specified reference habits, together with a source-documented intervention benchmark containing 207 longitudinal sessions, 3,435 turn-level decisions, and 301 positives.
-On the habit-induction benchmark, \system{} reaches F1 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction; three repeated runs yield $0.899\pm0.011$ versus $0.825\pm0.010$ for Direct Summary.
-On the intervention benchmark, whose implicit and late positives and aligned or explicit-exception negatives test timing and restraint, \system{} reaches a six-domain average F1 of 0.653, compared with 0.388 for RAG-only, 0.323 for a Mem0-v2.0.12-backed baseline, and 0.248 for ProactiveAgent-Prompt.
-On a source-disjoint blind holdout with matched raw input, backbone, decision budget, and cooldown, \system{} reaches pooled F1 0.320 versus 0.151 for the strongest comparator, with a paired gain of 0.169 (95\% CI $[0.049,0.283]$).
-Component attribution shows that Habit Induction improves representation, the intervention Controller raises actionable recall, and cooldown more than halves the Push rate while increasing exception suppression.
-These results support a modular view of proactive memory: useful systems must discover unspoken regularities and separately control when acting on them is warranted.
+Proactive LLM agents must decide whether a newly observed event warrants unsolicited assistance.
+The evidence for that decision may be absent from the current event and distributed across days, yet exposing an ever-growing event history leaves temporal structure implicit and increases context cost.
+We present Event-Driven Proactive Memory (\system{}), a hierarchical memory that progressively transforms an entity-isolated event stream into three evidence levels: bounded source-level evidence in Source Memory, fact-validated daily trajectories in Working Memory, and replay-validated long-term trajectories in Long-term Memory.
+Daily validation asks whether an extracted fact is supported by source events; historical replay asks whether a proposed temporal structure recurs; the decision LLM then proposes whether the current event itself \emph{or} memory evidence creates a concrete, timely, and low-risk opportunity to Push.
+We construct a label-hidden benchmark of 3,080 decisions from 9 HeartSteps participants and 4 CASAS homes, with 423 entity-days and 13 strictly isolated streams; reference labels and all annotation metadata remain evaluator-private.
+The episode-aware reference labels encode reviewed service opportunities and are frozen after LLM-assisted screening, independent annotation by three team members conducted in parallel with but isolated from model inference, cross-review, and adjudication.
+Using a common backbone model, with an identical decision prompt across the three \system{} variants, Full \system{} achieves 39.2\% precision, 75.7\% recall, and 51.7\% micro F1.
+It exceeds ProactiveAgent-Prompt by 10.5 F1 points while reducing Push rate by 2.7 points, and exceeds Source-only and Source+Working by 12.9 and 11.0 F1 points.
+Offline audits further show that all 1,279 retained daily episodes are source-supported; all 54 retained long-term proposals are source-linked and replay-audited, and 42 meet the Active gate.
+These results show that validated temporal abstraction can make proactive decisions both more informed and more selective without turning memory itself into a hidden intervention rule.
 \end{abstract}
 
-\ccsdesc[500]{Information systems~Information retrieval}
-\ccsdesc[300]{Computing methodologies~Artificial intelligence}
-\ccsdesc[300]{Human-centered computing~Human computer interaction (HCI)}
+\ccsdesc[500]{Computing methodologies~Intelligent agents}
+\ccsdesc[300]{Information systems~Information retrieval}
+\ccsdesc[300]{Human-centered computing~Ubiquitous and mobile computing systems and tools}
 
-\keywords{LLM agents, long-term memory, habit discovery, proactive assistance, intervention control}
+\keywords{proactive agents, agent memory, event streams, temporal trajectories, large language models}
 
 \maketitle
 
@@ -70,7 +73,6 @@ These results support a modular view of proactive memory: useful systems must di
 \input{7Conclusion}
 \input{8EthicalConsiderations}
 
-\balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{9Reference}
 

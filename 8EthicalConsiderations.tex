@@ -1,15 +1,17 @@
 \section*{Ethical Considerations}
 
-Inferring habits creates privacy risks beyond storing explicit user statements.
-The system may derive routines, preferences, schedules, or other sensitive regularities that a user did not knowingly designate as memory.
-Such profiles could reveal sensitive behavior if exposed, transferred across contexts, or accessed by an unauthorized party.
-A deployment should therefore require informed opt-in and provide a visible habit inspector, correction, per-habit deletion, retention limits, and a global disable control.
+Proactive memory can infer recurring temporal structure that a user never explicitly chose to store.
+Activity schedules and household movement can be sensitive even when each event is individually innocuous.
+A deployment should require informed opt-in, entity-scoped access control, visible inspection of inferred trajectories, correction and deletion controls, retention limits, and a global way to disable proactive behavior.
+Memories must not be silently transferred across participants, homes, applications, or accounts.
 
-Proactive interventions can also be unwanted, manipulative, mistimed, or unsafe.
-Phase checks and per-habit cooldown constrain intervention frequency, while high-impact settings additionally require explicit confirmation and application-specific policy checks.
-Assessing user trust, perceived helpfulness, and transfer to live use requires prospective evaluation beyond the offline labels.
+Incorrect intervention can be intrusive or harmful.
+The CASAS task permits only gentle low-risk check-ins and prohibits disease, fall, travel, danger, and preference inference.
+HeartSteps opportunities are optional activity support, not medical recommendations or estimates of treatment effect.
+High-impact decisions require domain policy checks and explicit human confirmation beyond the architecture evaluated here.
 
-Benchmark-derived prompts were sent to external model APIs during the experiments.
-Released artifacts exclude credentials and personal paths and document transmitted fields and provider retention assumptions.
-Audit traces can contain behavioral evidence and require the same access, retention, and deletion protections as the Habit Store.
-
+The benchmark maintains a strict public/private boundary.
+Reference labels, screening outputs, review stages, episode annotations, and scoring masks are never included in agent input.
+Participant and home identifiers are pseudonymized at the stream level, and all inference is entity-isolated.
+Model-visible payloads sent to an external API contain no organizer-private label or credential.
+Prediction traces, daily trajectories, and long-term trajectories should nevertheless receive the same retention and access protections as the source streams.

@@ -1,44 +1,41 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Large language model (LLM) agents increasingly operate over web applications, workplace tools, software repositories, and personal services.
-In these settings, an agent may interact with the same user and environment over many sessions.
-Persistent-memory systems address this setting through complementary mechanisms, including storing and retrieving prior events, consolidating conversational facts, producing higher-level reflections, and organizing memories in hierarchical or graph-structured stores~\citep{park2023generative,packer2023memgpt,zhong2024memorybank,chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
-These mechanisms answer an important question: \emph{what past information is relevant now?}
-They do not, by themselves, answer a second question: \emph{should that information be surfaced at the current turn?}
+LLM agents increasingly receive continuous observations from personal devices and ambient environments rather than a single explicit request.
+In such settings, useful assistance may need to begin before a user asks for it.
+This changes the agent's task from answering a query to repeatedly deciding whether the present event warrants an interruption.
+The decision is asymmetric: missing an opportunity reduces utility, but an unsupported or repetitive Push consumes attention and can quickly erode trust.
 
-The second question becomes central when memory is proactive.
-A reactive system waits for a query; a proactive system may interrupt an ongoing workflow.
-The cost of an incorrect decision is therefore asymmetric.
-Missing a useful reminder loses an opportunity, while an unnecessary reminder consumes attention, may expose an incorrect inference about the user, and can steer an agent toward an action that was never intended.
-Relevance is not enough: a memory can be related to the current task but premature, already satisfied, inconsistent with an explicit exception, or repeated too soon after an earlier intervention.
+Long-term memory systems help agents retain observations, retrieve related episodes, and consolidate experience~\citep{park2023generative,packer2023memgpt,zhong2024memorybank,chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
+These mechanisms are well suited to answering \emph{what happened before} or \emph{what is related now}.
+Proactive service requires an additional judgment.
+A low-activity snapshot may itself support a gentle suggestion; an otherwise ordinary snapshot may become meaningful only after several similar days; and a repeated trajectory can still be irrelevant if the opportunity was already covered.
+Thus, relevance, temporal regularity, and present intervention value are related but distinct claims.
 
-Recent preprints have begun to study streaming latent-need detection with hybrid memory, reasoning-integrated memory exploration, and selective reminder injection~\citep{xie2026pask,li2026memcog,wu2026remember}.
-We focus on a complementary gap.
-Users may not enumerate their own recurring workflows or express them as stable rules.
-For example, a developer may regularly commit only after tests pass, a shopper may repeatedly avoid a class of ingredients, or a calendar user may follow a scheduling preference without ever declaring it as a memory.
-An agent should be able to infer such regularities from interaction traces.
-At the same time, the inferred habit must not become an unconditional notification rule.
+Prompt-only proactive agents provide the decision objective but leave an expanding history for the LLM to interpret at every turn~\citep{lu2025proactiveagent}.
+The resulting context is both noisy and structurally weak: repeated behavior is represented as many source records rather than a compact, testable temporal statement.
+Conversely, a generic retrieval memory may return a similar episode without establishing that it repeats or that acting now is useful.
+Recent proactive-memory systems highlight the value of retaining latent needs and selectively resurfacing prior state~\citep{xie2026pask,li2026memcog,wu2026remember}, but reliable proactive assistance over behavioral streams still needs a clear evidence lifecycle from source-level events to long-horizon temporal structure.
 
-Evaluating this setting requires evidence at two levels.
-We use a behavior-only benchmark to directly score whether repeated traces are consolidated into evidence-grounded habits, and a source-documented six-domain benchmark with turn-level labels for warranted and withheld interventions.
-The latter's implicit and late positives and aligned or explicit-exception negatives test intervention timing and restraint rather than only retrieval relevance or suggestion plausibility.
+We introduce Event-Driven Proactive Memory (\system{}), shown in Figure~\ref{fig:architecture}.
+\system{} treats proactive memory as a hierarchy rather than a flat archive.
+\emph{Source Memory} preserves recent source-level event evidence without semantic rewriting, under a strict temporal and cardinality bound.
+After each completed day, an LLM organizes the temporary event buffer into daily trajectories and a deterministic validator rejects unsupported facts; accepted trajectories form \emph{Working Memory}.
+After a completed week, an LLM proposes longer temporal structure and deterministic historical replay tests whether the evidence actually recurs; supported trajectories enter \emph{Long-term Memory}.
+At decision time, an Evidence Card separates current facts, recent source evidence, daily evidence, active long-term evidence, and episode state.
+The decision LLM follows an OR rule and proposes Push when either the current event is service-worthy or prior trajectories create a new proactive opportunity.
+A shared Episode Controller cannot create a Push; it only suppresses a repeated candidate Push for an already covered episode before the finalized output is scored.
 
-We introduce \system{} (Habit-Consolidated Proactive Memory), a modular middleware for discovering latent habits and controlling their delivery.
-\system{} observes structured user and agent events, accumulates repeated evidence, and consolidates trigger--context--consequence regularities into typed habit records.
-Generalized Habit Matching connects exact and normalized action--entity forms to an auditable controller that checks workflow phase, optionally consults an LLM in ambiguous Code cases, and enforces per-habit cooldown.
-Its controller produces a structured Push or no-Push decision that can subsequently be rendered into application-specific natural language.
+We evaluate \system{} on HeartSteps activity-support streams~\citep{klasnja2019heartsteps} and CASAS ambient smart-home streams~\citep{cook2013casas}.
+The benchmark contains 3,080 public decision events across 9 participants and 4 homes.
+Every stream is replayed causally and in isolation, while reference labels, candidate indicators, history statistics, and scoring fields remain private.
+The episode-aware reference labels encode reviewed service opportunities and are frozen after LLM-assisted candidate screening, independent annotation by three team members conducted in parallel with but isolated from model inference, cross-review, and adjudication.
+All public events enter final human review, and the benchmark and reference labels are frozen before reported testing and remain unchanged throughout it.
 
-This formulation is relevant to web search and data mining in two ways.
-First, web agents and intelligent assistants must mine longitudinal interaction traces rather than treat each request independently.
-Second, the utility of retrieved behavioral evidence depends on decision timing: the system must rank candidate memories and decide whether any candidate should enter the current agent context.
-The resulting problem joins behavioral pattern mining, retrieval, and selective intervention for agentic systems.
-
-We make four contributions:
+Our contributions are:
 \begin{itemize}
-    \item We separate habit induction from intervention evaluation using a behavior-only benchmark (102 episodes; 30 pre-specified reference habits), a documented six-domain intervention benchmark (207 sessions; 3,435 turns; 301 positives), and a 45-session source-disjoint blind holdout with 251 turns.
-    \item We present \system{}, which discovers habits that need not be explicitly declared and couples Generalized Habit Matching with an auditable intervention Controller. Under matched inputs, its habit F1 is 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction.
-    \item We compare \system{} with retrieval, reflection, generative-memory, Mem0-backed, and ProactiveAgent-Prompt baselines. \system{} reaches six-domain average F1 0.653 and retains the strongest pooled F1 on the source-disjoint holdout under matched raw input, model budget, and cooldown.
-    \item We use factorial attribution, Gold and profile-shuffle controls, paired statistics, and condition-selectivity analysis to show how habit representation, actionable recall, and cooldown-based intervention cost jointly determine proactive behavior.
+    \item We formulate proactive memory for causal event streams, separating current-event utility, historical temporal support, and episode-aware intervention coverage.
+    \item We propose a three-level hierarchy that transforms bounded source-level events into fact-validated daily trajectories and replay-validated long-term trajectories, while retaining traceable evidence for the final decision.
+    \item We construct a 3,080-event benchmark covering 423 entity-days and 13 isolated streams, with positive and negative decisions presented in an identical, label-neutral format.
+    \item Full \system{} reaches 51.7\% micro F1. It outperforms PA-Prompt, Source-only, and Source+Working by 10.5, 12.9, and 11.0 points, respectively, while the daily and weekly audits verify its evidence contracts.
 \end{itemize}
-

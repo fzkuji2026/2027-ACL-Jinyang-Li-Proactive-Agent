@@ -1,10 +1,13 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We studied proactive memory as a decision problem rather than retrieval followed by unconditional injection.
-\system{} discovers persistent habits from repeated interaction evidence and separately controls whether a habit should be surfaced through Generalized Habit Matching, Code-specific phase/Think checks, and per-habit cooldown.
-On the behavior-only benchmark, its matched-input habit F1 is 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction; repeated runs confirm the same direction.
-Across six domains, \system{} improves average F1 over implementation-controlled memory baselines and pinned Mem0/ProactiveAgent artifacts, while the source-disjoint blind holdout reproduces the aggregate advantage under matched raw input, model budget, and cooldown.
-Factorial attribution, profile controls, and condition-selectivity analysis identify complementary roles: Habit Induction improves evidence-grounded representation, the intervention Controller raises actionable recall, and cooldown regulates intervention cost.
-This separation offers a practical direction for web agents and intelligent assistants that must learn from longitudinal behavior without turning every related memory into an interruption.
+We presented \system{}, a hierarchical Proactive Memory for event-driven LLM agents.
+Source Memory preserves a bounded, exact recent history; Working Memory stores fact-validated daily trajectories; and Long-term Memory stores temporal trajectories that survive historical replay.
+An Evidence Card exposes these levels to a decision LLM, which proposes whether the current event itself or memory evidence warrants a new Push; the shared Episode Controller can only suppress a repeated same-episode opportunity before scoring.
 
+On 3,080 events from nine HeartSteps participants and four CASAS homes, Full \system{} reaches 39.2\% precision, 75.7\% recall, and 51.7\% micro F1.
+It exceeds PA-Prompt by 10.5 F1 points at a 2.7-point lower Push rate, and controlled hierarchy ablations show additional benefit from both daily and long-term evidence.
+Offline audits verify that retained daily facts are source-supported and that retained long-term proposals are source-linked and replay-audited, with 42 meeting the Active gate.
+
+The central principle is a separation of responsibilities: daily validation asks whether a claim is grounded in cited source events, historical replay asks whether a proposed temporal structure has sufficient support under the frozen replay criteria, and the decision agent asks whether acting now is worthwhile.
+This separation enables agents to discover implicit longitudinal evidence without equating every pattern with an interruption.

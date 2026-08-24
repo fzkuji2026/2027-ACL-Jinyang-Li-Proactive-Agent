@@ -1,294 +1,176 @@
-\subsection{Habit Induction Quality}
-\label{sec:habit_induction_results}
+\subsection{Main Results}
+\label{sec:main_results}
 
-Table~\ref{tab:habit_induction} evaluates the representation before turn-level intervention control.
-Under the matched-input comparison, \system{} Habit Induction reaches habit F1 0.893, compared with 0.828 for Direct Summary, 0.700 for Structured Conditional Discovery, and 0.553 for Mem0 Extraction.
-It also attains the highest precision (0.962) and recall (0.833) and the lowest hallucination rate (0.056).
-
-\begin{table}[t]
-\centering
-\caption{Habit discovery from the same frozen behavior-only episodes. All methods use the shared evidence-based matcher; Mem0 denotes official extraction followed by shared-schema projection. Halluc. is the fraction of predicted habits unsupported by the cited behavioral evidence.}
-\label{tab:habit_induction}
-\scriptsize
-\setlength{\tabcolsep}{2.2pt}
-\begin{tabular}{lcccc}
-\toprule
-Method & Habit P & Habit R & Habit F1 & Halluc. \\
-\midrule
-Direct Summary & \underline{0.857} & \underline{0.800} & \underline{0.828} & 0.156 \\
-Structured Conditional & 0.700 & 0.700 & 0.700 & 0.320 \\
-Mem0 Extraction & 0.765 & 0.433 & 0.553 & \underline{0.133} \\
-\system{} Induction & \textbf{0.962} & \textbf{0.833} & \textbf{0.893} & \textbf{0.056} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\system{} matches 25 of 26 induced habits, compared with 24 of 28 for Direct Summary, 21 of 30 for Structured Conditional Discovery, and 13 of 17 for Mem0 Extraction.
-The repeated same-model comparison reinforces this result: across three complete runs, \system{} obtains F1 $0.899\pm0.011$ versus $0.825\pm0.010$ for Direct Summary, with positive paired differences of 0.065, 0.099, and 0.060.
-Together, the expanded method coverage and repeated executions show that typed induction improves evidence-grounded habit representation before intervention control.
-
-\subsection{Overall Performance}
-\label{sec:results}
-
-Table~\ref{tab:main_results} reports the continual \texttt{all} protocol results.
-\system{} has the highest F1 in all six domains.
-Its six-domain average F1 is 0.653, compared with 0.388 for RAG-only, 0.323 for the Mem0-backed condition, and 0.248 for ProactiveAgent-Prompt.
+Table~\ref{tab:main_results} reports the primary comparison on all 3,080 events.
+Full \system{} achieves the highest F1 on HeartSteps, CASAS, and the micro aggregate.
 
 \begin{table*}[t]
 \centering
-\caption{Six-domain F1 under the continual stateful \texttt{all} protocol. Avg. is the arithmetic mean across the six unrounded domain F1 scores. Methods follow the implementation-controlled and artifact-backed configurations in Section~\ref{sec:setup}. \system{} and the Mem0-backed controller use cooldown 3; ProactiveAgent-Prompt uses cooldown 0. Best is bold and second-best is underlined.}
+\caption{Main results (\%). All rows are observed full-benchmark runs. Source-only, Source+Working, and Full \system{} share one decision prompt. Bold marks the best precision, recall, or F1 within each scope.}
 \label{tab:main_results}
-\footnotesize
-\setlength{\tabcolsep}{4.8pt}
+\scriptsize
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{llrrrr}
+\toprule
+Scope & Method & Push Rate & Precision & Recall & F1 \\
+\midrule
+\multirow{4}{*}{HeartSteps ($N=1{,}456$)}
+ & Source-only & 53.5 & 28.1 & 60.0 & 38.3 \\
+ & Source+Working & 53.8 & 28.5 & 61.1 & 38.9 \\
+ & Full \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} \\
+ & PA-Prompt & 69.0 & 30.0 & \textbf{82.5} & 43.9 \\
+\midrule
+\multirow{4}{*}{CASAS ($N=1{,}624$)}
+ & Source-only & 16.6 & 34.1 & 48.4 & 40.0 \\
+ & Source+Working & 17.5 & 37.5 & 56.3 & 45.1 \\
+ & Full \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} \\
+ & PA-Prompt & 9.2 & 34.2 & 26.8 & 30.1 \\
+\midrule
+\multirow{4}{*}{Micro ($N=3{,}080$)}
+ & Source-only & 34.1 & 29.6 & 56.0 & 38.8 \\
+ & Source+Working & 34.7 & 30.9 & 59.5 & 40.7 \\
+ & Full \system{} & 34.8 & \textbf{39.2} & \textbf{75.7} & \textbf{51.7} \\
+ & PA-Prompt & 37.5 & 30.5 & 63.4 & 41.2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{Fig2_Main_Results.pdf}
+    \Description{The left panel compares micro precision, recall, and F1 for Source-only, Source plus Working, Full EPM, and ProactiveAgent-Prompt. The right panel compares F1 on HeartSteps, CASAS, and the pooled micro result. Full EPM has the highest F1 in every scope.}
+    \caption{Decision quality under the frozen benchmark. Full \system{} improves micro precision and recall simultaneously and attains the best F1 on both sources.}
+    \label{fig:main_results}
+\end{figure*}
+
+\paragraph{Overall comparison.}
+At a 34.8\% micro Push rate, Full \system{} reaches 39.2\% precision, 75.7\% recall, and 51.7\% F1.
+Relative to PA-Prompt, it reduces Push rate by 2.7 points while improving precision by 8.7 points, recall by 12.3 points, and F1 by 10.5 points.
+The gain is therefore not produced by indiscriminate intervention.
+PA-Prompt exposes a long causal history but leaves the model to recover its temporal structure at every turn; \system{} supplies a smaller, validated representation of that structure.
+
+We additionally conduct an entity-composition sensitivity check, reported only
+in the supplementary material.
+
+\paragraph{HeartSteps.}
+PA-Prompt obtains the highest recall (82.5\%) but Pushes on 69.0\% of all events.
+Full \system{} lowers the Push rate by 15.2 points, increases precision from 30.0\% to 35.8\%, and improves F1 from 43.9\% to 48.8\%.
+The result reflects a useful trade-off for optional activity support: validated history removes many generic suggestions while preserving most reference opportunities.
+
+\paragraph{CASAS.}
+The prompt baseline is conservative but misses nearly three quarters of reference opportunities, reaching only 26.8\% recall.
+Full \system{} raises recall to 73.7\% and precision to 48.6\%, yielding 58.6\% F1 versus 30.1\% for PA-Prompt.
+Each public row contains only the current 50-minute segment, so the improvement depends on Agent-maintained cross-segment evidence rather than a benchmark-provided anomaly feature.
+These findings answer RQ1.
+
+\paragraph{Auxiliary flat-retrieval check.}
+Flat Retrieval Memory reaches 34.2\% Push rate, 33.1\% precision, 62.9\% recall, and 43.4\% micro F1 on the same 3,080 events.
+It improves over Source-only by 4.6 F1 points and over PA-Prompt by 2.2 points, showing that retrieving older same-entity events is useful.
+However, at nearly the same Push rate as Full \system{} (34.2\% versus 34.8\%), it remains lower by 6.1 precision points, 12.8 recall points, and 8.3 F1 points; its HeartSteps and CASAS F1 scores are 41.3\% and 48.2\%, respectively, versus 48.8\% and 58.6\% for Full \system{}.
+Thus, ordinary semantic retrieval provides a stronger history baseline but does not reproduce the benefit of fact-validated daily evidence and replay-validated long-term trajectories.
+
+\subsection{Contribution of the Memory Hierarchy}
+\label{sec:hierarchy}
+
+Table~\ref{tab:hierarchy_counts} gives the micro confusion matrices for the controlled hierarchy.
+Adding Working Memory yields a net increase of 19 TP without a net increase in FP.
+Adding Long-term Memory then yields a net increase of 90 TP and a net reduction of 87 FP, while the total number of Pushes changes by only three.
+The long-term level therefore does more than add triggers: its temporal and episode evidence can both reveal previously invisible opportunities and disambiguate unsupported current-event interpretations.
+
+\begin{table}[t]
+\centering
+\caption{Controlled hierarchy ablation on all 3,080 events.}
+\label{tab:hierarchy_counts}
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
 \begin{tabular}{lrrrrrrr}
 \toprule
-Method & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. & Avg. \\
+Method & Push & TP & FP & FN & TN & P & R / F1 \\
 \midrule
-No Memory & 0.000 & 0.087 & 0.355 & 0.239 & 0.295 & 0.034 & 0.168 \\
-RAG-only & \underline{0.247} & \underline{0.380} & 0.439 & \underline{0.494} & 0.381 & \underline{0.387} & \underline{0.388} \\
-Summary-Reflection & 0.176 & 0.314 & 0.361 & 0.370 & \underline{0.408} & 0.315 & 0.324 \\
-Generative Memory & 0.197 & 0.360 & 0.427 & 0.386 & 0.393 & 0.335 & 0.350 \\
-Mem0-v2.0.12-backed & 0.216 & 0.339 & 0.398 & 0.408 & 0.321 & 0.258 & 0.323 \\
-ProactiveAgent-Prompt & 0.174 & 0.219 & \underline{0.463} & 0.170 & 0.190 & 0.269 & 0.248 \\
-\system{} & \textbf{0.667} & \textbf{0.647} & \textbf{0.600} & \textbf{0.683} & \textbf{0.672} & \textbf{0.652} & \textbf{0.653} \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-An oracle that selects the best local baseline per domain reaches an average F1 of 0.392, versus 0.653 for \system{}.
-RAG-only is the strongest single baseline at 0.388.
-Paired session bootstraps estimate a gain in six-domain average F1 of 0.265 over RAG-only (95\% CI [0.216, 0.306]).
-The corresponding gains over Mem0-backed and the prompt adaptation are 0.330 ([0.275, 0.379]) and 0.406 ([0.359, 0.445]), respectively.
-Each of the 18 domain-level intervals excludes zero, and Holm-adjusted exact McNemar tests give the same directional conclusion.
-These intervals confirm that the gains persist under paired session-level resampling.
-The same per-domain local selections produce 604 false positives and 822 pushes, whereas \system{} produces 176 false positives and 408 pushes, reductions of 70.9\% and 50.4\%, respectively.
-The component analyses below separate the contributions of habit representation, intervention control, and cooldown to this system-level result.
-
-The external conditions exhibit a distinct precision--recall profile.
-Mem0-backed yields 141 TP, 417 FP, 160 FN, and 2,717 TN (558 pushes; micro F1 0.328).
-ProactiveAgent-Prompt yields 189 TP, 1,143 FP, 112 FN, and 1,991 TN (1,332 pushes; micro F1 0.231).
-The latter recovers 62.8\% of positive turns but has micro precision 0.142, so its low F1 primarily reflects over-proposal under the proposal/null policy.
-The contrast reveals complementary bottlenecks: ProactiveAgent-Prompt over-proposes under its released proposal/null contract, whereas the Mem0-backed condition retrieves persistent memories but relies on the shared turn-level controller for intervention.
-
-\subsection{Fair Source-Disjoint Comparison}
-\label{sec:fair_baselines}
-
-Table~\ref{tab:fair_baselines} evaluates five methods on the same blind holdout with identical raw-input projection, backbone, decision budget, and cooldown-3 replay.
-\system{} achieves the highest pooled F1 (0.320) and macro F1 (0.263), combining recall 0.571 with 21.6 Pushes per 100 turns.
-
-\begin{table*}[t]
-\centering
-\caption{Fair comparison on the 45-session source-disjoint blind holdout under matched session-local cooldown 3. All methods use the same canonical raw input, DeepSeek-v4-Flash budget, and 250 binary-labeled turns. Macro F1 averages Code, Email, and Shopping.}
-\label{tab:fair_baselines}
-\scriptsize
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{lrrrrrrrrr}
-\toprule
-Method & TP & FP & FN & TN & P & R & $\mu$F1 & Macro F1 & Push/100 \\
-\midrule
-RAG-only & 0 & 4 & 21 & 225 & 0.000 & 0.000 & 0.000 & 0.000 & 1.6 \\
-Mem0 v2.0.12 & 0 & 4 & 21 & 225 & 0.000 & 0.000 & 0.000 & 0.000 & 1.6 \\
-ProactiveAgent-Prompt & 8 & 77 & 13 & 152 & 0.094 & 0.381 & \underline{0.151} & \underline{0.127} & 34.0 \\
-Structured Conditional & 2 & 18 & 19 & 211 & 0.100 & 0.095 & 0.098 & 0.069 & 8.0 \\
-\system{} & 12 & 42 & 9 & 187 & \textbf{0.222} & \textbf{0.571} & \textbf{0.320} & \textbf{0.263} & 21.6 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-The methods occupy distinct intervention operating points: RAG-only and Mem0 are highly conservative at 1.6 Pushes per 100 turns, Structured Conditional produces 8.0, ProactiveAgent-Prompt produces 34.0, and \system{} balances the highest recall with 21.6.
-Paired session bootstrap estimates \system{}'s micro-F1 gain as 0.320 over both RAG-only and Mem0 (95\% CI $[0.216, 0.416]$).
-The gain is 0.169 over the prompt condition ($[0.049, 0.283]$) and 0.222 over Structured Conditional ($[0.041, 0.367]$).
-The corresponding macro-F1 intervals also remain above zero.
-These results reproduce the aggregate advantage under a source-disjoint blind protocol in which evidence, model budget, and intervention policy are exactly matched.
-Per-domain analysis further localizes the strongest decision transfer to Code (F1 0.645), consistent with the domain-conditioned component effects analyzed below.
-
-\subsection{Intervention Controls}
-\label{sec:intervention_controls}
-
-We next compose exact retrieved-memory records from validated Mem0 traces with ProactiveAgent-Prompt.
-The base composition uses cooldown 0, session-local prompt history, and memory-only warm-up.
-It provides a controlled test of whether downstream necessity filtering and cooldown reduce over-proposal under a fixed retrieved-memory/proposal stack.
-Table~\ref{tab:intervention_controls} reports the composition and intervention-control results.
-
-\begin{table}[t]
-\centering
-\caption{Shopping, Email, and SmartHome intervention controls. Macro F1 averages domain F1; $\mu$ metrics pool turns. Cooldown-3 uses a session-local shared key, while \system{} uses native per-habit keys.}
-\label{tab:intervention_controls}
-\footnotesize
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{lrrrrr}
-\toprule
-Condition & Macro F1 & $\mu$P & $\mu$R & $\mu$F1 & Pushes \\
-\midrule
-Mem0 + Prompt & 0.253 & 0.148 & 0.870 & 0.253 & 858 \\
-$+$ Necessity verifier & 0.396 & 0.322 & 0.514 & 0.396 & 233 \\
-$+$ Cooldown-3 & 0.279 & 0.195 & 0.486 & 0.278 & 365 \\
-$+$ Verifier + cooldown & 0.345 & 0.340 & 0.349 & 0.345 & 150 \\
-\system{} (native) & \textbf{0.643} & \textbf{0.568} & 0.747 & \textbf{0.645} & 192 \\
+Source-only & 1,049 & 311 & 738 & 244 & 1,787 & 29.6 & 56.0 / 38.8 \\
+Source+Working & 1,068 & 330 & 738 & 225 & 1,787 & 30.9 & 59.5 / 40.7 \\
+Full \system{} & 1,071 & 420 & 651 & 135 & 1,874 & 39.2 & 75.7 / 51.7 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The study-built Necessity Verifier is a post-filter applied to non-null proposals and is distinct from ProactiveAgent's learned evaluator.
-It removes 573 of 731 false positives (78.4\%) but also loses 52 of 127 true positives (40.9\%), raising micro F1 from 0.253 to 0.396 while lowering recall from 0.870 to 0.514.
-Because it filters only non-null proposals, it adds one model call per proposal and leaves stage-one abstentions unchanged.
-The shared-key cooldown changes the operating point but remains below \system{}; the matched factorial study next separates the contributions of habit representation, intervention control, and cooldown.
+The domain-specific increments are also informative.
+Working Memory adds four TP on HeartSteps and 15 on CASAS; Long-term Memory adds 57 and 33 TP, respectively.
+Micro F1 rises from 38.8\% to 40.7\% after daily trajectories and then to 51.7\% after long-term trajectories.
+The smaller daily increment does not make the layer redundant: daily trajectories are the verified substrate from which long-term structure is constructed, and they become causally available much earlier.
+These results answer RQ2.
 
-\subsection{Source-Disjoint Component Attribution}
-\label{sec:component_attribution}
+\subsection{Validation and Causal Availability}
+\label{sec:validation_results}
 
-Table~\ref{tab:component_attribution} reports the formal $2\times2$ experiment on the frozen source-disjoint holdout.
-At the common cooldown-3 operating point, both Discovery and Controller have positive paired macro-F1 main effects.
+We audit the naturally produced memory artifacts without rerunning the 3,080 decisions with validators removed.
+This directly tests the two claims made by the architecture: retained daily facts must be source-supported, and retained long-term proposals must be source-linked and evaluated by historical replay before activation.
 
 \begin{table*}[t]
 \centering
-\caption{Formal component attribution on the 45-session source-disjoint holdout under matched session-local cooldown 3. D0/D1 denote Direct Summary/\system{} discovery and C0/C1 denote the generic/\system{} controller. Macro averages domain F1; $\mu$ metrics pool the 250 binary-labeled turns. Effects use 10,000 paired session-bootstrap samples.}
-\label{tab:component_attribution}
-\scriptsize
-\setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{lrrrrrrrrr}
-\toprule
-& \multicolumn{3}{c}{Domain F1} & & \multicolumn{3}{c}{Pooled} & & \\
-\cmidrule(lr){2-4}\cmidrule(lr){6-8}
-Condition & Code & Email & Shopping & Macro F1 & $\mu$P & $\mu$R & $\mu$F1 & FP/100 & Push/100 \\
-\midrule
-D0C0 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 2.0 & 2.0 \\
-D0C1 & 0.000 & 0.148 & 0.133 & 0.094 & 0.079 & 0.143 & 0.102 & 14.0 & 15.2 \\
-D1C0 & 0.105 & 0.000 & 0.000 & 0.035 & 0.048 & 0.048 & 0.048 & 8.0 & 8.4 \\
-D1C1 & \textbf{0.645} & 0.143 & 0.000 & \textbf{0.263} & \textbf{0.222} & \textbf{0.571} & \textbf{0.320} & 16.8 & 21.6 \\
-\bottomrule
-\end{tabular}
-
-\vspace{3pt}
-\begin{tabular}{lrr}
-\toprule
-Paired macro-F1 effect & Estimate & 95\% CI \\
-\midrule
-Discovery ($\Delta_D$) & +0.102 & $[+0.050,+0.147]$ \\
-Controller ($\Delta_C$) & +0.161 & $[+0.073,+0.243]$ \\
-Interaction ($\Delta_I$) & +0.134 & $[-0.009,+0.252]$ \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-Within the D1 representation, replacing C0 with C1 raises actionable recall from 0.048 to 0.571 and pooled F1 from 0.048 to 0.320, while Pushes increase from 21 to 54.
-C1 therefore functions as a recall-oriented intervention Controller, and cooldown complements it by regulating intervention cost.
-Applying the common cooldown-3 replay to raw D1C1 reduces Pushes from 112 to 54 and false positives from 98 to 42, with recall changing from 0.667 to 0.571.
-
-The Discovery contribution is strongest at the representation level and transfers to final decisions in a domain-conditioned manner.
-Table~\ref{tab:habit_induction} establishes the representation gain, while the factorial Discovery effect is largest in Code ($+0.375$).
-The profile controls further validate the learned representation: D1 and Gold profiles are statistically indistinguishable under C1 (observed gap $-0.005$, 95\% CI $[-0.055,+0.056]$), whereas deterministic profile shuffling lowers macro F1 from 0.263 to 0.088, a paired sensitivity of $+0.175$ ($[+0.074,+0.258]$).
-Together, these results identify a clear division of labor: Habit Induction improves evidence-grounded representation, C1 recovers actionable opportunities, and cooldown selects the intervention operating point.
-
-Figure~\ref{fig:selectivity_cost} summarizes this operating-point effect in user-facing terms.
-Cooldown 3 raises exception suppression from 0.188 to 0.604 and reduces Pushes per 100 turns from 44.8 to 21.6, while actionable recall changes from 0.667 to 0.571.
-Thus, the matched cooldown more than halves intervention frequency while preserving most actionable opportunities.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{Fig2_Condition_Selectivity_Cost.pdf}
-    \Description{Two-panel bar chart comparing cooldown zero and cooldown three. The left panel shows actionable recall changing from 0.667 to 0.571 and exception suppression increasing from 0.188 to 0.604. The right panel shows Pushes per 100 turns decreasing from 44.8 to 21.6.}
-    \caption{Condition selectivity and intervention cost on the source-disjoint holdout. Cooldown 3 substantially increases exception suppression and halves the Push rate while retaining most actionable recall.}
-    \label{fig:selectivity_cost}
-\end{figure}
-
-\subsection{Mechanism Ablations}
-\label{sec:ablation}
-
-Table~\ref{tab:ablations} demonstrates domain-conditioned modularity; Full denotes the complete \system{} configuration under the benchmark protocol.
-Exact-only Match retains discovered habits and literal action--entity matching but removes the generalized fallback.
-Removing the phase gate changes Code substantially but is prediction-identical in four other tested domains.
-
-% Values generated from final_ablation_table.csv; transposed for presentation.
-% Requires: booktabs.
-\begin{table*}[t]
-\centering
-\caption{Mechanism ablations. Cells report F1 (change from Full), with changes computed before rounding; an em dash marks a component not exercised by that domain workflow. Exact-only isolates generalized matching, phase and Think variants target the Code workflow, and the cooldown variant reports the Shopping operating point.}
-\label{tab:ablations}
-\footnotesize
-\setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{lcccccc}
-\toprule
-Configuration & Code & SmartHome & Shopping & Email & Calendar & Project Mgmt. \\
-\midrule
-Full & 0.667 (ref.) & 0.647 (ref.) & 0.600 (ref.) & 0.683 (ref.) & 0.672 (ref.) & 0.652 (ref.) \\
-Exact-only Match & 0.667 (+0.000) & 0.647 (+0.000) & 0.429 (-0.171) & 0.197 (-0.486) & 0.133 (-0.539) & 0.143 (-0.509) \\
-w/o Phase Gate & 0.462 (-0.205) & 0.647 (+0.000) & 0.600 (+0.000) & 0.683 (+0.000) & \textemdash & 0.652 (+0.000) \\
-w/o LLM Think & 0.642 (-0.024) & \textemdash & 0.600 (+0.000) & \textemdash & \textemdash & \textemdash \\
-w/o Cooldown & \textemdash & \textemdash & 0.701 (+0.101) & \textemdash & \textemdash & \textemdash \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\textbf{Generalized Habit Matching.}
-Full exceeds Exact-only Match in Shopping, Calendar, Email, and Project Management, with session-bootstrap intervals excluding zero: $[0.061,0.298]$, $[0.351,0.700]$, $[0.292,0.668]$, and $[0.311,0.677]$, respectively.
-Code and SmartHome already use literal normalized keys, so disabling the generalized fallback leaves predictions identical and provides an exact-match control.
-Thus the generalized fallback is most useful when preferences or workflow entities vary semantically, whereas exact matching remains sufficient for the two normalized-key domains.
-
-\textbf{Phase gate.}
-Removing the gate lowers Code F1 by 0.205 (95\% CI $[0.131,0.276]$) and increases FP from 23 to 59.
-The effect is repeatable across three runs, while four non-Code domains are prediction-identical with and without the gate.
-
-\textbf{Think.}
-Code w/o Think has a three-run mean F1 of 0.659 versus 0.667 for Full, and two repeats are prediction-identical to Full.
-Think therefore acts as an ambiguity safeguard while the deterministic controller preserves most of the Code performance.
-
-\textbf{Cooldown.}
-Removing Shopping cooldown raises turn-level F1 from 0.600 to 0.701 by increasing recall, but pushes rise from 58 to 85 and false positives from 25 to 37.
-At cooldown three, 27 candidates are suppressed: 15 potential true positives and 12 potential false positives.
-Cooldown therefore encodes an intervention-cost policy rather than an accuracy-only improvement.
-
-The source-disjoint selectivity analysis in Figure~\ref{fig:selectivity_cost} shows the same intervention-cost role under a fully matched protocol.
-
-\subsection{Repeatability and Protocol Checks}
-
-Code Full and Calendar Full each produce identical F1 across three observed runs, providing a prediction-level repeatability check for the benchmark evaluators.
-Separately, the habit-induction benchmark repeats both LLM methods across all six domains, with the three paired differences reported in Section~\ref{sec:habit_induction_results}.
-The Shopping protocol audit compares continual, split-reset, and reversed orderings.
-These checks preserve the principal conclusion while clarifying that the main \texttt{all} run is stateful and must not be reconstructed by summing standalone splits.
-
-\subsection{Efficiency Composition}
-\label{sec:efficiency}
-
-Table~\ref{tab:efficiency} reports absolute \system{} telemetry.
-Across six Full runs, the framework makes 496 logical calls and observes 732,409 provider-reported tokens.
-Discovery and Think account for 88 calls; optional Push formatting accounts for 408 calls (82.3\%) and 272,043 tokens (37.1\%).
-Because formatting follows the structured decision, a host can replace it without changing F1.
-
-\begin{table}[t]
-\centering
-\caption{Absolute Full-run telemetry under MiniMax-M3. Tokens are provider-reported observations.}
-\label{tab:efficiency}
+\caption{Offline evidence audit over all nine participants and four homes. Daily counts are evidence-linked episode proposals; weekly counts are replay attempts across successive updates. Final-store counts are unique retained artifacts.}
+\label{tab:validation_audit}
 \small
-\begin{tabular}{lrrr}
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{llrrrrl}
 \toprule
-Domain & Turns & Calls & Tokens \\
+View & Unit & Total & Pass/Active & Filtered/Candidate & Invalid & Interpretation \\
 \midrule
-Code & 448 & 105 & 112,287 \\
-Shopping & 495 & 70 & 164,066 \\
-Calendar & 684 & 85 & 125,510 \\
-Email & 684 & 83 & 119,712 \\
-Project Mgmt. & 684 & 89 & 123,218 \\
-SmartHome & 440 & 64 & 87,616 \\
+Final daily store & evidence-linked episode & 1,279 & 1,279 & 0 & 0 & all facts source-supported; 0 cross-entity \\
+Daily maintenance & validation attempt & 1,590 & 1,279 & 311 & -- & 19.6\% of proposed episodes filtered \\
+Final long-term store & temporal proposal & 54 & 42 & 12 & 0 & all replay-audited; 42 meet Active gate \\
+Weekly maintenance & replay attempt & 140 & 118 & 22 & -- & 15.7\% of proposals not activated \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The daily store contains 423 daily trajectories (367 HeartSteps and 56 CASAS) composed of 1,279 retained episodes.
+Every retained episode is traceable to source-level evidence from the same entity, while the construction log shows that the validator rejected 311 unsupported candidates before storage.
+The final long-term repository contains 54 source-linked, replay-audited proposals: 42 meet the Active gate and 12 remain Candidate because their replay support is insufficient; only Active trajectories are eligible for retrieval into decision Evidence Cards.
+The maintenance log contains 140 replay attempts across successive weekly updates, of which 22 did not pass the Active gate.
+Thus, the perfect audit rate of the final store is a consequence of filtering, not evidence that the construction LLM never proposes an unsupported item.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{Fig3_Proactive_Memory_Evidence.pdf}
+    \Description{The left panel shows pass versus filtered proportions for daily validation and Active versus Candidate proportions for weekly replay attempts. The right panel shows median days until Working Memory is available, a long-term trajectory becomes Active, and a long-term trajectory is actually matched to a decision.}
+    \caption{Mechanism evidence. Deterministic gates filter unsupported daily proposals and keep replay-insufficient long-term proposals inactive; the three levels become available at distinct causal horizons.}
+    \label{fig:mechanism_results}
+\end{figure*}
+
+Working Memory becomes available for all 13 entities after a median of 0.80 days.
+At least one Active long-term trajectory is available for 11 entities after a median of 6.79 days, and relevant long-term evidence is actually matched for eight entities after a median of 10.46 days.
+These boundaries confirm that the benchmark's 41--55-day HeartSteps streams and 14-day CASAS streams are long enough for both daily and weekly levels to affect later decisions.
+They also prevent a trajectory from being supported by the event it is used to judge.
+The audit answers RQ3.
+
+\subsection{Cases and Remaining Errors}
+
+We freeze 16 log-derived cases, balanced across the two benchmarks: four current-event opportunities, four Daily-supported decisions, four Long-term-supported decisions, two false positives, and two false negatives.
+Representative cases are summarized in Table~\ref{tab:cases}.
+Daily and Long-term examples illustrate mechanism behavior from existing full-memory logs; they do not replace the frozen aggregate counts.
+
+\begin{table}[t]
+\centering
+\caption{Representative qualitative cases from the frozen 16-case set.}
+\label{tab:cases}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{p{0.18\columnwidth}p{0.73\columnwidth}}
+\toprule
+Type & Evidence and decision \\
 \midrule
-Total & 3,435 & 496 & 732,409 \\
+Source TP & HeartSteps: available and still with no recent steps; offer a brief optional walk. CASAS: repeated bedroom--bathroom movement; offer a gentle check-in. \\
+Daily TP & A verified same-slot activity drop, or a second quiet smart-home segment, supplies context absent from the current row alone. \\
+Long-term TP & Repeated low activity in a stable decision slot, or bedroom--bathroom movement that departs from seven prior days, supports a timely check-in. \\
+Typical FP & The model suggests activity while the user is at a restaurant after substantial recent movement, or over-interprets ordinary two-room movement. \\
+Typical FN & The model remains silent despite actionable zero movement, or misses a daytime quiet episode that has persisted for two segments. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Provider-reported token coverage is 494/496 calls; the two calls without usage payloads are optional Calendar formatting responses and do not affect structured decisions.
-Three serial Code measurements have an identical 105-call decomposition and identical decisions; the mean observed token count is 116,758 (sample standard deviation 4,514).
-
-\subsection{Error Analysis}
-
-Errors concentrate at the boundary between retrieving a related habit and deciding that it is actionable.
-In the Code Hard subset, 11/17 false positives occur in aligned or exception negatives, while other errors push on early edits and miss the valid wrap-up stage.
-The Shopping Hard subset similarly contains premature pushes before final decision points and false positives on preference-aligned actions.
-In Calendar-all, at least 20/33 false positives are directly verified as aligned or exception cases.
-
-These errors localize three improvement targets.
-First, remaining false positives cluster where actionable stages are expressed implicitly rather than through explicit workflow cues.
-Second, a related preference is sometimes mistaken for a violated preference.
-Third, implicit semantic evidence creates hard cases beyond explicit normalized conflict keys.
-Correctly recovered habits and intervention errors can coexist, empirically supporting the separate optimization of discovery and delivery in Figure~\ref{fig:architecture}.
-
+Three limitations dominate the errors.
+First, present intent is underdetermined by both mobile context and ambient sensing, so a plausible message may not match the reviewed opportunity.
+Second, a trajectory can be valid yet still fail the present-utility test; the decision model sometimes over-interprets regularity.
+Third, episode boundaries are semantic: a later event may contain enough new evidence for a fresh Push even when it resembles a covered window.
+These observations answer RQ4 and motivate better evidence-grounded episode tracking rather than a benchmark-specific opportunity threshold.

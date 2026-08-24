@@ -1,13 +1,25 @@
 \section{Limitations}
 \label{sec:limitations}
 
-Our six-domain protocol isolates habit induction and turn-level intervention control with fixed evidence, labels, and state progression.
-It establishes reproducible mechanism-level behavior across software, smart-home, shopping, communication, scheduling, and project-management workflows.
-Natural longitudinal deployments provide the next evaluation layer for evolving preferences, user-centered intervention costs, and incremental discovery timing.
+The benchmark contains 3,080 decision events derived from real longitudinal traces across two domains, 13 isolated streams, and 423 entity-days.
+This supports the controlled comparisons reported here but does not establish universal proactive-agent performance.
+HeartSteps covers optional activity support and CASAS covers gentle ambient-sensing check-ins.
+Open-ended personal assistance, workplace coordination, and high-risk health or safety interventions remain outside scope.
 
-Mechanism activation follows domain structure: generalized matching contributes where surface forms vary, Code exercises phase and Think checks, and Shopping exposes the cooldown operating point.
-The released traces and manifests support extending the same analyses to additional domain--mechanism combinations.
+The reference labels operationalize reviewable service opportunities rather than objectively optimal actions or causal treatment effects.
+They were produced through LLM-assisted screening, independent annotation by three team members conducted in parallel with but isolated from model inference, cross-review, adjudication, and an episode-aware freeze.
+Because the released benchmark freezes the adjudicated reference labels rather than a separately preserved annotation-reliability study, we do not infer an agreement statistic from the final labels.
+A broader user study could test whether recipients agree with the timing, content, and interruption cost of the frozen opportunities.
 
-External comparisons use pinned, executable artifacts under the common turn-level interface defined in Section~\ref{sec:setup}, and Table~\ref{tab:efficiency} reports provider telemetry for \system{}.
-Trained end-to-end comparisons, matched latency measurements, zero-history onboarding, and user-facing habit inspection form natural extensions of the evaluated framework.
+We use a protocol-fixed evaluation rather than a separate development/test split.
+The architecture was developed first, and the benchmark rows, reference labels, prompt, Source bound, and replay gate were locked before the first reported benchmark inference and were not tuned afterward.
+This design supports a controlled comparison under one frozen protocol, but does not estimate performance after model selection on an independent development set.
+The 50-minute CASAS aggregation was likewise fixed before benchmark construction to preserve two-week chronology at manageable evaluation cost; we do not claim invariance to other aggregation widths.
 
+All main experiments use one LLM configuration to isolate architectural effects.
+We do not test a second model or the released PA checkpoint.
+The controlled Source/Working/Long-term comparison supports the architectural claim within this model setting, but cross-model robustness remains future work.
+Similarly, the validation audit establishes traceability and replay consistency, not that every accepted trajectory is the only valid semantic abstraction.
+
+Finally, offline reference labels cannot measure satisfaction, long-term behavior change, or deployment safety.
+Prospective evaluation is needed for user control, correction, personalization, and long-run trust.

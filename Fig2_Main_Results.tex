@@ -1,0 +1,42 @@
+\documentclass[tikz,border=2pt]{standalone}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\definecolor{source}{HTML}{4E79A7}
+\definecolor{working}{HTML}{E59C39}
+\definecolor{epm}{HTML}{138A72}
+\definecolor{baseline}{HTML}{9AA5B1}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1,horizontal sep=1.15cm},
+  width=8.0cm,height=5.25cm,
+  xtick=data,
+  x tick label style={font=\sffamily\scriptsize,align=center},
+  y tick label style={font=\sffamily\scriptsize},
+  label style={font=\sffamily\scriptsize},
+  title style={font=\sffamily\small,yshift=5mm},
+  legend style={font=\sffamily\tiny,draw=none,at={(0.5,1.03)},anchor=south,legend columns=4,/tikz/every even column/.append style={column sep=2mm}},
+  legend image code/.code={\draw[#1] (0cm,-0.08cm) rectangle (0.25cm,0.08cm);},
+  ymin=0,ymax=88,
+  grid=major,major grid style={draw=gray!22},
+  axis line style={gray!70},tick style={draw=none},enlarge x limits=.19
+]
+\nextgroupplot[title={(a) Micro decision quality},ylabel={Score (\%)},symbolic x coords={Precision,Recall,F1}]
+\addplot+[ybar,bar width=5.5pt,bar shift=-9pt,mark=none,fill=source,draw=black!45] coordinates {(Precision,29.6) (Recall,56.0) (F1,38.8)};
+\addlegendentry{Source-only}
+\addplot+[ybar,bar width=5.5pt,bar shift=-3pt,mark=none,fill=working,draw=black!45] coordinates {(Precision,30.9) (Recall,59.5) (F1,40.7)};
+\addlegendentry{Source+Working}
+\addplot+[ybar,bar width=5.5pt,bar shift=3pt,mark=none,fill=epm,draw=black!45] coordinates {(Precision,39.2) (Recall,75.7) (F1,51.7)};
+\addlegendentry{Full EPM}
+\addplot+[ybar,bar width=5.5pt,bar shift=9pt,mark=none,fill=baseline,draw=black!45] coordinates {(Precision,30.5) (Recall,63.4) (F1,41.2)};
+\addlegendentry{PA-Prompt}
+
+\nextgroupplot[title={(b) F1 by benchmark},ylabel={F1 (\%)},symbolic x coords={HeartSteps,CASAS,Micro}]
+\addplot+[ybar,bar width=5.5pt,bar shift=-9pt,mark=none,fill=source,draw=black!45] coordinates {(HeartSteps,38.3) (CASAS,40.0) (Micro,38.8)};
+\addplot+[ybar,bar width=5.5pt,bar shift=-3pt,mark=none,fill=working,draw=black!45] coordinates {(HeartSteps,38.9) (CASAS,45.1) (Micro,40.7)};
+\addplot+[ybar,bar width=5.5pt,bar shift=3pt,mark=none,fill=epm,draw=black!45,nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt}] coordinates {(HeartSteps,48.8) (CASAS,58.6) (Micro,51.7)};
+\addplot+[ybar,bar width=5.5pt,bar shift=9pt,mark=none,fill=baseline,draw=black!45] coordinates {(HeartSteps,43.9) (CASAS,30.1) (Micro,41.2)};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}
