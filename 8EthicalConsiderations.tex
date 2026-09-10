@@ -1,17 +1,12 @@
 \section*{Ethical Considerations}
 
-Proactive memory can infer recurring temporal structure that a user never explicitly chose to store.
-Activity schedules and household movement can be sensitive even when each event is individually innocuous.
-A deployment should require informed opt-in, entity-scoped access control, visible inspection of inferred trajectories, correction and deletion controls, retention limits, and a global way to disable proactive behavior.
-Memories must not be silently transferred across participants, homes, applications, or accounts.
+Our evaluation is limited to optional activity support, gentle check-ins, and low-risk repository assistance.
+It does not establish a basis for medical or high-risk safety decisions.
+Inference is isolated by stream, and reference labels, episode annotations, and scoring metadata are excluded from model inputs.
 
-Incorrect intervention can be intrusive or harmful.
-The CASAS task permits only gentle low-risk check-ins and prohibits disease, fall, travel, danger, and preference inference.
-HeartSteps opportunities are optional activity support, not medical recommendations or estimates of treatment effect.
-High-impact decisions require domain policy checks and explicit human confirmation beyond the architecture evaluated here.
+Longitudinal events and derived memories can reveal sensitive routines even when identifiers are pseudonymized.
+Event content, prediction traces, and inferred trajectories require access and retention protections; external-model use should minimize transmitted information and respect source-data permissions.
 
-The benchmark maintains a strict public/private boundary.
-Reference labels, screening outputs, review stages, episode annotations, and scoring masks are never included in agent input.
-Participant and home identifiers are pseudonymized at the stream level, and all inference is entity-isolated.
-Model-visible payloads sent to an external API contain no organizer-private label or credential.
-Prediction traces, daily trajectories, and long-term trajectories should nevertheless receive the same retention and access protections as the source streams.
+Deployment should require informed opt-in and allow inspection, correction, deletion, retention control, and disabling proactive assistance.
+An intervention prediction should be treated as a service proposal, not permission for consequential action.
+These deployment safeguards require separate implementation and evaluation.

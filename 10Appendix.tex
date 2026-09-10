@@ -1,0 +1,133 @@
+% Extended results and audit details. Core results and ablations remain in the main paper.
+\section{Pipeline-Level Model Sensitivity}
+\label{app:backbone_sensitivity}
+
+Table~\ref{tab:backbone_sensitivity} provides the complete model-sensitivity comparison summarized in Section~\ref{sec:main_results}.
+The decision LLM and the LLMs constructing daily trajectories and temporal patterns are replaced together.
+The benchmark, memory architecture, role-specific prompts, decoding configuration, validation thresholds, and controller remain fixed; constructed memory content may change.
+Full \system{} shows increasing Intervention F1 and decreasing False Intervention Rate from Luna to Terra to Sol in every scope.
+This is a pipeline-level comparison, not an isolated decision-model effect.
+All hierarchy and validation ablations retain Luna.
+
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{clcc}
+\toprule
+Scope & Model & \shortstack{Intervention\\F1 $\uparrow$} & \shortstack{False Intervention\\Rate $\downarrow$} \\
+\midrule
+\multirow{3}{*}{AS} & Luna & 48.8 & 46.1 \\
+ & Terra & 54.1 & 39.4 \\
+ & Sol & \textbf{58.6} & \textbf{34.4} \\
+\midrule
+\multirow{3}{*}{AL} & Luna & 58.6 & 10.3 \\
+ & Terra & 64.4 & 9.1 \\
+ & Sol & \textbf{69.3} & \textbf{7.5} \\
+\midrule
+\multirow{3}{*}{RA} & Luna & 55.4 & 18.1 \\
+ & Terra & 60.3 & 14.9 \\
+ & Sol & \textbf{66.4} & \textbf{11.8} \\
+\midrule
+\multirow{3}{*}{Mean} & Luna & 54.3 & 24.8 \\
+ & Terra & 59.6 & 21.1 \\
+ & Sol & \textbf{64.8} & \textbf{17.9} \\
+\bottomrule
+\end{tabular}
+\caption{Full \system{} model sensitivity (\%). Decision and construction LLMs change together. Bold marks the best value per scope; Mean follows Table~\ref{tab:main_results}.}
+\label{tab:backbone_sensitivity}
+\end{table}
+
+\FloatBarrier
+
+\section{Memory-Construction Audit and Online Availability}
+\label{app:construction_audit}
+
+Complementing the decision-quality ablations in Section~\ref{sec:validation_ablations}, we audit existing memory-construction artifacts and maintenance logs from Activity Support and Ambient Living, covering nine participants and four homes.
+Table~\ref{tab:validation_audit} distinguishes validation and replay operations from unique retained artifacts.
+The audit checks source support, entity consistency, and replay consistency rather than intervention outcomes.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5.0pt}
+\begin{tabular}{@{}p{0.22\textwidth}p{0.28\textwidth}p{0.45\textwidth}@{}}
+\toprule
+View & Counting unit & Audit result \\
+\midrule
+Daily validation log & validation attempt & 311 rejected before storage \\
+Retained daily store & unique evidence-linked segment & 1,279 checked; all source-supported; 0 cross-entity \\
+Weekly replay log & replay attempt & 140 attempts; 118 pass; 22 not activated at that update \\
+Retained pattern store & unique temporal-pattern proposal & 54 checked; 42 Active; 12 Candidate; 0 inconsistent replays \\
+\bottomrule
+\end{tabular}
+\caption{Memory-construction audit for Activity Support and Ambient Living (nine participants and four homes). Log rows count maintenance operations; store rows count unique retained artifacts.}
+\label{tab:validation_audit}
+\end{table*}
+
+\paragraph{Retained evidence.}
+The daily store contains 423 trajectories---367 from Activity Support and 56 from Ambient Living---comprising 1,279 retained segments.
+All retained segments pass the configured source-support and entity-consistency checks, with no cross-entity evidence.
+Separately, construction logs record 311 rejected daily validation checks.
+These observations characterize filtering and the retained evidence, rather than an error-free construction LLM.
+
+The final temporal-pattern store contains 54 source-linked proposals whose recorded replay results are consistent with offline recomputation: 42 are Active and 12 remain Candidate.
+Under Full \system{}, Candidates remain excluded from decision evidence.
+Across weekly maintenance updates, 118 of 140 replay attempts pass the activation gate, while 22 do not.
+These operation counts are distinct from the 42 unique Active patterns in the final store.
+
+\paragraph{Online availability.}
+Daily Trajectory Memory first becomes available for all 13 entities at a median elapsed time of 0.80 days.
+An Active temporal pattern first becomes available for 11 entities at a median of 6.79 days, whereas relevant temporal-pattern evidence is first matched for eight entities at a median of 10.46 days.
+Each median is calculated over entities reaching the corresponding stage.
+Pattern activation and current relevance are therefore distinct: an admitted pattern does not automatically enter every decision context.
+
+These observations show that daily and temporal-pattern evidence can become available within the evaluated streams, leaving subsequent events for evidence-informed decisions.
+Causal validity follows from the update order in Section~3.3: evidence used to judge an event is constructed from previously committed events.
+Together with Section~\ref{sec:validation_ablations}, this audit addresses RQ3 by separating evidence integrity and availability from downstream intervention quality.
+
+\FloatBarrier
+
+\section{Illustrative Decisions and Error Cases}
+\label{app:case_examples}
+
+Table~\ref{tab:case_flows} presents two illustrative decisions from historical full-memory logs in the frozen 16-case inventory for Activity Support and Ambient Living.
+It separates current observations, recorded memory context, and the resulting response.
+These examples complement the controlled ablations in Section~\ref{sec:hierarchy} by showing the context accompanying individual decisions; they do not establish that removing a particular memory level would reverse those decisions.
+
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}p{0.18\columnwidth}p{0.78\columnwidth}@{}}
+\toprule
+Scope & Recorded observation, context, and decision \\
+\midrule
+% Frozen inventory CASE-04: bce51c1b1f40dad8b26eb811. Context availability, not label rationale.
+AS & \textbf{Current:} available, still, at home, with low recent activity.
+\newline \textbf{Memory:} three daily trajectories; no relevant temporal pattern.
+\newline \textbf{Decision:} INTERVENE; offer a brief optional walk. \\
+\addlinespace[3pt]
+% Frozen inventory CASE-13: casas50_d_001421. Relevant-pattern count from decision telemetry.
+AL & \textbf{Current:} movement concentrated in the bedroom and bathroom.
+\newline \textbf{Memory:} one temporal pattern recorded as relevant; no daily trajectory in the current view.
+\newline \textbf{Decision:} INTERVENE; offer a gentle check-in. \\
+\bottomrule
+\end{tabular}
+\caption{Two historical full-memory examples. Memory entries report context availability, not counterfactual attribution.}
+\label{tab:case_flows}
+\end{table}
+
+The inventory also includes two false positives and two false negatives from Event-only logs.
+In Activity Support, an activity suggestion is issued despite substantial movement during the preceding hour, while another low-activity event with a positive reference label receives ABSTAIN.
+In Ambient Living, ordinary bedroom--bathroom movement receives a check-in, whereas a reference-positive quiet period spanning two consecutive segments is missed.
+
+These errors illustrate the distinction between an observable condition and an actionable service opportunity.
+Current inactivity or room transitions alone may be insufficient to justify assistance, but conservative interpretation can also miss reviewed opportunities.
+Historical evidence can contextualize such observations without determining the intervention decision by itself.
+Repeated windows additionally require assessing whether evidence or service needs have changed, complementing the controller trade-off examined in Section~\ref{sec:validation_ablations}.
+
+This qualitative analysis addresses the failure-analysis part of RQ4 and illustrates why \system{} separates memory evidence, present service value, and prior opportunity coverage.
+
+\FloatBarrier

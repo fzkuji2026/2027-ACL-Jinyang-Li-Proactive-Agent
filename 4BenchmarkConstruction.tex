@@ -1,0 +1,73 @@
+\section{ProactiveStream Benchmark}
+\label{sec:benchmark}
+
+ProactiveStream evaluates the same causal \textsc{Intervene}/\textsc{Abstain} task across three scopes, preserving their distinct observations and service semantics.
+Table~\ref{tab:benchmark_stats} reports all 4,539 events, 17 isolated streams, and 729 reference interventions.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}cp{0.22\textwidth}p{0.11\textwidth}ccp{0.23\textwidth}c@{}}
+\toprule
+Scope & Primary source & Entity & Streams & \shortstack{Input\\events} & Temporal coverage & \shortstack{Reference\\interventions} \\
+\midrule
+AS & HeartSteps & participant & 9 & 1,456 & 367 observed participant-days & 365 \\
+AL & CASAS & home & 4 & 1,624 & 14 consecutive days/home & 190 \\
+RA & GH Archive & repository & 4 & 1,459 & longitudinal repository histories & 174 \\
+\midrule
+Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal settings & 729 \\
+\bottomrule
+\end{tabular}
+\caption{Composition and provenance of ProactiveStream. AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Each stream is an independent memory and replay unit. Reference interventions denote team-reviewed service opportunities rather than observed recipient acceptance or downstream benefit.}
+\label{tab:benchmark_stats}
+\end{table*}
+
+\subsection{Scopes and Public Events}
+
+\paragraph{Activity Support (AS).}
+HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps} provide nine complete participant streams.
+Events expose contemporaneous availability, activity, step summaries, location, weather, and local slot, excluding randomized treatment assignments and future outcomes.
+Labels concern optional activity support, not the original treatment policy or health effects.
+
+\paragraph{Ambient Living (AL).}
+Four CASAS homes~\citep{cook2013casas} each contribute 14 consecutive days.
+Within-day ten-minute blocks form 28 regular 50-minute segments and one 40-minute tail per day: 406 events per home.
+Segments become available at interval closure and describe only within-interval sensor activity, without historical baselines.
+Services are limited to gentle check-ins, excluding disease, falls, danger, and unsupported personal inferences.
+
+\paragraph{Repository Assistance (RA).}
+Public GH Archive records~\citep{gharchive} and constructed repository events form four repository-local streams.
+The memory owner is the repository, not a contributor; services include low-risk triage, review, and maintenance.
+Native \texttt{PushEvent} denotes repository activity, not an intervention.
+
+Both label classes use the same scope-specific public event schema.
+Private reference labels, candidate flags, episode annotations, trajectory summaries, memory-level markers, and scoring masks are absent.
+Appendix~\ref{app:benchmark_protocol} gives detailed fields and preprocessing.
+
+\subsection{Reference Labels and Causal Replay}
+\label{sec:reference_labels}
+
+Annotators view $e_t$ and complete strictly prior same-entity history $\mathcal{H}_{<t}$, independently of a tested agent's memory representation.
+Let $A$ denote a concrete, timely, feasible, low-risk opportunity visible in $e_t$, $B$ one made visible by prior evidence, and $N_t^{\mathrm{ref}}$ reference-episode novelty:
+\begin{equation}
+\begin{aligned}
+y_t=1 \quad \Longleftrightarrow \quad &
+\big(A(e_t)=1\ \lor\ B(e_t,\mathcal{H}_{<t})=1\big)\\
+&\land N_t^{\mathrm{ref}}=1.
+\end{aligned}
+\label{eq:or_semantics}
+\end{equation}
+These are annotation predicates, not additional model gates.
+The first reliable actionable window is \textsc{Intervene}; covered windows are \textsc{Abstain} unless evidence strengthens, service changes, or the episode reopens.
+Reference coverage follows the reviewed opportunity sequence, not model predictions.
+
+LLM-assisted screening prioritizes review but never assigns final labels automatically.
+Three team members independently annotate without evaluated-system decisions, then cross-review and adjudicate every event.
+We use protocol-fixed evaluation, not an independent development/test split: aggregation precedes row construction, and versioned labels, prompts, memory bounds, and validation settings are frozen before reported runs.
+Labels represent reviewed service opportunities, not recipient acceptance.
+
+Each stream starts with empty method state and is replayed chronologically.
+Only current public fields and strictly prior same-stream state are accessible.
+Decisions precede memory commits; reference labels are joined only after inference.
+Early events before consolidated memory becomes available remain scored.

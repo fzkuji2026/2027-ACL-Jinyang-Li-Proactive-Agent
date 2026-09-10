@@ -1,13 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented \system{}, a hierarchical Proactive Memory for event-driven LLM agents.
-Source Memory preserves a bounded, exact recent history; Working Memory stores fact-validated daily trajectories; and Long-term Memory stores temporal trajectories that survive historical replay.
-An Evidence Card exposes these levels to a decision LLM, which proposes whether the current event itself or memory evidence warrants a new Push; the shared Episode Controller can only suppress a repeated same-episode opportunity before scoring.
-
-On 3,080 events from nine HeartSteps participants and four CASAS homes, Full \system{} reaches 39.2\% precision, 75.7\% recall, and 51.7\% micro F1.
-It exceeds PA-Prompt by 10.5 F1 points at a 2.7-point lower Push rate, and controlled hierarchy ablations show additional benefit from both daily and long-term evidence.
-Offline audits verify that retained daily facts are source-supported and that retained long-term proposals are source-linked and replay-audited, with 42 meeting the Active gate.
-
-The central principle is a separation of responsibilities: daily validation asks whether a claim is grounded in cited source events, historical replay asks whether a proposed temporal structure has sufficient support under the frozen replay criteria, and the decision agent asks whether acting now is worthwhile.
-This separation enables agents to discover implicit longitudinal evidence without equating every pattern with an interruption.
+We presented \system{} for proactive service and ProactiveStream for longitudinal evaluation.
+Bounded Event Memory, fact-validated Daily Trajectory Memory, and replay-validated Temporal Pattern Memory supply evidence separately from service-value and episode-novelty judgments.
+Full \system{} improves Intervention F1 and Balanced Accuracy over ProactiveAgent and Mem0 across all three scopes.
+Controlled ablations support this hierarchy and its validation mechanisms, highlighting the value of causally available evidence for proactive decisions.

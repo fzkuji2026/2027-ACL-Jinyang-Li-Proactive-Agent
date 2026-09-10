@@ -1,176 +1,128 @@
 \subsection{Main Results}
 \label{sec:main_results}
 
-Table~\ref{tab:main_results} reports the primary comparison on all 3,080 events.
-Full \system{} achieves the highest F1 on HeartSteps, CASAS, and the micro aggregate.
+Full \system{} leads in Intervention F1 and Balanced Accuracy in every scope (Table~\ref{tab:main_results}, RQ1), gaining 4.8--28.5 F1 points over ProactiveAgent and 4.3--38.5 over Mem0.
 
 \begin{table*}[t]
 \centering
-\caption{Main results (\%). All rows are observed full-benchmark runs. Source-only, Source+Working, and Full \system{} share one decision prompt. Bold marks the best precision, recall, or F1 within each scope.}
-\label{tab:main_results}
-\scriptsize
-\setlength{\tabcolsep}{5.0pt}
-\begin{tabular}{llrrrr}
+\small
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{clcccccc}
 \toprule
-Scope & Method & Push Rate & Precision & Recall & F1 \\
+Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \shortstack{Opportunity\\Recall $\uparrow$} & \shortstack{Intervention\\F1 $\uparrow$} & \shortstack{False Intervention\\Rate $\downarrow$} & \shortstack{Balanced\\Accuracy $\uparrow$} \\
 \midrule
-\multirow{4}{*}{HeartSteps ($N=1{,}456$)}
- & Source-only & 53.5 & 28.1 & 60.0 & 38.3 \\
- & Source+Working & 53.8 & 28.5 & 61.1 & 38.9 \\
- & Full \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} \\
- & PA-Prompt & 69.0 & 30.0 & \textbf{82.5} & 43.9 \\
+\multirow{3}{*}{AS} & ProactiveAgent & 69.0 & 30.0 & 82.5 & 43.9 & 64.5 & 59.0 \\
+ & Mem0 & 85.2 & 28.8 & \textbf{97.8} & 44.5 & 81.0 & 58.4 \\
+ & Full \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
 \midrule
-\multirow{4}{*}{CASAS ($N=1{,}624$)}
- & Source-only & 16.6 & 34.1 & 48.4 & 40.0 \\
- & Source+Working & 17.5 & 37.5 & 56.3 & 45.1 \\
- & Full \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} \\
- & PA-Prompt & 9.2 & 34.2 & 26.8 & 30.1 \\
+\multirow{3}{*}{AL} & Mem0 & 8.5 & 23.9 & 17.4 & 20.1 & 7.3 & 55.0 \\
+ & ProactiveAgent & 9.2 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
+ & Full \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
 \midrule
-\multirow{4}{*}{Micro ($N=3{,}080$)}
- & Source-only & 34.1 & 29.6 & 56.0 & 38.8 \\
- & Source+Working & 34.7 & 30.9 & 59.5 & 40.7 \\
- & Full \system{} & 34.8 & \textbf{39.2} & \textbf{75.7} & \textbf{51.7} \\
- & PA-Prompt & 37.5 & 30.5 & 63.4 & 41.2 \\
+\multirow{3}{*}{RA} & ProactiveAgent & 53.1 & 17.5 & 78.2 & 28.7 & 49.7 & 64.2 \\
+ & Mem0 & 7.7 & 39.8 & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
+ & Full \system{} & 26.7 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & 18.1 & \textbf{85.8} \\
+\midrule
+\multirow{3}{*}{Mean} & Mem0 & 33.8 & 30.8 & 47.0 & 32.0 & 31.2 & 57.9 \\
+ & ProactiveAgent & 43.8 & 27.2 & 62.5 & 34.2 & 40.3 & 61.1 \\
+ & Full \system{} & 32.7 & \textbf{41.5} & \textbf{80.0} & \textbf{54.3} & \textbf{24.8} & \textbf{77.6} \\
 \bottomrule
 \end{tabular}
+\caption{Main comparison (\%, Luna). AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Mean is the equal-weight average of the reported scope metrics, not pooled-event scoring. External baselines are ordered by F1 within each group; Full \system{} is last. Bold marks the best directional score, including the lowest False Intervention Rate. Intervention Rate describes behavior and is not ranked.}
+\label{tab:main_results}
 \end{table*}
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{Fig2_Main_Results.pdf}
-    \Description{The left panel compares micro precision, recall, and F1 for Source-only, Source plus Working, Full EPM, and ProactiveAgent-Prompt. The right panel compares F1 on HeartSteps, CASAS, and the pooled micro result. Full EPM has the highest F1 in every scope.}
-    \caption{Decision quality under the frozen benchmark. Full \system{} improves micro precision and recall simultaneously and attains the best F1 on both sources.}
-    \label{fig:main_results}
-\end{figure*}
+\paragraph{Coverage and selectivity.}
+The gains do not reflect uniformly more intervention.
+On AS, Full \system{} reduces FIR against both baselines but sacrifices some recall.
+On AL, precision and recall increase alongside FIR.
+On RA, it recovers more opportunities with lower FIR than ProactiveAgent, while Mem0's infrequent interventions leave many opportunities uncovered.
+Intervention Rate is thus an operating point, not a performance target.
+ProactiveAgent intervenes on 9.2\% of AL events versus 53.1\% of RA events despite similar reference-positive prevalences (11.7\% versus 11.9\%).
+Appendix~\ref{app:rate_interpretation} decomposes this difference without attributing it solely to the LLM.
 
-\paragraph{Overall comparison.}
-At a 34.8\% micro Push rate, Full \system{} reaches 39.2\% precision, 75.7\% recall, and 51.7\% F1.
-Relative to PA-Prompt, it reduces Push rate by 2.7 points while improving precision by 8.7 points, recall by 12.3 points, and F1 by 10.5 points.
-The gain is therefore not produced by indiscriminate intervention.
-PA-Prompt exposes a long causal history but leaves the model to recover its temporal structure at every turn; \system{} supplies a smaller, validated representation of that structure.
+\paragraph{Retrieval and model controls.}
+Flat Retrieval Memory attains 41.3\% F1 on AS and 48.2\% on AL, below Full \system{} by 7.4 and 10.4 points despite similar intervention rates.
+Full \system{} has higher precision and recall in both scopes.
+Jointly replacing decision and construction LLMs from Luna to Terra to Sol increases F1 and decreases FIR in every scope (RQ4; Appendix~\ref{app:backbone_sensitivity}).
 
-We additionally conduct an entity-composition sensitivity check, reported only
-in the supplementary material.
-
-\paragraph{HeartSteps.}
-PA-Prompt obtains the highest recall (82.5\%) but Pushes on 69.0\% of all events.
-Full \system{} lowers the Push rate by 15.2 points, increases precision from 30.0\% to 35.8\%, and improves F1 from 43.9\% to 48.8\%.
-The result reflects a useful trade-off for optional activity support: validated history removes many generic suggestions while preserving most reference opportunities.
-
-\paragraph{CASAS.}
-The prompt baseline is conservative but misses nearly three quarters of reference opportunities, reaching only 26.8\% recall.
-Full \system{} raises recall to 73.7\% and precision to 48.6\%, yielding 58.6\% F1 versus 30.1\% for PA-Prompt.
-Each public row contains only the current 50-minute segment, so the improvement depends on Agent-maintained cross-segment evidence rather than a benchmark-provided anomaly feature.
-These findings answer RQ1.
-
-\paragraph{Auxiliary flat-retrieval check.}
-Flat Retrieval Memory reaches 34.2\% Push rate, 33.1\% precision, 62.9\% recall, and 43.4\% micro F1 on the same 3,080 events.
-It improves over Source-only by 4.6 F1 points and over PA-Prompt by 2.2 points, showing that retrieving older same-entity events is useful.
-However, at nearly the same Push rate as Full \system{} (34.2\% versus 34.8\%), it remains lower by 6.1 precision points, 12.8 recall points, and 8.3 F1 points; its HeartSteps and CASAS F1 scores are 41.3\% and 48.2\%, respectively, versus 48.8\% and 58.6\% for Full \system{}.
-Thus, ordinary semantic retrieval provides a stronger history baseline but does not reproduce the benefit of fact-validated daily evidence and replay-validated long-term trajectories.
-
-\subsection{Contribution of the Memory Hierarchy}
+\subsection{Memory-Hierarchy Ablation}
 \label{sec:hierarchy}
 
-Table~\ref{tab:hierarchy_counts} gives the micro confusion matrices for the controlled hierarchy.
-Adding Working Memory yields a net increase of 19 TP without a net increase in FP.
-Adding Long-term Memory then yields a net increase of 90 TP and a net reduction of 87 FP, while the total number of Pushes changes by only three.
-The long-term level therefore does more than add triggers: its temporal and episode evidence can both reveal previously invisible opportunities and disambiguate unsupported current-event interpretations.
+Table~\ref{tab:hierarchy_counts} holds the Luna backbone, Event Memory, decision prompt, schema, and controller fixed.
+Daily evidence gives its largest F1 increment on RA (19.7 points).
+Temporal Pattern Memory adds 9.9, 13.5, and 7.0 points on AS, AL, and RA, respectively.
 
 \begin{table}[t]
 \centering
-\caption{Controlled hierarchy ablation on all 3,080 events.}
-\label{tab:hierarchy_counts}
-\scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{lrrrrrrr}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
 \toprule
-Method & Push & TP & FP & FN & TN & P & R / F1 \\
+Method & AS & AL & RA & Mean \\
 \midrule
-Source-only & 1,049 & 311 & 738 & 244 & 1,787 & 29.6 & 56.0 / 38.8 \\
-Source+Working & 1,068 & 330 & 738 & 225 & 1,787 & 30.9 & 59.5 / 40.7 \\
-Full \system{} & 1,071 & 420 & 651 & 135 & 1,874 & 39.2 & 75.7 / 51.7 \\
+Event-only & 38.3 & 40.0 & 28.7 & 35.7 \\
+Event+Daily & 38.9 & 45.1 & 48.5 & 44.2 \\
+Full \system{} & \textbf{48.8} & \textbf{58.6} & \textbf{55.4} & \textbf{54.3} \\
 \bottomrule
 \end{tabular}
+\caption{Memory-hierarchy Intervention F1 (\%, $\uparrow$). Settings are matched; Appendix~\ref{app:extended_ablations} retains the complete table and net TP increments. Mean equally averages scope F1.}
+\label{tab:hierarchy_counts}
 \end{table}
 
-The domain-specific increments are also informative.
-Working Memory adds four TP on HeartSteps and 15 on CASAS; Long-term Memory adds 57 and 33 TP, respectively.
-Micro F1 rises from 38.8\% to 40.7\% after daily trajectories and then to 51.7\% after long-term trajectories.
-The smaller daily increment does not make the layer redundant: daily trajectories are the verified substrate from which long-term structure is constructed, and they become causally available much earlier.
-These results answer RQ2.
+Relative to Event+Daily, Full \system{} yields 57 more TP and 57 fewer FP on AS, 33 more TP and 30 fewer FP on AL, and 22 more TP and 12 fewer FP on RA.
+These are net aggregate changes, not individual-event attributions.
+The improvements support both levels within the evaluated hierarchy (RQ2), where daily trajectories also supply the inputs for pattern construction.
 
-\subsection{Validation and Causal Availability}
-\label{sec:validation_results}
+\subsection{End-to-End Mechanism Ablations}
+\label{sec:validation_ablations}
 
-We audit the naturally produced memory artifacts without rerunning the 3,080 decisions with validators removed.
-This directly tests the two claims made by the architecture: retained daily facts must be source-supported, and retained long-term proposals must be source-linked and evaluated by historical replay before activation.
+The validation ablations hold Luna, Event Memory, decision prompts, context capacity, and episode control fixed (Table~\ref{tab:validation_ablations}).
+\emph{w/o Replay Gate} admits well-formed, source-linked, online-reconstructable Candidates to relevance matching without Equation~\ref{eq:replay_gate}'s admission thresholds; matching and decision judgment remain enabled.
+\emph{w/o Daily Validation} bypasses the typed-fact check for schema-valid, same-entity daily extractions, retaining weekly construction and replay.
+The RA-only \emph{w/o Episode Controller} variant scores the model proposal before suppression, leaving memory unchanged.
 
 \begin{table*}[t]
 \centering
-\caption{Offline evidence audit over all nine participants and four homes. Daily counts are evidence-linked episode proposals; weekly counts are replay attempts across successive updates. Final-store counts are unique retained artifacts.}
-\label{tab:validation_audit}
 \small
-\setlength{\tabcolsep}{5.0pt}
-\begin{tabular}{llrrrrl}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lcccccccc}
 \toprule
-View & Unit & Total & Pass/Active & Filtered/Candidate & Invalid & Interpretation \\
+& \multicolumn{2}{c}{AS} & \multicolumn{2}{c}{AL} & \multicolumn{2}{c}{RA} & \multicolumn{2}{c}{Mean} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+Method & Prec. & F1 & Prec. & F1 & Prec. & F1 & Prec. & F1 \\
 \midrule
-Final daily store & evidence-linked episode & 1,279 & 1,279 & 0 & 0 & all facts source-supported; 0 cross-entity \\
-Daily maintenance & validation attempt & 1,590 & 1,279 & 311 & -- & 19.6\% of proposed episodes filtered \\
-Final long-term store & temporal proposal & 54 & 42 & 12 & 0 & all replay-audited; 42 meet Active gate \\
-Weekly maintenance & replay attempt & 140 & 118 & 22 & -- & 15.7\% of proposals not activated \\
+w/o Replay Gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 & 36.2 & 48.4 \\
+w/o Daily Validation & 34.4 & 47.5 & 45.9 & 56.7 & 36.1 & 51.5 & 38.8 & 51.9 \\
+w/o Episode Controller & -- & -- & -- & -- & 36.7 & 53.6 & -- & -- \\
+Full \system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} & \textbf{41.5} & \textbf{54.3} \\
 \bottomrule
 \end{tabular}
+\caption{Mechanism ablations: Precision and Intervention F1 (\%, both $\uparrow$). Only the named component changes. Mean equally averages three scopes; the RA-only controller ablation has no mean. Complete rates and recall are in Appendix~\ref{app:extended_ablations}.}
+\label{tab:validation_ablations}
 \end{table*}
 
-The daily store contains 423 daily trajectories (367 HeartSteps and 56 CASAS) composed of 1,279 retained episodes.
-Every retained episode is traceable to source-level evidence from the same entity, while the construction log shows that the validator rejected 311 unsupported candidates before storage.
-The final long-term repository contains 54 source-linked, replay-audited proposals: 42 meet the Active gate and 12 remain Candidate because their replay support is insufficient; only Active trajectories are eligible for retrieval into decision Evidence Cards.
-The maintenance log contains 140 replay attempts across successive weekly updates, of which 22 did not pass the Active gate.
-Thus, the perfect audit rate of the final store is a consequence of filtering, not evidence that the construction LLM never proposes an unsupported item.
+\paragraph{Evidence checks.}
+Removing replay gating increases Intervention Rate and reduces precision, recall, and F1 in all scopes.
+Removing daily validation also lowers precision/F1, while recall is unchanged on AS/RA and slightly higher on AL.
+On RA, retaining replay changes 145 TP/284 FP to 156 TP/233 FP; daily validation retains 156 TP while reducing FP from 276 to 233.
+The larger F1 loss without replay appears in every scope, supporting both evidence checks beyond store consistency (RQ3).
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{Fig3_Proactive_Memory_Evidence.pdf}
-    \Description{The left panel shows pass versus filtered proportions for daily validation and Active versus Candidate proportions for weekly replay attempts. The right panel shows median days until Working Memory is available, a long-term trajectory becomes Active, and a long-term trajectory is actually matched to a decision.}
-    \caption{Mechanism evidence. Deterministic gates filter unsupported daily proposals and keep replay-insufficient long-term proposals inactive; the three levels become available at distinct causal horizons.}
-    \label{fig:mechanism_results}
-\end{figure*}
+\paragraph{Episode control.}
+On RA, retaining the controller changes 173 TP/299 FP to 156 TP/233 FP: 66 fewer FP but 17 fewer TP.
+Precision and F1 rise by 3.5 and 1.9 points, while recall falls from 99.4\% to 89.7\% and BA from 88.1\% to 85.8\%.
+Suppression therefore trades coverage for precision/F1 under the reviewed policy; it can also withhold reference-positive interventions.
 
-Working Memory becomes available for all 13 entities after a median of 0.80 days.
-At least one Active long-term trajectory is available for 11 entities after a median of 6.79 days, and relevant long-term evidence is actually matched for eight entities after a median of 10.46 days.
-These boundaries confirm that the benchmark's 41--55-day HeartSteps streams and 14-day CASAS streams are long enough for both daily and weekly levels to affect later decisions.
-They also prevent a trajectory from being supported by the event it is used to judge.
-The audit answers RQ3.
+\subsection{Evidence Availability and Error Analysis}
+\label{sec:validation_results}
+\label{sec:case_analysis}
 
-\subsection{Cases and Remaining Errors}
+The AS/AL audit covers nine participants and four homes: 423 daily trajectories contain 1,279 source-supported segments with no cross-entity evidence, while construction logs record 311 rejected checks.
+The final pattern store has 42 Active and 12 Candidate proposals with replay-consistent records (Appendix~\ref{app:construction_audit}).
+Daily evidence first becomes available for all 13 entities at median 0.80 days; Active patterns for 11 at 6.79 days; currently relevant patterns for eight at 10.46 days.
+Medians include only entities reaching each stage.
+Historical integrity, activation, current relevance, and future validity are distinct.
 
-We freeze 16 log-derived cases, balanced across the two benchmarks: four current-event opportunities, four Daily-supported decisions, four Long-term-supported decisions, two false positives, and two false negatives.
-Representative cases are summarized in Table~\ref{tab:cases}.
-Daily and Long-term examples illustrate mechanism behavior from existing full-memory logs; they do not replace the frozen aggregate counts.
-
-\begin{table}[t]
-\centering
-\caption{Representative qualitative cases from the frozen 16-case set.}
-\label{tab:cases}
-\footnotesize
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{p{0.18\columnwidth}p{0.73\columnwidth}}
-\toprule
-Type & Evidence and decision \\
-\midrule
-Source TP & HeartSteps: available and still with no recent steps; offer a brief optional walk. CASAS: repeated bedroom--bathroom movement; offer a gentle check-in. \\
-Daily TP & A verified same-slot activity drop, or a second quiet smart-home segment, supplies context absent from the current row alone. \\
-Long-term TP & Repeated low activity in a stable decision slot, or bedroom--bathroom movement that departs from seven prior days, supports a timely check-in. \\
-Typical FP & The model suggests activity while the user is at a restaurant after substantial recent movement, or over-interprets ordinary two-room movement. \\
-Typical FN & The model remains silent despite actionable zero movement, or misses a daytime quiet episode that has persisted for two segments. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Three limitations dominate the errors.
-First, present intent is underdetermined by both mobile context and ambient sensing, so a plausible message may not match the reviewed opportunity.
-Second, a trajectory can be valid yet still fail the present-utility test; the decision model sometimes over-interprets regularity.
-Third, episode boundaries are semantic: a later event may contain enough new evidence for a fresh Push even when it resembles a covered window.
-These observations answer RQ4 and motivate better evidence-grounded episode tracking rather than a benchmark-specific opportunity threshold.
+The 16-case inventory illustrates daily- and pattern-supported contexts, plus errors such as suggestions despite recent movement and missed sustained quiet windows (Appendix~\ref{app:case_examples}).
+These cases address RQ4's failure analysis without establishing counterfactual memory necessity: neither current inactivity nor a matched pattern alone determines service value.

@@ -1,59 +1,34 @@
 \section{Problem Formulation}
 \label{sec:problem}
 
-\subsection{Causal Event-Level Decision}
-
-Let $u$ denote one isolated entity---a HeartSteps participant or a CASAS home---with a time-ordered public stream
+Let $u$ denote an isolated entity with a time-ordered public event stream
 \begin{equation}
-E^u=(e^u_1,\ldots,e^u_T), \qquad e^u_t=(\tau_t,x_t),
+E^u=(e^u_1,\ldots,e^u_{T_u}), \qquad
+e^u_t=(\tau^u_t,x^u_t),
+\label{eq:event_stream}
 \end{equation}
-where $\tau_t$ is the event time and $x_t$ contains source-observable fields only.
-At step $t$, the agent receives $e^u_t$ and a memory state $M^u_t$ constructed exclusively from observations before $\tau_t$.
-It returns
+where $T_u$ is the number of events for entity $u$, $\tau^u_t$ is the event time, and $x^u_t$ contains the scope-specific public fields observable at that time.
+We omit the entity superscript $u$ when it is unambiguous.
+Before processing $e^u_t$, an agent has a causal state $Z^u_t$ constructed only from events and finalized outputs preceding $\tau^u_t$.
+It produces
 \begin{equation}
-(\hat y_t,\hat m_t)=\pi(e^u_t,M^u_t), \qquad \hat y_t\in\{0,1\},
+(\hat y_t,\hat m_t)=\pi(e^u_t,Z^u_t),
+\qquad \hat y_t\in\{0,1\},
+\label{eq:generic_decision}
 \end{equation}
-where $\hat y_t=1$ denotes \textsc{Push}, $\hat y_t=0$ denotes \textsc{Abstain}, and $\hat m_t$ is an optional evidence-grounded service message.
-The current event updates memory only after the decision is finalized:
+where $\hat y_t=1$ denotes \textsc{Intervene}, $\hat y_t=0$ denotes \textsc{Abstain}, and $\hat m_t$ is an optional evidence-grounded service message.
+Here $\pi$ denotes a general inference policy over the current event and causal state; $\hat m_t$ may be empty under \textsc{Abstain}.
+The event is committed only after the output is finalized:
 \begin{equation}
-M^u_{t+1}=U(M^u_t,e^u_t,\hat y_t,\hat m_t).
+Z^u_{t+1}=U(Z^u_t,e^u_t,\hat y_t,\hat m_t).
 \label{eq:causal_update}
 \end{equation}
-No state is shared across entities.
+No state is shared across entities, and neither future events nor evaluator-private information is available to $\pi$.
 
-The evaluator privately stores the frozen reference label $y_t$.
-Neither $y_t$ nor candidate flags, annotation stages, historical statistics, scoring masks, or any field indicating whether a row should be sent to an LLM appears in the agent input.
-Positive and negative events therefore share the same public schema and decision frequency.
+The target is a reviewed \emph{service opportunity}, rather than unusual behavior alone.
+Let $y_t\in\{0,1\}$ denote the frozen, reviewed reference label for event $e_t$.
+The objective is to identify timely, actionable service opportunities supported by the current event or strictly prior same-entity observations.
+Reference labels are defined independently of the evaluated agent's state representation; the annotation criteria are specified in Section~\ref{sec:reference_labels}.
 
-\subsection{Service-Opportunity Semantics}
-
-A Push is appropriate when at least one of two evidence routes is satisfied:
-\begin{equation}
-y_t=1 \quad \Longleftrightarrow \quad
- \big(S(e_t)=1 \ \lor\  T(e_t,M_t)=1\big)
- \ \land\  N(Q_t,H_{t-1})=1,
-\label{eq:or_semantics}
-\end{equation}
-where $S$ denotes a concrete, timely, low-risk service opportunity visible in the current event, $T$ denotes such an opportunity established by strictly prior trajectory evidence, and $N$ is an opportunity-novelty condition evaluated against the episode state $Q_t$ and prior finalized Push history $H_{t-1}$.
-$N=1$ when the opportunity has not been covered, or when evidence strengthens, the service content changes, or the episode has reopened; otherwise $N=0$.
-A trajectory deviation is neither necessary nor sufficient: the current event can be intrinsically actionable, while a statistically unusual event can still be unhelpful or unsafe to interpret.
-
-The reference labels are also episode-aware.
-For a semantic episode, the first reliable and actionable window is labeled Push.
-After that opportunity has been covered, later windows without new evidence are Abstain.
-A new Push is allowed only when evidence strengthens, the service content changes, or the episode reopens.
-This policy makes repeated interruption an explicit error rather than an incidental implementation detail.
-
-\subsection{Three Evidence Questions}
-
-The architecture separates three questions that a flat history tends to conflate:
-\begin{enumerate}
-    \item \textbf{Source grounding:} is a daily trajectory statement supported by cited source events from the same entity and completed day?
-    \item \textbf{Replay support:} does a proposed long-term trajectory satisfy the frozen recurrence criteria when replayed over earlier daily evidence?
-    \item \textbf{Present utility:} does the current event itself or the validated memory evidence justify a helpful intervention now?
-\end{enumerate}
-The first two are memory-construction contracts; the third remains the responsibility of the decision LLM.
-This boundary prevents a retrieved pattern from becoming a hidden Push label.
-
-For all events we report Push rate, precision, recall, and F1.
-Push rate measures intervention frequency and is an offline proxy for potential interruption burden, while precision and recall capture selectivity and opportunity coverage.
+At inference time, $\pi$ observes only the current scope-specific public event fields and causally available state from the same entity.
+The frozen reference labels and annotation metadata remain evaluator-private, and intervention and abstention events share the same scope-specific public schema.

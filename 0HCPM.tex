@@ -1,79 +1,56 @@
-\documentclass[sigconf,anonymous,review]{acmart}
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
 
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{placeins}
-
-\setcopyright{none}
-\acmDOI{}
-\acmISBN{}
-\acmConference[WSDM '27]{The Twentieth ACM International Conference on Web Search and Data Mining}{February 15--19, 2027}{Hong Kong, China}
-\acmYear{2027}
-\copyrightyear{2027}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning}
 
 \newcommand{\system}{EPM}
-
 \title{Proactive Memory for Event-Driven LLM Agents}
-
-\author{Jinyang Li}
-\affiliation{%
-  \institution{City University of Hong Kong}
-  \city{Hong Kong}
-  \country{China}
-}
-\email{jinyali2-c@my.cityu.edu.hk}
-\author{Zichuan Fu}
-\affiliation{%
-  \institution{City University of Hong Kong}
-  \city{Hong Kong}
-  \country{China}
-}
-\email{zc.fu@my.cityu.edu.hk}
-\author{Xiangyu Zhao}
-\authornote{Corresponding author.}
-\affiliation{%
-  \institution{City University of Hong Kong}
-  \city{Hong Kong}
-  \country{China}
-}
-\email{xianzhao@cityu.edu.hk}
-\renewcommand{\shortauthors}{Li et al.}
+% Review mode suppresses author identities. The AAMAS source retains the
+% confirmed author list for a future accepted, non-anonymous version.
+\author{Anonymous ACL submission}
 
 \begin{document}
+\maketitle
 
 \begin{abstract}
-Proactive LLM agents must decide whether a newly observed event warrants unsolicited assistance.
-The evidence for that decision may be absent from the current event and distributed across days, yet exposing an ever-growing event history leaves temporal structure implicit and increases context cost.
-We present Event-Driven Proactive Memory (\system{}), a hierarchical memory that progressively transforms an entity-isolated event stream into three evidence levels: bounded source-level evidence in Source Memory, fact-validated daily trajectories in Working Memory, and replay-validated long-term trajectories in Long-term Memory.
-Daily validation asks whether an extracted fact is supported by source events; historical replay asks whether a proposed temporal structure recurs; the decision LLM then proposes whether the current event itself \emph{or} memory evidence creates a concrete, timely, and low-risk opportunity to Push.
-We construct a label-hidden benchmark of 3,080 decisions from 9 HeartSteps participants and 4 CASAS homes, with 423 entity-days and 13 strictly isolated streams; reference labels and all annotation metadata remain evaluator-private.
-The episode-aware reference labels encode reviewed service opportunities and are frozen after LLM-assisted screening, independent annotation by three team members conducted in parallel with but isolated from model inference, cross-review, and adjudication.
-Using a common backbone model, with an identical decision prompt across the three \system{} variants, Full \system{} achieves 39.2\% precision, 75.7\% recall, and 51.7\% micro F1.
-It exceeds ProactiveAgent-Prompt by 10.5 F1 points while reducing Push rate by 2.7 points, and exceeds Source-only and Source+Working by 12.9 and 11.0 F1 points.
-Offline audits further show that all 1,279 retained daily episodes are source-supported; all 54 retained long-term proposals are source-linked and replay-audited, and 42 meet the Active gate.
-These results show that validated temporal abstraction can make proactive decisions both more informed and more selective without turning memory itself into a hidden intervention rule.
+Proactive LLM agents must decide whether a newly observed event warrants unsolicited assistance, even when relevant evidence is distributed across earlier observations.
+Existing event-history and retrieval interfaces preserve prior information but leave the agent to distinguish recent facts, recurring temporal structure, and present service value at decision time.
+We introduce ProactiveStream, a longitudinal benchmark spanning Activity Support, Ambient Living, and Repository Assistance, with 4,539 inference events from 17 isolated streams.
+We further propose Event-Driven Proactive Memory (\system{}), which organizes each stream into bounded Event Memory, fact-validated Daily Trajectory Memory, and replay-validated Temporal Pattern Memory, and selects evidence applicable to the current decision.
+Across the three settings, Full \system{} improves Intervention F1 over ProactiveAgent by 4.8--28.5 points and also outperforms Mem0.
+Controlled hierarchy and validation ablations further support the contribution of validated daily and temporal-pattern evidence.
+These results frame proactive memory as a validated evidence lifecycle rather than an unconstrained history archive or an implicit intervention policy.
 \end{abstract}
-
-\ccsdesc[500]{Computing methodologies~Intelligent agents}
-\ccsdesc[300]{Information systems~Information retrieval}
-\ccsdesc[300]{Human-centered computing~Ubiquitous and mobile computing systems and tools}
-
-\keywords{proactive agents, agent memory, event streams, temporal trajectories, large language models}
-
-\maketitle
 
 \input{1Introduction}
 \input{2ProblemFormulation}
 \input{3Framework}
+\input{4BenchmarkConstruction}
 \input{4aExperimentalSetup}
 \input{4bResultsAndAnalysis}
 \input{5RelatedWork}
-\input{6Limitations}
+\FloatBarrier
 \input{7Conclusion}
+\label{sec:main_end}
+\input{6Limitations}
 \input{8EthicalConsiderations}
 
-\bibliographystyle{ACM-Reference-Format}
 \bibliography{9Reference}
-
+\clearpage
+\appendix
+\input{10Appendix}
+\input{11Reproducibility}
 \end{document}

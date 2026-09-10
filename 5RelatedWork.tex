@@ -1,30 +1,19 @@
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Memory for LLM Agents}
+\paragraph{Agent memory and long-horizon retrieval.}
+Generative Agents, MemoryBank, and MemGPT organize observations and experience through reflection, updating, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
+Mem0, A-Mem, and HippoRAG develop extracted memories, linked records, and graph-based retrieval~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}, while LoCoMo and LongMemEval evaluate long-horizon recall~\citep{maharana2024locomo,wu2025longmemeval}.
+Retrieval relevance, temporal recurrence, and present service value nevertheless remain distinct.
+\system{} validates daily abstractions against source events and replays temporal proposals before retrieval, supplying checked historical evidence for a separate service-value judgment.
 
-Agent memory spans raw observation stores, episodic retrieval, consolidation, reflection, and structured memory.
-Generative Agents retrieve observations and synthesize reflections~\citep{park2023generative}; MemoryBank manages persistent conversational memory~\citep{zhong2024memorybank}; and MemGPT treats limited context as a hierarchy of memory tiers~\citep{packer2023memgpt}.
-Mem0 extracts and consolidates memories for scalable use~\citep{chhikara2025mem0}, A-Mem evolves linked memory notes~\citep{xu2025amem}, and HippoRAG supports multi-hop integration through graph retrieval~\citep{gutierrez2024hipporag}.
-Benchmarks such as LoCoMo and LongMemEval evaluate long-horizon conversational recall and reasoning~\citep{maharana2024locomo,wu2025longmemeval}.
+\paragraph{Proactive decision and memory.}
+ProactiveAgent studies whether an agent should propose a task or remain silent and uses annotated event data to elicit this capability~\citep{lu2025proactiveagent}.
+PASK combines streaming demand detection with hybrid long-term memory, MemCog makes structured memory exploration part of conversational reasoning, and Remember When It Matters uses a separate memory agent to inject selected reminders into long-horizon action agents~\citep{xie2026pask,li2026memcog,wu2026remember}.
+\system{} complements these approaches by examining how longitudinal evidence is formed, checked, and made causally available before a service-opportunity decision.
 
-These methods improve access to prior experience, but retrieval relevance does not establish temporal recurrence or present intervention value.
-\system{} instead organizes one proactive evidence lifecycle: bounded source observations become daily trajectories, daily claims are checked against source-level events, and long-term trajectories are replayed over history before the decision model may use them.
-
-\subsection{Proactive and Anticipatory Agents}
-
-ProactiveAgent formalizes the choice between proposing assistance and remaining silent and introduces a released observation-history prompt and trained proactive model~\citep{lu2025proactiveagent}.
-We evaluate its released prompt-based variant, denoted PA-Prompt, without using the released fine-tuned checkpoint.
-PASK combines streaming intent detection with hybrid memory~\citep{xie2026pask}; MemCog makes memory traversal part of proactive conversational reasoning~\citep{li2026memcog}; and Remember When It Matters uses a separate memory agent to decide when structured state should be injected into a long-horizon action context~\citep{wu2026remember}.
-These systems establish that memory can influence when an agent acts.
-Our complementary focus is how implicit temporal evidence is constructed and validated before reaching that decision.
-
-Notification research further shows that interruption cost depends on task phase, breakpoints, and user receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
-This motivates reporting Push frequency alongside opportunity recall, while treating it as an offline proxy rather than a direct measurement of perceived interruption.
-
-\subsection{Longitudinal Behavioral Streams}
-
-HeartSteps demonstrates repeated context-dependent decisions for just-in-time activity support~\citep{klasnja2019heartsteps}, while CASAS provides ambient smart-home streams for longitudinal activity analysis~\citep{cook2013casas}.
-Both contain meaningful temporal structure, but their event semantics and observation rates differ substantially.
-Our benchmark uses a common causal Push/Abstain interface while preserving domain-specific public fields, strict participant/home isolation, and low-risk service boundaries.
-Unlike benchmarks that expose a query over a completed history, every event is evaluated online and the memory needed to interpret it must already have been constructed.
+\paragraph{Evaluation of proactive service.}
+Existing benchmarks examine proactive task proposals, latent-need detection, or proactive memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.
+ProactiveStream evaluates repeated \textsc{Intervene}/\textsc{Abstain} decisions over causally replayed event streams, with entity isolation and episode-aware reference opportunities.
+Research on notification timing further shows that interruption cost depends on task phase and receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
+This motivates evaluating opportunity recovery together with unnecessary intervention.

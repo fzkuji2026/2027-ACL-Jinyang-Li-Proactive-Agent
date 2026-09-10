@@ -1,113 +1,29 @@
-\section{Experiments}
+\section{Experimental Evaluation}
 \label{sec:experiments}
 
-\subsection{Benchmark Suite}
-\label{sec:benchmark}
+\subsection{Experimental Settings}
+\label{sec:experimental_settings}
 
-We evaluate a common event-level question in two longitudinal domains: given the current public event and only the same entity's causal history, should the agent provide proactive service now?
-Table~\ref{tab:benchmark_stats} summarizes the frozen benchmark.
+We examine baseline performance (\textbf{RQ1}), memory-level contributions (\textbf{RQ2}), evidence-validation mechanisms (\textbf{RQ3}), and model sensitivity and errors (\textbf{RQ4}).
 
-\begin{table*}[t]
-\centering
-\caption{Frozen benchmark. An entity is the memory-isolation and replay unit. Reference positives encode episode-aware reviewed service opportunities.}
-\label{tab:benchmark_stats}
-\small
-\setlength{\tabcolsep}{5.2pt}
-\begin{tabular}{llrrlrr}
-\toprule
-Benchmark & Entity & Streams & Events & Temporal coverage & Decision unit & Reference Push \\
-\midrule
-HeartSteps & participant & 9 & 1,456 & 367 participant-days; 41--55 days/entity & public meta-event & 365 (25.1\%) \\
-CASAS & home & 4 & 1,624 & 14 consecutive days/home; 56 home-days & 50-minute segment & 190 (11.7\%) \\
-\midrule
-Total & isolated stream & 13 & 3,080 & 423 entity-days & event-level Push/Abstain & 555 (18.0\%) \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\paragraph{Comparators.}
+\emph{ProactiveAgent} uses the released evaluation prompt and proposal/null contract without its fine-tuned checkpoint, retaining causal event--decision history capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+\emph{Mem0} uses open-source extraction, consolidation, and same-entity retrieval~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
+Both share the task semantics and final Episode Controller, but retain their native prompt/memory interfaces; budgets are not equalized.
+\emph{Event-only}, \emph{Event+Daily}, and Full \system{} share the decision prompt, Event Memory bound, schema, and controller, differing only in memory levels.
+For AS/AL, \emph{Flat Retrieval Memory} adds three similar older same-entity events to Event-only using fixed dense embeddings and cosine similarity, without consolidation or replay.
+Section~\ref{sec:validation_ablations} defines the mechanism ablations; Appendix~\ref{app:configuration} lists the recorded interface and retrieval settings.
 
-\subsubsection{HeartSteps}
+\paragraph{Model and protocol.}
+Primary decision and construction calls use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
+Decision and construction are separate roles with separate output budgets.
+Terra/Sol comparisons replace both roles together (Appendix~\ref{app:backbone_sensitivity}).
+Input manifests, prompts, schemas, thresholds, and configurations are versioned.
 
-HeartSteps is a mobile micro-randomized trial that recorded repeated decision contexts for contextually tailored physical-activity suggestions~\citep{klasnja2019heartsteps}.
-We use 1,456 public meta-events from nine complete participant streams, spanning 367 participant-days.
-The inclusion rule requires a complete longitudinal stream long enough to support repeated daily and weekly construction while keeping event-by-event LLM evaluation tractable; it is fixed before labeling and testing.
-Each event contains only decision-time-observable fields such as availability, recognized activity, recent step summaries, location category, weather, and local decision slot.
-Randomized treatment assignments, future outcomes, and private scoring fields are excluded.
-The task is not to reproduce the original randomized policy or infer a medical need; it is to identify a low-risk opportunity for optional activity support.
-
-\subsubsection{CASAS}
-
-CASAS provides longitudinal ambient-sensor traces from smart-home testbeds~\citep{cook2013casas}.
-We use four homes with complete source coverage for the same 14-day horizon, which is long enough to form one week of evidence and evaluate its use in the following week.
-Native ten-minute blocks are coarsened within each local day into 28 regular 50-minute segments and one 40-minute tail, giving 406 decisions per home and 1,624 in total.
-The 50-minute decision unit preserves the complete two-week chronology and every source block while balancing longitudinal sufficiency against the cost of event-by-event LLM evaluation; this aggregation rule was specified before the benchmark rows were constructed.
-Every source block is assigned to exactly one public segment.
-
-A public segment contains only actions observed inside that segment: motion counts, ordered room locations, door actions, and compact numeric summaries.
-It contains no rolling history, personal baseline, anomaly score, prior-segment state, or candidate reason.
-Consequently, cross-segment regularities must be reconstructed by the evaluated memory.
-The allowed service is a gentle, low-risk check-in; disease, falls, travel, danger, and unsupported preference claims are outside the label space.
-
-\subsection{Reference-Label Construction}
-
-Reference-label construction follows four stages: LLM-assisted candidate screening, entity-isolated independent annotation by three team members, cross-review and adjudication of disagreements, and a final episode-aware freeze.
-The LLM screening stage proposes cases for review but never determines a final label.
-The three team members annotate independently in parallel with model inference, but the two tracks use mutually isolated records: annotators cannot see model outputs, and model inference cannot read annotation records.
-Model outputs are not used as labeling evidence.
-All 3,080 events, rather than only LLM-screened candidates, enter final human review.
-Team members inspect only the current event and strictly earlier public evidence from the same participant or home, then apply the OR criterion from Equation~\ref{eq:or_semantics}: a reviewed service opportunity is positive if the event is intrinsically service-worthy or if earlier trajectories create a new proactive opportunity.
-Within a semantic episode, only the first reliable, actionable window is positive unless evidence strengthens, the service changes, or the episode reopens.
-The frozen map contains 365 HeartSteps and 190 CASAS positives.
-The architecture was developed before benchmark evaluation.
-We use a protocol-fixed evaluation rather than a separate development/test split: after the CASAS aggregation rule had been fixed, the public benchmark, adjudicated reference labels, decision prompt, 72-hour/100-event Source bound, and Active gate were jointly locked before the first reported benchmark inference.
-No prompt, threshold, benchmark row, or reference label was changed in response to test results.
-
-The benchmark presented to an agent contains none of these labels or intermediate screening decisions.
-It also omits candidate tiers, stage labels, scoring masks, and any marker indicating that a row should be evaluated by an LLM.
-Thus, the benchmark input does not reveal where the evaluator expects a decision.
-
-\subsection{Replay Protocol}
-
-Each participant and home is replayed independently in timestamp order from empty method state.
-At event $t$, a method may read the current event, its own strictly prior memory, and its prior outputs if its architecture retains them.
-It may not read future events or another entity's state.
-The output is persisted before the next event, and reference labels are joined only after inference.
-All 3,080 public rows are decisions; positives and negatives use the same schema and frequency.
-
-\FloatBarrier
-\subsection{Compared Methods}
-\label{sec:methods}
-
-\paragraph{PA-Prompt}
-This external baseline adapts the released prompt and proposal/null output contract of ProactiveAgent~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
-We evaluate the released prompt-based variant, denoted PA-Prompt, without using the released fine-tuned checkpoint.
-It uses a causally accumulated event--decision history capped at 1,000 events per request and no external structured memory.
-Its candidates use the shared Episode Controller before scoring.
-
-\paragraph{Source-only}
-The decision LLM receives the current event and Source Memory from Equation~\ref{eq:source_memory}.
-It has no daily or long-term trajectories.
-
-\paragraph{Flat Retrieval Memory}
-As an auxiliary full-benchmark check, this baseline augments Source-only with the three most similar older source-level events from the same entity.
-Retrieval uses a frozen dense embedding and cosine similarity over strictly earlier events outside the current Source window; it performs no daily consolidation, historical replay, neighbor expansion, or LLM reranking.
-The current event is added to the entity-specific index only after its decision is finalized.
-It uses the same decision prompt, output protocol, and Episode Controller as the controlled \system{} variants.
-
-\paragraph{Source+Working}
-This method adds the fact-validated daily trajectories currently available in Working Memory to Source-only, but excludes Long-term Memory.
-
-\paragraph{Full \system{}}
-The full method exposes all three memory levels and episode state through the Evidence Card.
-Source-only, Source+\allowbreak Working, and Full \system{} use the same decision prompt, output protocol, and Episode Controller; only the visible memory levels change.
-
-\subsection{Implementation and Metrics}
-
-All full-scale experiments use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero, thinking disabled, and at most 256 output tokens.
-The Source context contains at most 100 events including the current event and never crosses the 72-hour boundary.
-Daily construction runs after a local day closes; weekly construction and replay run only after a complete week.
-Every memory record, trajectory, and validation query carries an entity identifier.
-
-We compute Push rate, precision, recall, and F1 directly from TP, FP, FN, and TN.
-Micro results pool all 3,080 event decisions.
-Push rate is reported alongside F1 because two methods with similar opportunity coverage may produce very different intervention frequencies; it remains a proxy rather than a measure of perceived burden.
-We ask: (RQ1) Does \system{} improve proactive decision quality over an external proactive prompt? (RQ2) What does each memory level contribute? (RQ3) Do daily validation and historical replay enforce their intended evidence contracts? (RQ4) What failure modes and practical limitations remain?
+\paragraph{Metrics.}
+We aggregate TP/FP/FN/TN within each scope, then compute Intervention Rate, Precision, Opportunity Recall, Intervention F1, False Intervention Rate (FIR), and Balanced Accuracy (BA).
+Mean rows equally average the reported scope metrics, not pooled counts or entity scores.
+FIR is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, not $1-\mathrm{Precision}$; BA averages recall and specificity.
+Higher precision, recall, F1, and BA and lower FIR are preferred.
+Intervention Rate describes decision frequency and has no universal preferred direction.
+Every event is scored after shared episode control, except in its explicit ablation.

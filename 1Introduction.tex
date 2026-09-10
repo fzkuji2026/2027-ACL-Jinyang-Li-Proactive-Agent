@@ -2,40 +2,40 @@
 \label{sec:introduction}
 
 LLM agents increasingly receive continuous observations from personal devices and ambient environments rather than a single explicit request.
-In such settings, useful assistance may need to begin before a user asks for it.
-This changes the agent's task from answering a query to repeatedly deciding whether the present event warrants an interruption.
-The decision is asymmetric: missing an opportunity reduces utility, but an unsupported or repetitive Push consumes attention and can quickly erode trust.
+In these settings, useful assistance may need to begin before a user asks for it.
+The agent must therefore do more than answer queries: it must repeatedly decide whether the current event warrants proactive intervention.
+This decision is asymmetric.
+Missing a useful opportunity reduces utility, whereas an unsupported or repetitive intervention consumes attention and can quickly erode trust.
 
 Long-term memory systems help agents retain observations, retrieve related episodes, and consolidate experience~\citep{park2023generative,packer2023memgpt,zhong2024memorybank,chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
 These mechanisms are well suited to answering \emph{what happened before} or \emph{what is related now}.
-Proactive service requires an additional judgment.
-A low-activity snapshot may itself support a gentle suggestion; an otherwise ordinary snapshot may become meaningful only after several similar days; and a repeated trajectory can still be irrelevant if the opportunity was already covered.
-Thus, relevance, temporal regularity, and present intervention value are related but distinct claims.
+Proactive service, however, also requires judgments about actionability, temporal regularity, and novelty.
+A low-activity snapshot may itself support a gentle suggestion; an otherwise ordinary snapshot may become meaningful only after several similar days; and a recurring trajectory may no longer warrant action once its opportunity has been covered.
+Relevance, temporal regularity, and present intervention value are therefore related but distinct claims.
 
-Prompt-only proactive agents provide the decision objective but leave an expanding history for the LLM to interpret at every turn~\citep{lu2025proactiveagent}.
-The resulting context is both noisy and structurally weak: repeated behavior is represented as many source records rather than a compact, testable temporal statement.
-Conversely, a generic retrieval memory may return a similar episode without establishing that it repeats or that acting now is useful.
-Recent proactive-memory systems highlight the value of retaining latent needs and selectively resurfacing prior state~\citep{xie2026pask,li2026memcog,wu2026remember}, but reliable proactive assistance over behavioral streams still needs a clear evidence lifecycle from source-level events to long-horizon temporal structure.
+Our ProactiveAgent baseline uses the method's released evaluation prompt to make intervention decisions from causal event history~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+In this prompt-based adaptation, temporal structure must be inferred anew at each turn rather than maintained as explicit, replay-validated patterns.
+Conversely, a generic retrieval memory may return a similar episode without establishing that the episode recurs or that acting now is useful.
+Recent work on proactive reasoning and memory highlights the value of retaining latent needs and selectively resurfacing prior state~\citep{xie2026pask,li2026memcog,wu2026remember}.
+Taken together, these limitations motivate a traceable lifecycle from observations, to verified temporal evidence, and finally to a present intervention decision.
 
-We introduce Event-Driven Proactive Memory (\system{}), shown in Figure~\ref{fig:architecture}.
-\system{} treats proactive memory as a hierarchy rather than a flat archive.
-\emph{Source Memory} preserves recent source-level event evidence without semantic rewriting, under a strict temporal and cardinality bound.
-After each completed day, an LLM organizes the temporary event buffer into daily trajectories and a deterministic validator rejects unsupported facts; accepted trajectories form \emph{Working Memory}.
-After a completed week, an LLM proposes longer temporal structure and deterministic historical replay tests whether the evidence actually recurs; supported trajectories enter \emph{Long-term Memory}.
-At decision time, an Evidence Card separates current facts, recent source evidence, daily evidence, active long-term evidence, and episode state.
-The decision LLM follows an OR rule and proposes Push when either the current event is service-worthy or prior trajectories create a new proactive opportunity.
-A shared Episode Controller cannot create a Push; it only suppresses a repeated candidate Push for an already covered episode before the finalized output is scored.
+To address this gap, we pair ProactiveStream, a longitudinal proactive-service benchmark, with Event-Driven Proactive Memory.
+\emph{ProactiveStream} defines a common causal intervention task across three scopes: Activity Support, Ambient Living, and Repository Assistance. It combines entity isolation, label-neutral public inputs, and episode-aware reviewed service opportunities.
+Event-Driven Proactive Memory (\system{}), shown in Figure~\ref{fig:architecture}, organizes evidence into bounded Event Memory, fact-validated Daily Trajectory Memory, and replay-validated Temporal Pattern Memory.
+At decision time, \system{} assembles event and daily evidence and retrieves temporal patterns applicable to the current event.
+The decision LLM may propose an intervention when either the current event or an earlier trajectory establishes a concrete, timely, and low-risk service opportunity.
+A shared Episode Controller then suppresses repeated interventions for an already covered episode.
 
-We evaluate \system{} on HeartSteps activity-support streams~\citep{klasnja2019heartsteps} and CASAS ambient smart-home streams~\citep{cook2013casas}.
-The benchmark contains 3,080 public decision events across 9 participants and 4 homes.
-Every stream is replayed causally and in isolation, while reference labels, candidate indicators, history statistics, and scoring fields remain private.
-The episode-aware reference labels encode reviewed service opportunities and are frozen after LLM-assisted candidate screening, independent annotation by three team members conducted in parallel with but isolated from model inference, cross-review, and adjudication.
-All public events enter final human review, and the benchmark and reference labels are frozen before reported testing and remain unchanged throughout it.
+Our evaluation uses all three scopes: 4,539 inference events from 9 participants, 4 homes, and 4 repository streams, yielding 17 isolated longitudinal streams.
+Each stream is replayed in causal order and isolation; private reference labels never enter the agent context.
+Reference-label construction combines LLM-assisted screening with independent initial annotation by three team members and final team adjudication over all public events.
+All evaluation artifacts were versioned and frozen before the reported runs.
+Across the three scopes, Full \system{} improves Intervention F1 over ProactiveAgent by 4.8--28.5 points and also outperforms Mem0.
+Controlled hierarchy and validation ablations, artifact audits, and backbone sensitivity analyses provide complementary evidence for the proposed lifecycle.
 
-Our contributions are:
+In summary, the paper makes two technical contributions and provides supporting empirical evidence:
 \begin{itemize}
-    \item We formulate proactive memory for causal event streams, separating current-event utility, historical temporal support, and episode-aware intervention coverage.
-    \item We propose a three-level hierarchy that transforms bounded source-level events into fact-validated daily trajectories and replay-validated long-term trajectories, while retaining traceable evidence for the final decision.
-    \item We construct a 3,080-event benchmark covering 423 entity-days and 13 isolated streams, with positive and negative decisions presented in an identical, label-neutral format.
-    \item Full \system{} reaches 51.7\% micro F1. It outperforms PA-Prompt, Source-only, and Source+Working by 10.5, 12.9, and 11.0 points, respectively, while the daily and weekly audits verify its evidence contracts.
+    \item \textbf{Benchmark.} ProactiveStream supports causal evaluation across three application scopes with isolated entities, label-neutral public inputs, and episode-aware reference opportunities.
+    \item \textbf{Method.} We introduce a proactive-memory hierarchy that converts bounded event evidence into fact-validated daily trajectories and replay-validated temporal patterns, with explicit retrieval and episode-aware decision interfaces.
+    \item \textbf{Evidence.} Full \system{} consistently outperforms the external ProactiveAgent and Mem0 baselines in Intervention F1, while controlled layer and validation ablations directly test the contribution of the proposed evidence lifecycle.
 \end{itemize}
