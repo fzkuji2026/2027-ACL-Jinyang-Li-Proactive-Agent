@@ -1,6 +1,6 @@
 # Proactive Memory for Event-Driven LLM Agents
 
-This repository contains the ACL review manuscript for Event-Driven Proactive Memory (EPM).
+This repository contains the ACL review manuscript for Proactive Evidence Memory (ProEviMem).
 
 ## Build
 

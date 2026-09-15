@@ -1,7 +1,7 @@
 \section{ProactiveStream Benchmark}
 \label{sec:benchmark}
 
-ProactiveStream evaluates the same causal \textsc{Intervene}/\textsc{Abstain} task across three scopes, preserving their distinct observations and service semantics.
+ProactiveStream instantiates the causal \textsc{Intervene}/\textsc{Abstain} task across three scopes, with scope-specific observations and services under a common opportunity-labeling principle.
 Table~\ref{tab:benchmark_stats} reports all 4,539 events, 17 isolated streams, and 729 reference interventions.
 
 \begin{table*}[t]
@@ -37,11 +37,15 @@ Segments become available at interval closure and describe only within-interval 
 Services are limited to gentle check-ins, excluding disease, falls, danger, and unsupported personal inferences.
 
 \paragraph{Repository Assistance (RA).}
-Public GH Archive records~\citep{gharchive} and constructed repository events form four repository-local streams.
-The memory owner is the repository, not a contributor; services include low-risk triage, review, and maintenance.
+We organize repository activity records into chronologically ordered event streams.
+Each repository defines an independent stream containing commit pushes, issue updates, pull-request actions, and reviews.
+We preserve GitHub's native event granularity, with each event corresponding to one intervention decision.
+Memory construction and intervention decisions are performed separately for each repository, without transferring observations or memory across repositories.
+Intervention history likewise remains repository-local, even when contributors overlap.
+Services include low-risk triage, review, and maintenance.
 Native \texttt{PushEvent} denotes repository activity, not an intervention.
 
-Both label classes use the same scope-specific public event schema.
+Across scopes, both label classes use the same scope-specific public event schema.
 Private reference labels, candidate flags, episode annotations, trajectory summaries, memory-level markers, and scoring masks are absent.
 Appendix~\ref{app:benchmark_protocol} gives detailed fields and preprocessing.
 
@@ -64,7 +68,7 @@ Reference coverage follows the reviewed opportunity sequence, not model predicti
 
 LLM-assisted screening prioritizes review but never assigns final labels automatically.
 Three team members independently annotate without evaluated-system decisions, then cross-review and adjudicate every event.
-We use protocol-fixed evaluation, not an independent development/test split: aggregation precedes row construction, and versioned labels, prompts, memory bounds, and validation settings are frozen before reported runs.
+For the main comparisons, we use protocol-fixed evaluation, not an independent development/test split: aggregation precedes row construction, and versioned labels, prompts, memory bounds, and validation settings are frozen before those runs.
 Labels represent reviewed service opportunities, not recipient acceptance.
 
 Each stream starts with empty method state and is replayed chronologically.

@@ -3,14 +3,17 @@
 
 ProactiveStream covers three low-risk service scopes across 17 isolated streams.
 Reference labels denote team-reviewed opportunities under the specified episode policy, not observed recipient preferences or optimal actions.
-We do not report pre-adjudication agreement statistics; adjudicated labels cannot establish initial annotator consistency.
+The additional review uses consensus labels from a separate three-reviewer team blinded to model outputs on 150 contiguous targets per scope, each from one stream; pre-discussion inter-annotator agreement is not quantified.
 
 We use protocol-fixed evaluation without an independent development/test split.
-Event inventories, reference labels, prompts, memory boundaries, and validation settings were fixed before the reported runs.
+For the main comparisons, event inventories, reference labels, prompts, memory boundaries, and validation settings were fixed before the reported runs.
 This supports within-protocol comparisons, not generalization to held-out entities or domains.
+The paired 450-target review measures label sensitivity on three selected streams, not benchmark-wide ranking stability; the small AS F1 ordering changes with the label version (Appendix~\ref{app:label_review_450}).
+The paired episode diagnostic uses a separate model-assisted reference set and partially confirmed follow-up judgments; remaining semantic and boundary uncertainty limits conclusions beyond this descriptive CSM--ProEviMem comparison (Appendix~\ref{app:episode_review_450}).
+The RA suppression analysis holds the recorded decision sequence fixed and does not estimate how removing the controller would change later agent states.
 Terra/Sol jointly replace decision and memory-construction LLMs, assessing pipeline sensitivity rather than isolated decision-model effects or cross-family transfer.
 
 Daily validation and historical replay check source support and recurrence in the observed history.
 These checks neither establish evidence completeness nor guarantee that patterns remain valid as behavior changes.
-Offline evaluation also does not measure recipient satisfaction, realized interruption burden, long-term behavioral effects, or deployment safety.
+Across scopes, offline evaluation measures intervention decisions, not verified service delivery, recipient satisfaction, realized interruption burden, long-term behavioral effects, or deployment safety.
 These outcomes require prospective evaluation with recipients; high-risk health and safety interventions remain outside the present scope.

@@ -16,7 +16,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,calc,positioning}
 
-\newcommand{\system}{EPM}
+\newcommand{\system}{ProEviMem}
 \title{Proactive Memory for Event-Driven LLM Agents}
 % Review mode suppresses author identities. The AAMAS source retains the
 % confirmed author list for a future accepted, non-anonymous version.
@@ -26,13 +26,12 @@
 \maketitle
 
 \begin{abstract}
-Proactive LLM agents must decide whether a newly observed event warrants unsolicited assistance, even when relevant evidence is distributed across earlier observations.
-Existing event-history and retrieval interfaces preserve prior information but leave the agent to distinguish recent facts, recurring temporal structure, and present service value at decision time.
-We introduce ProactiveStream, a longitudinal benchmark spanning Activity Support, Ambient Living, and Repository Assistance, with 4,539 inference events from 17 isolated streams.
-We further propose Event-Driven Proactive Memory (\system{}), which organizes each stream into bounded Event Memory, fact-validated Daily Trajectory Memory, and replay-validated Temporal Pattern Memory, and selects evidence applicable to the current decision.
-Across the three settings, Full \system{} improves Intervention F1 over ProactiveAgent by 4.8--28.5 points and also outperforms Mem0.
-Controlled hierarchy and validation ablations further support the contribution of validated daily and temporal-pattern evidence.
-These results frame proactive memory as a validated evidence lifecycle rather than an unconstrained history archive or an implicit intervention policy.
+Event-driven LLM agents must decide whether incoming observations warrant assistance, often using evidence spread across earlier events.
+Retaining related history is not enough: the agent must assess its support and current applicability without treating recurrence alone as sufficient reason to intervene.
+We propose Proactive Evidence Memory (\system{}), combining bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
+The framework checks daily facts against their sources and assesses patterns against prior observations, then selects applicable evidence for the agent's service-opportunity judgment.
+Across ProactiveStream's three application scopes, \system{} improves Intervention F1 by 4.3--11.5 percentage points over the strongest baseline in each scope, among comparators including recursive-summary and temporal-graph methods.
+Hierarchy and validation ablations support the contribution of evidence organization and historical support checks to opportunity detection.
 \end{abstract}
 
 \input{1Introduction}

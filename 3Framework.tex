@@ -1,13 +1,13 @@
-\section{Event-Driven Proactive Memory}
+\section{Proactive Evidence Memory (\system{})}
 \label{sec:framework}
 
-\system{} separates three evidence levels: recent public events, fact-validated daily trajectories, and temporal patterns assessed by historical replay.
-Memory construction establishes observed facts and historical support; the decision LLM separately judges present service value (Figure~\ref{fig:architecture}).
+\system{} organizes recent public events, fact-validated daily trajectories, and replay-assessed temporal patterns into three evidence levels (Figure~\ref{fig:architecture}).
+Construction checks source fidelity and historical support; retrieval selects applicable patterns; the decision LLM judges present service value.
 
 \begin{figure*}[t]
     \centering
     \resizebox{\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}
-    \caption{\system{} separates memory construction (A) from online decision-making (B). Daily extraction is checked against cited events; temporal proposals are assessed by replay over completed daily records. Only lifecycle-eligible, currently relevant patterns enter the structured context. The decision LLM assesses service value, and the shared controller can suppress repeated interventions but cannot create them. Dashed feedback commits the current event only after either finalized output; $Q_t$ records prior episode coverage.}
+    \caption{\system{} separates memory construction (A) from online decision-making (B). Daily extraction is checked against cited events; temporal proposals are assessed by replay over completed daily records. Only lifecycle-eligible, currently relevant patterns enter the structured context. The decision LLM assesses service value, and the shared controller can suppress repeated interventions but cannot create them. Dashed feedback commits the current event after the output is finalized, whether \textsc{Intervene} or \textsc{Abstain}; $Q_t$ records prior episode coverage.}
     \label{fig:architecture}
 \end{figure*}
 
@@ -24,8 +24,8 @@ We use $\Delta=72$ hours and $K=100$, including the separately supplied current 
 An independent buffer retains all committed events of the open local day for daily construction, unaffected by this truncation.
 
 \paragraph{Fact-validated Daily Trajectory Memory.}
-After a local day closes, a construction LLM converts buffered events into structured trajectory segments with intervals, typed facts, and supporting event identifiers.
-For normalized checkable facts $F(d)$ in segment $d$ and its cited events $\mathcal{E}(d)$, acceptance requires
+After a local day closes, a construction LLM summarizes its buffered events as trajectory segments with intervals, typed facts, and event citations.
+For segment $d$, normalized checkable facts $F(d)$ and cited events $\mathcal{E}(d)$ must satisfy
 \begin{equation}
 F(d)\subseteq\bigcup_{e\in\mathcal{E}(d)}F(e),
 \qquad \mathcal{E}(d)\subseteq E^u_{\text{completed day}}.
@@ -76,6 +76,7 @@ Ranking prioritizes occurrence state, lifecycle, confidence, and temporal distan
 Selection uses no future observations: historical support and present applicability are separate requirements.
 
 \subsection{Proactive Decision and Episode Control}
+\label{sec:decision_control}
 
 The decision context separates current observations, daily evidence, and selected patterns:
 \begin{equation}
@@ -83,11 +84,11 @@ C_t=(e_t,S_t,W_t,R_t,Q_t),
 \label{eq:decision_context}
 \end{equation}
 where $Q_t$ records observable episode state and prior coverage.
-The LLM proposes $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$ when the current event \emph{or} prior evidence supports concrete, timely, feasible, low-risk assistance.
+The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} prior evidence supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
 A deviation is neither required nor sufficient.
 The shared Episode Controller may suppress, but never create, an intervention.
 It identifies opportunities by observable state, service intent, and pattern evidence; changed state, stronger evidence, changed service, or a new local day permits reconsideration, not automatic intervention.
-The same controller applies to all evaluated methods unless explicitly ablated; Appendix~\ref{app:episode_control} gives scope-specific details.
+All methods use the same controller policy, applied to their own observable state and available evidence; Appendix~\ref{app:episode_control} specifies identity construction.
 
 Inference prepares prior memory, stages $e_t$, selects evidence, obtains and finalizes the decision, and only then commits $e_t$.
 Maintenance incorporating $e_t$ can affect only later decisions.

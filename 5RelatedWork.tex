@@ -4,13 +4,14 @@
 \paragraph{Agent memory and long-horizon retrieval.}
 Generative Agents, MemoryBank, and MemGPT organize observations and experience through reflection, updating, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
 Mem0, A-Mem, and HippoRAG develop extracted memories, linked records, and graph-based retrieval~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}, while LoCoMo and LongMemEval evaluate long-horizon recall~\citep{maharana2024locomo,wu2025longmemeval}.
-Retrieval relevance, temporal recurrence, and present service value nevertheless remain distinct.
-\system{} validates daily abstractions against source events and replays temporal proposals before retrieval, supplying checked historical evidence for a separate service-value judgment.
+Our comparison concerns how retained information becomes decision evidence: CSM supplies recursive summaries, while Graphiti retrieves event-derived relations with temporal validity and provenance~\citep{zep2026graphiti}.
+\system{} instead represents recurring conditional patterns, assesses their historical support, and selects their current applicability.
+Section~\ref{sec:main_results} compares these interfaces; Section~\ref{sec:validation_ablations} tests the evidence checks.
 
 \paragraph{Proactive decision and memory.}
 ProactiveAgent studies whether an agent should propose a task or remain silent and uses annotated event data to elicit this capability~\citep{lu2025proactiveagent}.
 PASK combines streaming demand detection with hybrid long-term memory, MemCog makes structured memory exploration part of conversational reasoning, and Remember When It Matters uses a separate memory agent to inject selected reminders into long-horizon action agents~\citep{xie2026pask,li2026memcog,wu2026remember}.
-\system{} complements these approaches by examining how longitudinal evidence is formed, checked, and made causally available before a service-opportunity decision.
+\system{} complements these directions by separating three evidence questions: which source facts support an abstraction, whether a proposed pattern has historical support, and when it applies to an incoming event.
 
 \paragraph{Evaluation of proactive service.}
 Existing benchmarks examine proactive task proposals, latent-need detection, or proactive memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.

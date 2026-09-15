@@ -6,6 +6,7 @@
 \definecolor{working}{HTML}{E59C39}
 \definecolor{epm}{HTML}{138A72}
 \definecolor{baseline}{HTML}{9AA5B1}
+\definecolor{memzero}{HTML}{7B61A8}
 \begin{document}
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -16,27 +17,30 @@
   y tick label style={font=\sffamily\scriptsize},
   label style={font=\sffamily\scriptsize},
   title style={font=\sffamily\small,yshift=5mm},
-  legend style={font=\sffamily\tiny,draw=none,at={(0.5,1.03)},anchor=south,legend columns=4,/tikz/every even column/.append style={column sep=2mm}},
+  legend style={font=\sffamily\tiny,draw=none,at={(1.08,1.08)},anchor=south,legend columns=5,/tikz/every even column/.append style={column sep=1.5mm}},
   legend image code/.code={\draw[#1] (0cm,-0.08cm) rectangle (0.25cm,0.08cm);},
-  ymin=0,ymax=88,
+  ymin=0,ymax=92,
   grid=major,major grid style={draw=gray!22},
   axis line style={gray!70},tick style={draw=none},enlarge x limits=.19
 ]
-\nextgroupplot[title={(a) Micro decision quality},ylabel={Score (\%)},symbolic x coords={Precision,Recall,F1}]
-\addplot+[ybar,bar width=5.5pt,bar shift=-9pt,mark=none,fill=source,draw=black!45] coordinates {(Precision,29.6) (Recall,56.0) (F1,38.8)};
-\addlegendentry{Source-only}
-\addplot+[ybar,bar width=5.5pt,bar shift=-3pt,mark=none,fill=working,draw=black!45] coordinates {(Precision,30.9) (Recall,59.5) (F1,40.7)};
-\addlegendentry{Source+Working}
-\addplot+[ybar,bar width=5.5pt,bar shift=3pt,mark=none,fill=epm,draw=black!45] coordinates {(Precision,39.2) (Recall,75.7) (F1,51.7)};
+\nextgroupplot[title={(a) F1 by scope},ylabel={F1 (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Activity\\Support,Ambient\\Living,Repository\\Assistance},ymax=72]
+\addplot+[ybar,bar width=4.5pt,bar shift=-12pt,mark=none,fill=source,draw=black!45] coordinates {(activity,38.3) (ambient,40.0) (repository,28.7)};
+\addlegendentry{Event-only}
+\addplot+[ybar,bar width=4.5pt,bar shift=-6pt,mark=none,fill=working,draw=black!45] coordinates {(activity,38.9) (ambient,45.1) (repository,48.5)};
+\addlegendentry{Event+Daily}
+\addplot+[ybar,bar width=4.5pt,bar shift=0pt,mark=none,fill=epm,draw=black!45,nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt}] coordinates {(activity,48.8) (ambient,58.6) (repository,55.4)};
 \addlegendentry{Full EPM}
-\addplot+[ybar,bar width=5.5pt,bar shift=9pt,mark=none,fill=baseline,draw=black!45] coordinates {(Precision,30.5) (Recall,63.4) (F1,41.2)};
+\addplot+[ybar,bar width=4.5pt,bar shift=6pt,mark=none,fill=baseline,draw=black!45] coordinates {(activity,43.9) (ambient,30.1) (repository,28.7)};
 \addlegendentry{PA-Prompt}
+\addplot+[ybar,bar width=4.5pt,bar shift=12pt,mark=none,fill=memzero,draw=black!45] coordinates {(activity,44.5) (ambient,20.1) (repository,31.4)};
+\addlegendentry{Mem0}
 
-\nextgroupplot[title={(b) F1 by benchmark},ylabel={F1 (\%)},symbolic x coords={HeartSteps,CASAS,Micro}]
-\addplot+[ybar,bar width=5.5pt,bar shift=-9pt,mark=none,fill=source,draw=black!45] coordinates {(HeartSteps,38.3) (CASAS,40.0) (Micro,38.8)};
-\addplot+[ybar,bar width=5.5pt,bar shift=-3pt,mark=none,fill=working,draw=black!45] coordinates {(HeartSteps,38.9) (CASAS,45.1) (Micro,40.7)};
-\addplot+[ybar,bar width=5.5pt,bar shift=3pt,mark=none,fill=epm,draw=black!45,nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt}] coordinates {(HeartSteps,48.8) (CASAS,58.6) (Micro,51.7)};
-\addplot+[ybar,bar width=5.5pt,bar shift=9pt,mark=none,fill=baseline,draw=black!45] coordinates {(HeartSteps,43.9) (CASAS,30.1) (Micro,41.2)};
+\nextgroupplot[title={(b) Intervention Rate by scope},ylabel={Intervention Rate (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Activity\\Support,Ambient\\Living,Repository\\Assistance}]
+\addplot+[ybar,bar width=4.5pt,bar shift=-12pt,mark=none,fill=source,draw=black!45] coordinates {(activity,53.5) (ambient,16.6) (repository,21.5)};
+\addplot+[ybar,bar width=4.5pt,bar shift=-6pt,mark=none,fill=working,draw=black!45] coordinates {(activity,53.8) (ambient,17.5) (repository,26.0)};
+\addplot+[ybar,bar width=4.5pt,bar shift=0pt,mark=none,fill=epm,draw=black!45] coordinates {(activity,53.8) (ambient,17.7) (repository,26.7)};
+\addplot+[ybar,bar width=4.5pt,bar shift=6pt,mark=none,fill=baseline,draw=black!45] coordinates {(activity,69.0) (ambient,9.2) (repository,53.1)};
+\addplot+[ybar,bar width=4.5pt,bar shift=12pt,mark=none,fill=memzero,draw=black!45] coordinates {(activity,85.2) (ambient,8.5) (repository,7.7)};
 \end{groupplot}
 \end{tikzpicture}
 \end{document}

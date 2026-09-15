@@ -4,8 +4,8 @@
 
 Table~\ref{tab:backbone_sensitivity} provides the complete model-sensitivity comparison summarized in Section~\ref{sec:main_results}.
 The decision LLM and the LLMs constructing daily trajectories and temporal patterns are replaced together.
-The benchmark, memory architecture, role-specific prompts, decoding configuration, validation thresholds, and controller remain fixed; constructed memory content may change.
-Full \system{} shows increasing Intervention F1 and decreasing False Intervention Rate from Luna to Terra to Sol in every scope.
+The benchmark, memory architecture, role-specific prompts, decoding configuration, validation thresholds, and controller remain fixed; the resulting memory content may change.
+\system{} shows increasing Intervention F1 and decreasing False Intervention Rate from Luna to Terra to Sol in every scope.
 This is a pipeline-level comparison, not an isolated decision-model effect.
 All hierarchy and validation ablations retain Luna.
 
@@ -35,7 +35,7 @@ Scope & Model & \shortstack{Intervention\\F1 $\uparrow$} & \shortstack{False Int
  & Sol & \textbf{64.8} & \textbf{17.9} \\
 \bottomrule
 \end{tabular}
-\caption{Full \system{} model sensitivity (\%). Decision and construction LLMs change together. Bold marks the best value per scope; Mean follows Table~\ref{tab:main_results}.}
+\caption{\system{} model sensitivity (\%). Decision and construction LLMs change together. Bold marks the best value per scope; Mean follows Table~\ref{tab:main_results}.}
 \label{tab:backbone_sensitivity}
 \end{table}
 
@@ -44,7 +44,7 @@ Scope & Model & \shortstack{Intervention\\F1 $\uparrow$} & \shortstack{False Int
 \section{Memory-Construction Audit and Online Availability}
 \label{app:construction_audit}
 
-Complementing the decision-quality ablations in Section~\ref{sec:validation_ablations}, we audit existing memory-construction artifacts and maintenance logs from Activity Support and Ambient Living, covering nine participants and four homes.
+Complementing the evidence-check ablations in Section~\ref{sec:validation_ablations}, we audit existing memory-construction artifacts and maintenance logs from Activity Support and Ambient Living, covering nine participants and four homes.
 Table~\ref{tab:validation_audit} distinguishes validation and replay operations from unique retained artifacts.
 The audit checks source support, entity consistency, and replay consistency rather than intervention outcomes.
 
@@ -73,7 +73,7 @@ Separately, construction logs record 311 rejected daily validation checks.
 These observations characterize filtering and the retained evidence, rather than an error-free construction LLM.
 
 The final temporal-pattern store contains 54 source-linked proposals whose recorded replay results are consistent with offline recomputation: 42 are Active and 12 remain Candidate.
-Under Full \system{}, Candidates remain excluded from decision evidence.
+Under \system{}, Candidates remain excluded from decision evidence.
 Across weekly maintenance updates, 118 of 140 replay attempts pass the activation gate, while 22 do not.
 These operation counts are distinct from the 42 unique Active patterns in the final store.
 
@@ -84,42 +84,47 @@ Each median is calculated over entities reaching the corresponding stage.
 Pattern activation and current relevance are therefore distinct: an admitted pattern does not automatically enter every decision context.
 
 These observations show that daily and temporal-pattern evidence can become available within the evaluated streams, leaving subsequent events for evidence-informed decisions.
-Causal validity follows from the update order in Section~3.3: evidence used to judge an event is constructed from previously committed events.
-Together with Section~\ref{sec:validation_ablations}, this audit addresses RQ3 by separating evidence integrity and availability from downstream intervention quality.
+The update order in Section~\ref{sec:decision_control} preserves the causal boundary: evidence used to judge an event is constructed from previously committed events.
+Together with Section~\ref{sec:validation_ablations}, this audit addresses RQ3 by separating evidence integrity and availability from downstream service-opportunity detection performance.
 
 \FloatBarrier
 
 \section{Illustrative Decisions and Error Cases}
 \label{app:case_examples}
 
-Table~\ref{tab:case_flows} presents two illustrative decisions from historical full-memory logs in the frozen 16-case inventory for Activity Support and Ambient Living.
-It separates current observations, recorded memory context, and the resulting response.
-These examples complement the controlled ablations in Section~\ref{sec:hierarchy} by showing the context accompanying individual decisions; they do not establish that removing a particular memory level would reverse those decisions.
+Table~\ref{tab:case_flows} traces one recorded AS decision from the 450-target diagnostic run, selected because its source events, daily artifacts, contemporaneous weekly proposal, and matched-pattern telemetry can be linked.
+It uses the proposal available at decision time, not a later revision from the final memory snapshot.
+The example illustrates evidence flow rather than a memory-attributable true positive or superiority over a baseline.
 
-\begin{table}[!htbp]
+\begin{table*}[!htbp]
 \centering
 \small
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{@{}p{0.18\columnwidth}p{0.78\columnwidth}@{}}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}p{0.20\textwidth}p{0.75\textwidth}@{}}
 \toprule
-Scope & Recorded observation, context, and decision \\
+Stage and recorded time & Source-linked observation or operation \\
 \midrule
-% Frozen inventory CASE-04: bce51c1b1f40dad8b26eb811. Context availability, not label rationale.
-AS & \textbf{Current:} available, still, at home, with low recent activity.
-\newline \textbf{Memory:} three daily trajectories; no relevant temporal pattern.
-\newline \textbf{Decision:} INTERVENE; offer a brief optional walk. \\
+Historical events\newline Dec.\ 15, 17--19, 21 & Participant 35 has recorded STILL observations in slots 2--4 across five cited days. For example, Dec.\ 15 at 16:32:38 records slot 2, work, STILL, and 586 steps in the preceding hour (event \texttt{5fd72a80\ldots}). STILL describes a snapshot, not continuous inactivity. \\
 \addlinespace[3pt]
-% Frozen inventory CASE-13: casas50_d_001421. Relevant-pattern count from decision telemetry.
-AL & \textbf{Current:} movement concentrated in the bedroom and bathroom.
-\newline \textbf{Memory:} one temporal pattern recorded as relevant; no daily trajectory in the current view.
-\newline \textbf{Decision:} INTERVENE; offer a gentle check-in. \\
+Daily construction\newline Dec.\ 16--22 & Each cited day becomes a source-linked daily trajectory at the next daily rollover. The Dec.\ 15 trajectory retains the example's event reference and observed fields; its recorded creation time is Dec.\ 16 at 12:02:49. \\
+\addlinespace[3pt]
+Weekly proposal\newline Dec.\ 22 & At the weekly update on Dec.\ 22, the proposal cites the five completed trajectories dated Dec.\ 15, 17--19, and 21: recognized activity repeatedly equals STILL in slots 2--4, with applicability window 16:00--22:00. The maintenance record at 12:02:27 reports one proposed and one activated pattern. \\
+\addlinespace[3pt]
+Current event\newline Dec.\ 24, 16:31:26 & Event \texttt{c956aa51\ldots}: slot 2, available, not in transit, store location, activity UNKNOWN, 256 steps in the preceding 30 minutes and 778 in the preceding hour. The context contains 12 prior events, two daily trajectories, and the matched pattern \texttt{93463c34\ldots}. \\
+\addlinespace[3pt]
+Decision, then commit & Both model proposal and final output are ABSTAIN; controller action is ALLOW with no suppression. Telemetry records that the current event is committed after context construction. A matched recurring observation therefore need not produce an intervention. \\
 \bottomrule
 \end{tabular}
-\caption{Two historical full-memory examples. Memory entries report context availability, not counterfactual attribution.}
+\caption{A source-to-decision timeline for one AS participant. Dates are in December 2015; times use the stored UTC timestamps, not inferred local activity times. Text condenses source events and construction/decision logs.}
 \label{tab:case_flows}
-\end{table}
+\end{table*}
 
-The inventory also includes two false positives and two false negatives from Event-only logs.
+The current step counts provide an observable reason not to equate the earlier STILL pattern with a present need for activity support.
+This is our interpretation of the fields, not a recorded explanation from the decision LLM.
+The logged ABSTAIN originates from that LLM rather than duplicate suppression, preserving the distinction between pattern applicability and intervention judgment.
+
+The separate frozen 16-case inventory includes two false positives and two false negatives from Event-only logs.
 In Activity Support, an activity suggestion is issued despite substantial movement during the preceding hour, while another low-activity event with a positive reference label receives ABSTAIN.
 In Ambient Living, ordinary bedroom--bathroom movement receives a check-in, whereas a reference-positive quiet period spanning two consecutive segments is missed.
 
@@ -129,5 +134,183 @@ Historical evidence can contextualize such observations without determining the 
 Repeated windows additionally require assessing whether evidence or service needs have changed, complementing the controller trade-off examined in Section~\ref{sec:validation_ablations}.
 
 This qualitative analysis addresses the failure-analysis part of RQ4 and illustrates why \system{} separates memory evidence, present service value, and prior opportunity coverage.
+
+\section{Independent Human Review Across Three Scopes}
+\label{app:label_review_450}
+
+We conduct a sampled label review within the main benchmark, selecting 150 consecutive target events per scope (450 in total).
+A separate three-reviewer team independently annotates these segments without access to either ProEviMem or CSM outputs, and discusses its judgments to obtain consensus references.
+Each segment belongs to exactly one participant, home, or project repository; no segment mixes entities.
+A fixed SHA256-based rule first ranks eligible streams and then eligible contiguous starts using public metadata only, without reference labels or predictions, and requires at least seven days of preceding history.
+The selected streams are AS participant\_35, AL home\_0004, and the RA repository \texttt{callstack/react-native-pager-view}.
+Their target periods are December 16, 2015--January 18, 2016; June 23--28, 2011; and June 21--November 4, 2025, respectively.
+All 37, 203, and 152 preceding events are retained and processed chronologically by the corresponding ProEviMem pipeline, but excluded from scoring.
+Thus, 842 public events supply causal context for 450 scored targets; each target can use only its current observation and strictly prior same-stream history.
+
+The reviewers inspect each target with its preceding same-stream history, rather than judging isolated events.
+The confirmed review yields 27/123, 15/135, and 34/116 \textsc{Intervene}/\textsc{Abstain} labels for AS, AL, and RA, respectively.
+Agreement with the earlier diagnostic references is 88.7\% (133/150), 91.3\% (137/150), and 85.3\% (128/150) for AS, AL, and RA, respectively.
+In AS and AL, 13 and 13 labels change from \textsc{Intervene} to \textsc{Abstain}, compared with 4 and 0 changes in the reverse direction; RA has 6 removals and 16 additions.
+Most judgments therefore agree, while service-opportunity boundaries remain consequential.
+These counts characterize differences between label versions, not pre-discussion inter-annotator agreement or the semantic cause of each disagreement.
+These annotations serve as references for the additional evaluation; the main benchmark labels and result tables remain unchanged.
+For model comparison, we use the recorded ProEviMem and CSM decisions from the selected-segment diagnostic runs, rather than a subset of the main-run output files.
+For each method, exactly the same target decisions are scored against both label versions; changing the reference labels does not rerun inference or alter the outputs.
+Like the main experiment, this diagnostic uses \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
+Decision-output limits are 256 tokens for AS/AL and 512 for RA.
+Both methods retain the 72-hour/100-event bound and episode control; ProEviMem additionally retains daily validation and replay gating.
+
+Table~\ref{tab:label_review_450} reports ProEviMem under the confirmed event-level references, and Table~\ref{tab:paired_label_f1_450} adds CSM under both label versions.
+ProEviMem identifies 24/27 AS, 15/15 AL, and 18/34 RA opportunities.
+Its F1 remains above CSM in AL and RA under both versions; the small AS difference changes direction.
+Thus, the paired audit reveals both agreement and label sensitivity, rather than establishing invariant method rankings.
+For example, AL ProEviMem F1 changes from 68.7\% to 55.6\% when only the references change, while CSM changes from 46.4\% to 37.2\%.
+These are within-segment comparisons, not changes from the full-scope main results: the sampled events and diagnostic runs differ from the main evaluation.
+Across scopes, immediate and scheduled service decisions share the \textsc{Intervene} label.
+The following paired episode analysis uses a separate, provisional reference set grounded in these reviewed events and their causal histories; event-label confirmation does not by itself confirm episode boundaries or message matches.
+
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cccc}
+\toprule
+Scope & Method & Earlier F1 & Reviewed F1 \\
+\midrule
+AS & CSM & 44.4 & 41.0 \\
+ & ProEviMem & 42.6 & 42.5 \\
+AL & CSM & 46.4 & 37.2 \\
+ & ProEviMem & 68.7 & 55.6 \\
+RA & CSM & 49.4 & 46.5 \\
+ & ProEviMem & 57.6 & 47.4 \\
+\bottomrule
+\end{tabular}
+\caption{Paired reference-label sensitivity on 150 targets per scope. F1 is in percent. Within each method, the recorded diagnostic-run decisions are identical in both columns; only the reference version changes. Earlier references are original labels for AS/AL; RA uses 122 original labels and 28 subsequently completed human labels, rather than an entirely pre-test-frozen comparator.}
+\label{tab:paired_label_f1_450}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{lccc}
+\toprule
+Quantity & AS & AL & RA \\
+\midrule
+Scored decisions & 150 & 150 & 150 \\
+Preceding events (not scored) & 37 & 203 & 152 \\
+Reference interventions & 27 & 15 & 34 \\
+Reference abstentions & 123 & 135 & 116 \\
+ProEviMem interventions & 86 & 39 & 42 \\
+TP & 24 & 15 & 18 \\
+FP & 62 & 24 & 24 \\
+FN & 3 & 0 & 16 \\
+TN & 61 & 111 & 92 \\
+\midrule
+Intervention Rate & 57.3\% & 26.0\% & 28.0\% \\
+Precision & 27.9\% & 38.5\% & 42.9\% \\
+Opportunity Recall & 88.9\% & 100.0\% & 52.9\% \\
+Intervention F1 & 42.5\% & 55.6\% & 47.4\% \\
+False Intervention Rate & 50.4\% & 17.8\% & 20.7\% \\
+Balanced Accuracy & 69.2\% & 91.1\% & 66.1\% \\
+\bottomrule
+\end{tabular}
+\caption{Recorded ProEviMem decisions evaluated against consensus labels from a team blinded to model outputs, on 450 targets with 150 contiguous decisions per scope. Each segment and its prefix are entity-isolated. Counts use final intervention decisions after episode control, including immediate and scheduled outputs. Prefix events supply context only; main benchmark results remain unchanged.}
+\label{tab:label_review_450}
+\end{table}
+
+\subsection{Paired Episode-Level Behavioral Diagnosis}
+\label{app:episode_review_450}
+
+On the same 450 targets and 392 preceding events, we compare recorded CSM and \system{} decisions using a common set of 67 proposed episodes: 26 in AS, 10 in AL, and 31 in RA.
+The analysis separates first effective assistance, useful follow-up, and repetition, without additional inference or changes to event labels.
+Each episode specifies a service goal and object, causal evidence, onset, valid observed event positions, and any explicit deadline or closure evidence; it is not a daily trajectory or temporal-pattern record.
+The reference set and semantic matches are model-assisted proposals. Six AL follow-up classifications have human confirmation; the remaining proposals are not treated as independently confirmed annotations.
+We therefore report this version as a provisional, post-hoc paired diagnostic, separate from the blinded event-label review.
+Validity at listed observations does not imply continuous validity between sparse events.
+
+\paragraph{Reference and model histories.}
+Fixed event labels use reference-opportunity novelty (Equation~\ref{eq:or_semantics}); episode coverage instead follows the evaluated method's actual preceding interventions.
+Each method initializes coverage from its own prefix outputs, without counting prefix interventions as target outcomes or borrowing the other method's coverage history.
+A target intervention must match an episode's service goal and object at a listed valid observation.
+For timeliness, intended service time is the decision time plus the specified delay, with zero delay for immediate intervention.
+If an explicit reference deadline exists, an intended service time beyond it receives no coverage credit.
+The first timely match covers the episode.
+For subsequent matches, we compare the message and available evidence with that method's preceding assistance for the same episode.
+A follow-up is valuable when new causal evidence changes the actionable service or next step and the message addresses that change; rephrasing the same advice or continued status alone is redundant.
+Cases requiring unobserved delivery, recipient response, or task completion are left uncertain.
+Valuable follow-ups do not create extra episodes or increase coverage.
+Each output credits at most one episode: among compatible references, the first uncovered one in the fixed reference order takes precedence; otherwise the first already covered one is used.
+Unmatched or late outputs remain in the intervention denominator.
+The original event labels and main result tables are unchanged.
+
+\paragraph{Metrics.}
+Let $I$ be all target interventions, $F$ first valid interventions, $V$ valuable follow-ups, and $R$ redundant follow-ups.
+Episode Coverage is covered new episodes divided by all new episodes.
+Supported Intervention Precision (SIP) is $(F+V)/I$, extending the first-only Episode Precision $F/I$ without giving extra coverage credit.
+Redundant Intervention Rate (RIR) is $R/I$.
+Uncertain follow-ups ($U$), unmatched outputs, late outputs, and unresolved matches remain in $I$, but not in $F+V$ or $R$.
+These categories describe compatibility with the proposed references, not verified recipient benefit.
+Table~\ref{tab:episode_review_450} reports coverage and rates; Table~\ref{tab:episode_categories_450} retains the count decomposition.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{cccccc}
+\toprule
+Scope & Method & Covered / New & Coverage $\uparrow$ & SIP $\uparrow$ & RIR $\downarrow$ \\
+\midrule
+AS & CSM & 23/26 & \textbf{88.5} & 26.7 & \textbf{1.1} \\
+ & \system{} & 23/26 & \textbf{88.5} & \textbf{27.9} & 1.2 \\
+\midrule
+AL & CSM & 8/10 & 80.0 & 39.3 & \textbf{32.1} \\
+ & \system{} & 10/10 & \textbf{100.0} & \textbf{41.0} & 43.6 \\
+\midrule
+RA & CSM & 18/31 & \textbf{58.1} & 33.8 & \textbf{4.6} \\
+ & \system{} & 14/31 & 45.2 & \textbf{40.5} & 9.5 \\
+\bottomrule
+\end{tabular}
+\caption{Provisional paired episode diagnostic on 150 targets per scope, using the same proposed references and each method's causal history. Rates are percentages. SIP credits first valid assistance and valuable follow-up; RIR counts only redundant follow-up. Bold marks the better unrounded directional value within each scope (or both for ties). These are descriptive scores under partially confirmed annotations, not a separate confirmatory evaluation.}
+\label{tab:episode_review_450}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{cccccccccc}
+\toprule
+Scope & Method & $I$ & $F$ & $V$ & $R$ & $U$ & Unmatched & Late & Unresolved \\
+\midrule
+AS & CSM & 90 & 23 & 1 & 1 & 0 & 64 & 0 & 1 \\
+ & \system{} & 86 & 23 & 1 & 1 & 0 & 60 & 0 & 1 \\
+\midrule
+AL & CSM & 28 & 8 & 3 & 9 & 0 & 8 & 0 & 0 \\
+ & \system{} & 39 & 10 & 6 & 17 & 0 & 6 & 0 & 0 \\
+\midrule
+RA & CSM & 65 & 18 & 4 & 3 & 3 & 30 & 6 & 1 \\
+ & \system{} & 42 & 14 & 3 & 4 & 0 & 16 & 4 & 1 \\
+\bottomrule
+\end{tabular}
+\caption{Intervention counts underlying Table~\ref{tab:episode_review_450}. $I$ equals the sum of all seven outcome categories. $U$ denotes uncertain follow-up value; Unresolved denotes a pending semantic or condition match. Both remain separate from redundant or supported assistance. A valuable follow-up does not increase the episode count.}
+\label{tab:episode_categories_450}
+\end{table*}
+
+\paragraph{Observation boundaries.}
+The main diagnostic treats the first AL opportunity as target-onset; a plausible continuation from the prefix changes both methods' denominator to nine, with CSM covering 7/9 and \system{} 9/9.
+Coverage describes the observed segment, not an opportunity's full future lifetime.
+RA has six late CSM outputs and four late \system{} outputs; scheduled decisions are checked against explicit deadlines, not verified delivery.
+Three CSM RA follow-ups have uncertain value: accepting all three would raise its SIP from 33.8\% to 38.5\%, a sensitivity scenario rather than an uncertainty interval.
+Other unmatched and unresolved outputs are not exhaustively adjudicated for alternative service value.
+
+\paragraph{Behavioral comparison.}
+AS coverage is identical, while \system{} uses fewer interventions.
+In AL, \system{} covers two more proposed opportunities and provides more valuable follow-ups, but also has a higher redundant-intervention rate.
+In RA, CSM covers more opportunities, whereas \system{} has higher SIP with fewer interventions.
+The low supported shares partly reflect outputs unmatched to this finite reference inventory; they do not establish that every remaining message is useless.
+These trade-offs distinguish coverage, supported follow-up, and repetition rather than imply uniform superiority or isolate the controller's causal effect.
 
 \FloatBarrier

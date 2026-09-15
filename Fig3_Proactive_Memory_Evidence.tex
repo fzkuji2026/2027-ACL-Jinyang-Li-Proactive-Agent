@@ -36,11 +36,11 @@
 \nextgroupplot[
   title={(b) Median causal availability},
   ylabel={Days from stream start},ymin=0,ymax=12.2,
-  symbolic x coords={Working,LT active,LT matched},xtick={Working,LT active,LT matched},
+  symbolic x coords={Daily,Pattern active,Pattern matched},xtick={Daily,Pattern active,Pattern matched},xticklabels={Daily,Pattern\\active,Pattern\\matched},
   nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt,text=black}
 ]
-\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=navy] coordinates {(Working,0.80)};
-\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=purple] coordinates {(LT active,6.79) (LT matched,10.46)};
+\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=navy] coordinates {(Daily,0.80)};
+\addplot+[ybar,bar width=17pt,mark=none,draw=black!45,fill=purple] coordinates {(Pattern active,6.79) (Pattern matched,10.46)};
 \end{groupplot}
 \end{tikzpicture}
 \end{document}

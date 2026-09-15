@@ -1,7 +1,8 @@
 \subsection{Main Results}
 \label{sec:main_results}
 
-Full \system{} leads in Intervention F1 and Balanced Accuracy in every scope (Table~\ref{tab:main_results}, RQ1), gaining 4.8--28.5 F1 points over ProactiveAgent and 4.3--38.5 over Mem0.
+\system{} leads in Intervention F1 and Balanced Accuracy in every scope (Table~\ref{tab:main_results}, RQ1).
+Against the strongest baseline per scope---Mem0 on AS and CSM on AL/RA---its F1 gains are 4.3, 6.8, and 11.5 points, respectively.
 
 \begin{table*}[t]
 \centering
@@ -12,39 +13,54 @@ Full \system{} leads in Intervention F1 and Balanced Accuracy in every scope (Ta
 \toprule
 Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \shortstack{Opportunity\\Recall $\uparrow$} & \shortstack{Intervention\\F1 $\uparrow$} & \shortstack{False Intervention\\Rate $\downarrow$} & \shortstack{Balanced\\Accuracy $\uparrow$} \\
 \midrule
-\multirow{3}{*}{AS} & ProactiveAgent & 69.0 & 30.0 & 82.5 & 43.9 & 64.5 & 59.0 \\
+\multirow{5}{*}{AS} & Graphiti & 55.1 & 29.3 & 64.4 & 40.3 & 52.0 & 56.2 \\
+ & CSM & 58.9 & 30.8 & 72.3 & 43.2 & 54.4 & 59.0 \\
+ & ProactiveAgent & 69.0 & 30.0 & 82.5 & 43.9 & 64.5 & 59.0 \\
  & Mem0 & 85.2 & 28.8 & \textbf{97.8} & 44.5 & 81.0 & 58.4 \\
- & Full \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
+ & \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
 \midrule
-\multirow{3}{*}{AL} & Mem0 & 8.5 & 23.9 & 17.4 & 20.1 & 7.3 & 55.0 \\
+\multirow{5}{*}{AL} & Mem0 & 8.5 & 23.9 & 17.4 & 20.1 & 7.3 & 55.0 \\
  & ProactiveAgent & 9.2 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
- & Full \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
+ & Graphiti & 17.9 & 33.4 & 51.1 & 40.4 & 13.5 & 68.8 \\
+ & CSM & 17.1 & 43.7 & 63.7 & 51.8 & 10.9 & 76.4 \\
+ & \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
 \midrule
-\multirow{3}{*}{RA} & ProactiveAgent & 53.1 & 17.5 & 78.2 & 28.7 & 49.7 & 64.2 \\
+\multirow{5}{*}{RA} & ProactiveAgent & 53.1 & 17.5 & 78.2 & 28.7 & 49.7 & 64.2 \\
  & Mem0 & 7.7 & 39.8 & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
- & Full \system{} & 26.7 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & 18.1 & \textbf{85.8} \\
+ & Graphiti & 28.1 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
+ & CSM & 39.5 & 28.6 & \textbf{94.8} & 43.9 & 32.1 & 81.4 \\
+ & \system{} & 26.7 & \textbf{40.1} & 89.7 & \textbf{55.4} & 18.1 & \textbf{85.8} \\
 \midrule
-\multirow{3}{*}{Mean} & Mem0 & 33.8 & 30.8 & 47.0 & 32.0 & 31.2 & 57.9 \\
+\multirow{5}{*}{Mean} & Mem0 & 33.8 & 30.8 & 47.0 & 32.0 & 31.2 & 57.9 \\
  & ProactiveAgent & 43.8 & 27.2 & 62.5 & 34.2 & 40.3 & 61.1 \\
- & Full \system{} & 32.7 & \textbf{41.5} & \textbf{80.0} & \textbf{54.3} & \textbf{24.8} & \textbf{77.6} \\
+ & Graphiti & 33.7 & 29.9 & 59.6 & 39.5 & 29.6 & 65.0 \\
+ & CSM & 38.5 & 34.4 & 76.9 & 46.3 & 32.4 & 72.3 \\
+ & \system{} & 32.7 & \textbf{41.5} & \textbf{80.0} & \textbf{54.3} & \textbf{24.8} & \textbf{77.6} \\
 \bottomrule
 \end{tabular}
-\caption{Main comparison (\%, Luna). AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Mean is the equal-weight average of the reported scope metrics, not pooled-event scoring. External baselines are ordered by F1 within each group; Full \system{} is last. Bold marks the best directional score, including the lowest False Intervention Rate. Intervention Rate describes behavior and is not ranked.}
+\caption{Main comparison (\%, Luna). AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Mean equally averages scope metrics, not pooled counts. Baselines are ordered by F1 within each group; \system{} is last. Bold marks the best directional score, including the lowest FIR. Intervention Rate is not ranked.}
 \label{tab:main_results}
 \end{table*}
 
 \paragraph{Coverage and selectivity.}
 The gains do not reflect uniformly more intervention.
-On AS, Full \system{} reduces FIR against both baselines but sacrifices some recall.
-On AL, precision and recall increase alongside FIR.
+On AS, \system{} reduces FIR against all four baselines, with less recall than ProactiveAgent and Mem0.
+On AL, it improves both precision and recall over all baselines; FIR increases relative to ProactiveAgent and Mem0 but decreases relative to CSM and Graphiti.
 On RA, it recovers more opportunities with lower FIR than ProactiveAgent, while Mem0's infrequent interventions leave many opportunities uncovered.
 Intervention Rate is thus an operating point, not a performance target.
 ProactiveAgent intervenes on 9.2\% of AL events versus 53.1\% of RA events despite similar reference-positive prevalences (11.7\% versus 11.9\%).
 Appendix~\ref{app:rate_interpretation} decomposes this difference without attributing it solely to the LLM.
 
+\paragraph{Summary and graph memory.}
+CSM exceeds Event-only by 4.9, 11.8, and 15.2 F1 points on AS, AL, and RA, supporting plain-summary retention.
+\system{} remains ahead of CSM by 5.5, 6.8, and 11.5 points.
+On RA, CSM recovers nine more reference opportunities (165 versus 156 TP), but incurs 179 more FP (412 versus 233); ProEviMem's advantage is selectivity rather than maximum coverage.
+Graphiti reaches 40.3\%, 40.4\%, and 37.7\% F1: temporal relation retrieval does not match ProEviMem under this adapter.
+These memory-interface comparisons do not isolate replay's contribution; Section~\ref{sec:validation_ablations} tests it directly.
+
 \paragraph{Retrieval and model controls.}
-Flat Retrieval Memory attains 41.3\% F1 on AS and 48.2\% on AL, below Full \system{} by 7.4 and 10.4 points despite similar intervention rates.
-Full \system{} has higher precision and recall in both scopes.
+Flat Retrieval Memory attains 41.3\% F1 on AS and 48.2\% on AL, below \system{} by 7.4 and 10.4 points despite similar intervention rates.
+\system{} has higher precision and recall in both scopes.
 Jointly replacing decision and construction LLMs from Luna to Terra to Sol increases F1 and decreases FIR in every scope (RQ4; Appendix~\ref{app:backbone_sensitivity}).
 
 \subsection{Memory-Hierarchy Ablation}
@@ -57,31 +73,34 @@ Temporal Pattern Memory adds 9.9, 13.5, and 7.0 points on AS, AL, and RA, respec
 \begin{table}[t]
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccc}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
 \toprule
-Method & AS & AL & RA & Mean \\
+Method & Metric & AS & AL & RA & Mean \\
 \midrule
-Event-only & 38.3 & 40.0 & 28.7 & 35.7 \\
-Event+Daily & 38.9 & 45.1 & 48.5 & 44.2 \\
-Full \system{} & \textbf{48.8} & \textbf{58.6} & \textbf{55.4} & \textbf{54.3} \\
+\multirow{2}{*}{Event-only} & F1 $\uparrow$ & 38.3 & 40.0 & 28.7 & 35.7 \\
+ & FIR $\downarrow$ & 51.3 & 12.4 & 18.9 & 27.5 \\
+\multirow{2}{*}{Event+Daily} & F1 $\uparrow$ & 38.9 & 45.1 & 48.5 & 44.2 \\
+ & FIR $\downarrow$ & 51.3 & 12.4 & 19.1 & 27.6 \\
+\multirow{2}{*}{\system{}} & F1 $\uparrow$ & \textbf{48.8} & \textbf{58.6} & \textbf{55.4} & \textbf{54.3} \\
+ & FIR $\downarrow$ & \textbf{46.1} & \textbf{10.3} & \textbf{18.1} & \textbf{24.8} \\
 \bottomrule
 \end{tabular}
-\caption{Memory-hierarchy Intervention F1 (\%, $\uparrow$). Settings are matched; Appendix~\ref{app:extended_ablations} retains the complete table and net TP increments. Mean equally averages scope F1.}
+\caption{Hierarchy ablation (\%): Intervention F1 and False Intervention Rate (FIR). Bold marks the best score. Mean averages displayed scope scores; Appendix~\ref{app:extended_ablations} adds net TP increments.}
 \label{tab:hierarchy_counts}
 \end{table}
 
-Relative to Event+Daily, Full \system{} yields 57 more TP and 57 fewer FP on AS, 33 more TP and 30 fewer FP on AL, and 22 more TP and 12 fewer FP on RA.
-These are net aggregate changes, not individual-event attributions.
-The improvements support both levels within the evaluated hierarchy (RQ2), where daily trajectories also supply the inputs for pattern construction.
+Daily evidence increases TP by 4/15/64 on AS/AL/RA, with unchanged FP on AS/AL and two additional FP on RA; hence FIR stays flat or slightly rises despite higher F1.
+Adding patterns then gains 57/33/22 TP while reducing FP by 57/30/12, improving both coverage and selectivity.
+These net aggregate changes support complementary roles within the hierarchy (RQ2), not individual-event attribution or a replay-only effect.
 
-\subsection{End-to-End Mechanism Ablations}
+\subsection{Mechanism Ablations and Controller Analysis}
 \label{sec:validation_ablations}
 
 The validation ablations hold Luna, Event Memory, decision prompts, context capacity, and episode control fixed (Table~\ref{tab:validation_ablations}).
 \emph{w/o Replay Gate} admits well-formed, source-linked, online-reconstructable Candidates to relevance matching without Equation~\ref{eq:replay_gate}'s admission thresholds; matching and decision judgment remain enabled.
 \emph{w/o Daily Validation} bypasses the typed-fact check for schema-valid, same-entity daily extractions, retaining weekly construction and replay.
-The RA-only \emph{w/o Episode Controller} variant scores the model proposal before suppression, leaving memory unchanged.
+The RA-only \emph{Before suppression} diagnostic scores recorded model proposals from the same run, without changing its memory or later decisions.
 
 \begin{table*}[t]
 \centering
@@ -95,11 +114,11 @@ Method & Prec. & F1 & Prec. & F1 & Prec. & F1 & Prec. & F1 \\
 \midrule
 w/o Replay Gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 & 36.2 & 48.4 \\
 w/o Daily Validation & 34.4 & 47.5 & 45.9 & 56.7 & 36.1 & 51.5 & 38.8 & 51.9 \\
-w/o Episode Controller & -- & -- & -- & -- & 36.7 & 53.6 & -- & -- \\
-Full \system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} & \textbf{41.5} & \textbf{54.3} \\
+Before suppression & -- & -- & -- & -- & 36.7 & 53.6 & -- & -- \\
+\system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} & \textbf{41.5} & \textbf{54.3} \\
 \bottomrule
 \end{tabular}
-\caption{Mechanism ablations: Precision and Intervention F1 (\%, both $\uparrow$). Only the named component changes. Mean equally averages three scopes; the RA-only controller ablation has no mean. Complete rates and recall are in Appendix~\ref{app:extended_ablations}.}
+\caption{Evidence-check ablations and controller diagnostic: Precision and Intervention F1 (\%, both $\uparrow$). Validation rows remove the named check; Before suppression scores recorded proposals, not a controller-free rerun. Mean equally averages three scopes. Appendix~\ref{app:extended_ablations} adds intervention rates and recall.}
 \label{tab:validation_ablations}
 \end{table*}
 
@@ -110,19 +129,29 @@ On RA, retaining replay changes 145 TP/284 FP to 156 TP/233 FP; daily validation
 The larger F1 loss without replay appears in every scope, supporting both evidence checks beyond store consistency (RQ3).
 
 \paragraph{Episode control.}
-On RA, retaining the controller changes 173 TP/299 FP to 156 TP/233 FP: 66 fewer FP but 17 fewer TP.
+On the recorded RA sequence, episode suppression changes 173 TP/299 FP to 156 TP/233 FP: 66 fewer FP but 17 fewer TP.
 Precision and F1 rise by 3.5 and 1.9 points, while recall falls from 99.4\% to 89.7\% and BA from 88.1\% to 85.8\%.
-Suppression therefore trades coverage for precision/F1 under the reviewed policy; it can also withhold reference-positive interventions.
+For these recorded proposals, suppression trades coverage for precision/F1 and can withhold reference-positive interventions.
 
 \subsection{Evidence Availability and Error Analysis}
 \label{sec:validation_results}
 \label{sec:case_analysis}
 
-The AS/AL audit covers nine participants and four homes: 423 daily trajectories contain 1,279 source-supported segments with no cross-entity evidence, while construction logs record 311 rejected checks.
-The final pattern store has 42 Active and 12 Candidate proposals with replay-consistent records (Appendix~\ref{app:construction_audit}).
-Daily evidence first becomes available for all 13 entities at median 0.80 days; Active patterns for 11 at 6.79 days; currently relevant patterns for eight at 10.46 days.
-Medians include only entities reaching each stage.
-Historical integrity, activation, current relevance, and future validity are distinct.
+\paragraph{Construction and availability.}
+Across 13 AS/AL entities, 423 daily trajectories contain 1,279 source-supported segments; logs record 311 rejected checks and no retained cross-entity evidence.
+The pattern store has 42 Active and 12 Candidate proposals with replay-consistent records (Appendix~\ref{app:construction_audit}).
+Median times to first daily evidence, Active pattern, and relevant pattern are 0.80, 6.79, and 10.46 days among the 13, 11, and eight entities reaching each stage, respectively.
+Activation therefore does not ensure current relevance.
 
-The 16-case inventory illustrates daily- and pattern-supported contexts, plus errors such as suggestions despite recent movement and missed sustained quiet windows (Appendix~\ref{app:case_examples}).
-These cases address RQ4's failure analysis without establishing counterfactual memory necessity: neither current inactivity nor a matched pattern alone determines service value.
+A logged AS timeline links source events, daily extraction, pattern admission, and a matched context ending in ABSTAIN (Appendix~\ref{app:case_examples}).
+It illustrates evidence flow and service-value judgment (RQ4), not counterfactual memory necessity.
+
+\paragraph{Human-review diagnostic.}
+A separate three-reviewer team, blinded to model outputs, reviews one contiguous 150-event segment per scope with its complete preceding history.
+Agreement with earlier diagnostic references is 88.7\%, 91.3\%, and 85.3\% in AS, AL, and RA.
+Holding each method's decisions fixed, reviewed-label F1 is 42.5\%/55.6\%/47.4\% for \system{} versus 41.0\%/37.2\%/46.5\% for CSM (Appendix~\ref{app:label_review_450}).
+The AL/RA ordering is preserved, but the small AS difference reverses: most labels agree, yet opportunity boundaries affect this sampled comparison.
+
+\paragraph{Episode diagnostic.}
+A provisional paired analysis of CSM and \system{} separates first assistance, valuable follow-up, and redundancy on the same 450 targets (Appendix~\ref{app:episode_review_450}).
+Under the shared proposed references, \system{} has higher supported-intervention precision across scopes, but CSM covers more RA opportunities; this diagnoses coverage--selectivity trade-offs rather than uniform superiority.

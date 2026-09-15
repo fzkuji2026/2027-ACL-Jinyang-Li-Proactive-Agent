@@ -1,7 +1,6 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented \system{} for proactive service and ProactiveStream for longitudinal evaluation.
-Bounded Event Memory, fact-validated Daily Trajectory Memory, and replay-validated Temporal Pattern Memory supply evidence separately from service-value and episode-novelty judgments.
-Full \system{} improves Intervention F1 and Balanced Accuracy over ProactiveAgent and Mem0 across all three scopes.
-Controlled ablations support this hierarchy and its validation mechanisms, highlighting the value of causally available evidence for proactive decisions.
+We presented \system{}, which turns longitudinal observations into source-checked daily trajectories and replay-assessed temporal patterns for proactive service decisions.
+On ProactiveStream, it improves Intervention F1 and Balanced Accuracy over four baselines across three scopes; ablations support the hierarchy and its evidence checks.
+The resulting design treats history as traceable evidence with temporal applicability, while leaving present service value and opportunity novelty to the decision process.

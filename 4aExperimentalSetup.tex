@@ -4,26 +4,30 @@
 \subsection{Experimental Settings}
 \label{sec:experimental_settings}
 
-We examine baseline performance (\textbf{RQ1}), memory-level contributions (\textbf{RQ2}), evidence-validation mechanisms (\textbf{RQ3}), and model sensitivity and errors (\textbf{RQ4}).
+We evaluate method comparisons (\textbf{RQ1}), memory-level contributions (\textbf{RQ2}), evidence-validation mechanisms (\textbf{RQ3}), and model sensitivity and errors (\textbf{RQ4}).
 
 \paragraph{Comparators.}
 \emph{ProactiveAgent} uses the released evaluation prompt and proposal/null contract without its fine-tuned checkpoint, retaining causal event--decision history capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
 \emph{Mem0} uses open-source extraction, consolidation, and same-entity retrieval~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
 Both share the task semantics and final Episode Controller, but retain their native prompt/memory interfaces; budgets are not equalized.
-\emph{Event-only}, \emph{Event+Daily}, and Full \system{} share the decision prompt, Event Memory bound, schema, and controller, differing only in memory levels.
+\emph{Cross-week Summary Memory (CSM)} is our plain-summary baseline: it recursively combines completed daily summaries with an earlier cross-week summary, without typed fact validation, replay gating, or explicit temporal-rule matching.
+\emph{Graphiti} adapts an open-source temporal graph to store event-derived relations and retrieve same-stream facts~\citep{zep2026graphiti}.
+Both augment bounded Event Memory and reuse the task policy and controller, with memory-specific interface guidance rather than identical prompt text.
+\emph{Event-only}, \emph{Event+Daily}, and \system{} share the decision prompt, Event Memory bound, schema, and controller, differing only in memory levels.
 For AS/AL, \emph{Flat Retrieval Memory} adds three similar older same-entity events to Event-only using fixed dense embeddings and cosine similarity, without consolidation or replay.
 Section~\ref{sec:validation_ablations} defines the mechanism ablations; Appendix~\ref{app:configuration} lists the recorded interface and retrieval settings.
 
 \paragraph{Model and protocol.}
-Primary decision and construction calls use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
+The primary backbone is \texttt{gpt-5.6-luna}; the original ProEviMem decision and construction runs use the official OpenAI API, with temperature zero and thinking disabled.
 Decision and construction are separate roles with separate output budgets.
 Terra/Sol comparisons replace both roles together (Appendix~\ref{app:backbone_sensitivity}).
 Input manifests, prompts, schemas, thresholds, and configurations are versioned.
 
 \paragraph{Metrics.}
+Across all scopes, \textsc{Intervene} includes both immediate and scheduled service decisions; \textsc{Abstain} denotes no intervention decision at the current event.
 We aggregate TP/FP/FN/TN within each scope, then compute Intervention Rate, Precision, Opportunity Recall, Intervention F1, False Intervention Rate (FIR), and Balanced Accuracy (BA).
 Mean rows equally average the reported scope metrics, not pooled counts or entity scores.
 FIR is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, not $1-\mathrm{Precision}$; BA averages recall and specificity.
 Higher precision, recall, F1, and BA and lower FIR are preferred.
 Intervention Rate describes decision frequency and has no universal preferred direction.
-Every event is scored after shared episode control, except in its explicit ablation.
+Events are scored after shared episode control; a separate RA diagnostic also scores the recorded proposals before suppression.
