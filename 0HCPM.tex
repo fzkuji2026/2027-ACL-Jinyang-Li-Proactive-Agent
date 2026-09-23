@@ -14,6 +14,8 @@
 \usepackage{multirow}
 \usepackage{placeins}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usetikzlibrary{arrows.meta,calc,positioning}
 
 \newcommand{\system}{ProEviMem}
@@ -26,12 +28,13 @@
 \maketitle
 
 \begin{abstract}
-Event-driven LLM agents must decide whether incoming observations warrant assistance, often using evidence spread across earlier events.
-Retaining related history is not enough: the agent must assess its support and current applicability without treating recurrence alone as sufficient reason to intervene.
+Proactive LLM agents anticipate service opportunities from ongoing observations and accumulated history.
+A central challenge is determining which historical observations remain applicable to the current event and can support a timely service decision.
 We propose Proactive Evidence Memory (\system{}), combining bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
-The framework checks daily facts against their sources and assesses patterns against prior observations, then selects applicable evidence for the agent's service-opportunity judgment.
-Across ProactiveStream's three application scopes, \system{} improves Intervention F1 by 4.3--11.5 percentage points over the strongest baseline in each scope, among comparators including recursive-summary and temporal-graph methods.
-Hierarchy and validation ablations support the contribution of evidence organization and historical support checks to opportunity detection.
+Daily validation checks extracted facts against source events, while historical replay assesses recurring patterns before they are matched to current events.
+We also construct ProactiveStream, a longitudinal benchmark covering three application scopes, where agents process isolated event streams chronologically under episode-aware opportunity labels.
+\system{} improves Intervention Score by 4.3--11.5 percentage points over the strongest baseline in each scope.
+Ablation studies support the contributions of hierarchical memory organization and validation to service-opportunity detection.
 \end{abstract}
 
 \input{1Introduction}

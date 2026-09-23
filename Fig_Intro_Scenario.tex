@@ -1,0 +1,135 @@
+% Editable compact vector scene. All observations and decisions are illustrative.
+% Introduction motivation figure; compile separately to regenerate Fig_Intro_Scenario.pdf.
+\documentclass[tikz,border=3pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,calc}
+\definecolor{ink}{HTML}{22364A}
+\definecolor{muted}{HTML}{617182}
+\definecolor{edge}{HTML}{D9E3EB}
+\definecolor{blue}{HTML}{527696}
+\definecolor{bluepale}{HTML}{F3F7FB}
+\definecolor{teal}{HTML}{287E75}
+\definecolor{tealpale}{HTML}{EEF8F4}
+\definecolor{amber}{HTML}{BC803B}
+\definecolor{amberpale}{HTML}{FFF5E7}
+\definecolor{purple}{HTML}{776AA4}
+\definecolor{purplepale}{HTML}{F4F1FA}
+\definecolor{skin}{HTML}{F1CFB5}
+\tikzset{
+  txt/.style={text=ink,font=\fontsize{12}{14}\selectfont,inner sep=0pt,align=left},
+  secondary/.style={txt,font=\fontsize{11}{13}\selectfont,text=muted},
+  heading/.style={txt,font=\bfseries\fontsize{13}{15}\selectfont},
+  box/.style={rounded corners=5pt,line width=.7pt,draw=edge,fill=white},
+  arrow/.style={-{Stealth[length=2.1mm,width=1.4mm]},draw=muted,line width=.85pt}
+}
+\newcommand{\walker}[2]{%
+  \begin{scope}[shift={(#1,#2)},line cap=round,line join=round]
+    \fill[skin] (0,-.48) circle (.105);
+    \draw[ink,line width=1.2pt] (-.07,-.54) to[bend left=32] (.075,-.54);
+    \draw[teal,line width=3.6pt] (-.025,-.32)--(-.09,.04);
+    \draw[teal,line width=1.55pt] (-.03,-.28)--(.15,-.08)--(.32,-.10);
+    \draw[teal,line width=1.55pt] (-.055,-.24)--(-.23,-.07)--(-.31,.06);
+    \draw[ink,line width=1.9pt] (-.09,.04)--(.07,.25)--(.25,.39);
+    \draw[ink,line width=1.9pt] (-.09,.04)--(-.23,.27)--(-.32,.41);
+    \draw[ink,line width=1.5pt] (.23,.4)--(.34,.4);
+    \draw[ink,line width=1.5pt] (-.32,.42)--(-.22,.42);
+  \end{scope}}
+\newcommand{\calendarwalk}[3]{%
+  \path[box] (#1,1.79) rectangle ++(2.72,1.54);
+  \path[fill=tealpale,rounded corners=5pt] (#1,1.79) rectangle ++(2.72,.43);
+  \fill[tealpale] (#1,2.02) rectangle ++(2.72,.20);
+  \node[txt,text=teal,font=\bfseries\fontsize{11}{13}\selectfont,anchor=west] at (#1+.19,2.01) {#2};
+  \draw[teal,line width=1.5pt,line cap=round] (#1+.38,1.72)--(#1+.38,1.88);
+  \draw[teal,line width=1.5pt,line cap=round] (#1+2.33,1.72)--(#1+2.33,1.88);
+  \walker{#1+.51}{2.83}
+  \node[txt,anchor=west] at (#1+1.02,2.55) {Walking};
+  \node[secondary,anchor=west] at (#1+1.02,2.96) {#3};
+}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=-1cm]
+  \path[use as bounding box] (0,0) rectangle (18.8,9.45);
+  \fill[white] (0,0) rectangle (18.8,9.45);
+  \node[txt,anchor=west,font=\bfseries\fontsize{17}{19}\selectfont] at (.4,.46)
+    {From past activity to timely assistance};
+
+  % Shared history: selected observations, not a complete replay record.
+  \path[box,fill=bluepale] (.4,1.01) rectangle (10.25,3.66);
+  \node[heading,text=muted,anchor=west] at (.75,1.39) {Earlier evenings};
+  \node[secondary,anchor=east] at (9.87,1.39) {Over 72 h ago};
+  \calendarwalk{.78}{Monday}{18:20}
+  \calendarwalk{3.80}{Tuesday}{18:35}
+  \calendarwalk{6.82}{Thursday}{18:25}
+  \draw[arrow,draw=amber] (10.39,2.34)--(11.01,2.34);
+
+  \path[box,draw=amber!40,fill=amberpale] (11.18,1.01) rectangle (18.4,3.66);
+  \node[heading,text=amber,anchor=west] at (11.54,1.40) {Today, 18:30};
+  \begin{scope}[shift={(12.20,2.59)},line cap=round,line join=round]
+    \fill[amber!9] (0,0) circle (.82);
+    \fill[skin] (-.09,-.36) circle (.18);
+    \path[fill=ink] (-.27,-.42) to[bend left=32] (.07,-.45)
+      --(.04,-.55) to[bend left=20] (-.25,-.53)--cycle;
+    \path[fill=blue] (-.3,-.10) to[bend right=10] (.17,-.10)
+      --(.25,.38)--(-.29,.38)--cycle;
+    \draw[blue,line width=4pt] (-.27,.01)--(-.43,.29)--(-.2,.37);
+    \draw[blue,line width=4pt] (.17,.02)--(.38,.2)--(.45,-.04);
+    \draw[skin,line width=3pt] (.45,-.04)--(.46,-.10);
+    \path[fill=ink,rounded corners=1pt] (.38,-.39) rectangle (.58,-.08);
+    \path[fill=white,rounded corners=.5pt] (.405,-.355) rectangle (.555,-.15);
+    \draw[ink,line width=4.6pt] (-.15,.37)--(-.23,.67);
+    \draw[ink,line width=4.6pt] (.11,.37)--(.20,.67);
+    \draw[ink,line width=2pt] (-.27,.7)--(-.13,.7);
+    \draw[ink,line width=2pt] (.16,.7)--(.32,.7);
+    \draw[amber!45,line width=.6pt] (-.67,.75)--(.71,.75);
+  \end{scope}
+  \node[txt,anchor=west] at (13.46,2.25) {Low activity};
+  \node[txt,anchor=west] at (13.46,2.87) {Available for a suggestion};
+
+  % Branch the identical current observation into both agents.
+  \draw[draw=amber!70,line width=.8pt,rounded corners=3pt]
+    (14.82,3.68)--(14.82,4.11)--(4.06,4.11);
+  \draw[arrow,draw=amber!80] (4.06,4.11)--(4.06,4.53);
+  \draw[arrow,draw=amber!80] (13.23,4.11)--(13.23,4.53);
+
+  \path[box,fill=bluepale] (.4,4.60) rectangle (7.72,8.94);
+  \path[box,draw=teal!40,fill=tealpale] (8.04,4.60) rectangle (18.4,8.94);
+  \node[heading,anchor=west] at (.81,5.06) {Event-only Agent};
+  \node[heading,anchor=west] at (8.45,5.06) {Agent with ProEviMem};
+
+  \path[box] (.79,5.55) rectangle (7.33,6.76);
+  \node[txt,anchor=west,font=\bfseries\fontsize{12}{14}\selectfont] at (1.07,5.93)
+    {Recent events};
+  \draw[draw=edge,line width=1pt] (1.07,6.38)--(6.78,6.38);
+  \foreach \x in {1.18,2.04,2.90,3.76,4.62,5.48}{
+    \path[fill=blue!30,rounded corners=1.3pt] (\x,6.18) rectangle ++(.40,.40);
+  }
+  \path[fill=amber,rounded corners=1.3pt] (6.34,6.16) rectangle ++(.44,.44);
+  \node[secondary,anchor=center] at (4.06,7.18) {Service timing uncertain};
+  \draw[arrow,draw=blue!65] (4.06,7.42)--(4.06,7.78);
+
+  % Daily abstraction and temporal consolidation, shortened for the Intro scene.
+  \path[box,draw=teal!23] (8.43,5.55) rectangle (12.88,6.96);
+  \node[txt,text=teal,anchor=west,font=\bfseries\fontsize{12}{14}\selectfont] at (8.71,5.93)
+    {Daily trajectories};
+  \node[txt,anchor=west] at (8.71,6.51) {Dated walking intervals};
+  \draw[arrow,draw=teal] (12.98,6.27)--(13.45,6.27);
+  \path[box,draw=purple!30,fill=purplepale] (13.55,5.55) rectangle (18.03,6.96);
+  \node[txt,text=purple,anchor=west,font=\bfseries\fontsize{12}{14}\selectfont] at (13.82,5.93)
+    {Temporal patterns};
+  \node[txt,anchor=west] at (13.82,6.40) {Evening walks};
+  \node[txt,anchor=west] at (13.82,6.76) {18:00--19:00};
+  \node[secondary,text=teal,anchor=center] at (13.23,7.34) {Recent events + applicable pattern};
+  \draw[arrow,draw=teal] (13.23,7.56)--(13.23,7.78);
+
+  \path[box,draw=blue!25] (.79,7.94) rectangle (7.33,8.60);
+  \node[txt,text=blue,font=\bfseries\fontsize{12}{14}\selectfont,anchor=west] at (1.09,8.27) {ABSTAIN};
+  \node[txt,anchor=west] at (3.35,8.27) {Keep observing.};
+  \path[box,draw=teal!28] (8.43,7.94) rectangle (18.03,8.60);
+  \node[txt,text=teal,font=\bfseries\fontsize{12}{14}\selectfont,anchor=west] at (8.72,8.27) {INTERVENE};
+  \node[txt,anchor=west] at (11.61,8.27) {``A good time for a short walk?''};
+
+  % One concise provenance label replaces the repeated caveats in v1.
+  \node[secondary,anchor=east,font=\itshape\fontsize{10}{12}\selectfont] at (18.4,9.29) {Illustrative example};
+\end{tikzpicture}
+\end{document}

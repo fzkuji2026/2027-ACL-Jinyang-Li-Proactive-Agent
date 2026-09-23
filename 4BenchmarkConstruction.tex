@@ -1,11 +1,13 @@
 \section{ProactiveStream Benchmark}
 \label{sec:benchmark}
 
-ProactiveStream instantiates the causal \textsc{Intervene}/\textsc{Abstain} task across three scopes, with scope-specific observations and services under a common opportunity-labeling principle.
-Table~\ref{tab:benchmark_stats} reports all 4,539 events, 17 isolated streams, and 729 reference interventions.
+ProactiveStream evaluates service-opportunity detection in longitudinal event streams, where agents assess incoming observations using their own accumulated history.
+It comprises 4,539 events across 17 isolated streams in three service scopes, with 729 reviewed reference interventions (Table~\ref{tab:benchmark_stats}).
 
 \begin{table*}[t]
 \centering
+\caption{Composition and provenance of ProactiveStream. AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Each stream is an independent memory and replay unit. Reference interventions denote team-reviewed service opportunities.}
+\label{tab:benchmark_stats}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}cp{0.22\textwidth}p{0.11\textwidth}ccp{0.23\textwidth}c@{}}
@@ -19,41 +21,27 @@ RA & GH Archive & repository & 4 & 1,459 & longitudinal repository histories & 1
 Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal settings & 729 \\
 \bottomrule
 \end{tabular}
-\caption{Composition and provenance of ProactiveStream. AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Each stream is an independent memory and replay unit. Reference interventions denote team-reviewed service opportunities rather than observed recipient acceptance or downstream benefit.}
-\label{tab:benchmark_stats}
 \end{table*}
 
 \subsection{Scopes and Public Events}
 
-\paragraph{Activity Support (AS).}
-HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps} provide nine complete participant streams.
-Events expose contemporaneous availability, activity, step summaries, location, weather, and local slot, excluding randomized treatment assignments and future outcomes.
-Labels concern optional activity support, not the original treatment policy or health effects.
+\hspace*{\parindent}\textbf{Activity Support (AS)} uses participant activity and availability contexts for optional activity assistance.
 
-\paragraph{Ambient Living (AL).}
-Four CASAS homes~\citep{cook2013casas} each contribute 14 consecutive days.
-Within-day ten-minute blocks form 28 regular 50-minute segments and one 40-minute tail per day: 406 events per home.
-Segments become available at interval closure and describe only within-interval sensor activity, without historical baselines.
-Services are limited to gentle check-ins, excluding disease, falls, danger, and unsupported personal inferences.
+\textbf{Ambient Living (AL)} uses time-bounded home-sensor observations for gentle, low-risk check-ins.
+Each sensor segment becomes available at interval closure.
 
-\paragraph{Repository Assistance (RA).}
-We organize repository activity records into chronologically ordered event streams.
-Each repository defines an independent stream containing commit pushes, issue updates, pull-request actions, and reviews.
-We preserve GitHub's native event granularity, with each event corresponding to one intervention decision.
-Memory construction and intervention decisions are performed separately for each repository, without transferring observations or memory across repositories.
-Intervention history likewise remains repository-local, even when contributors overlap.
-Services include low-risk triage, review, and maintenance.
-Native \texttt{PushEvent} denotes repository activity, not an intervention.
+\textbf{Repository Assistance (RA)} uses repository activity at GitHub's native event granularity for low-risk triage, review, and maintenance, with one decision per event.
 
-Across scopes, both label classes use the same scope-specific public event schema.
-Private reference labels, candidate flags, episode annotations, trajectory summaries, memory-level markers, and scoring masks are absent.
-Appendix~\ref{app:benchmark_protocol} gives detailed fields and preprocessing.
+Each participant, home, or repository defines an isolated chronological stream, allowing earlier observations to inform later service opportunities.
+Public inputs contain contemporaneously available observations, using the same scope-specific schema for both label classes.
+Agents construct their own memory from these events; annotation and scoring metadata remain evaluator-private.
+Appendix~\ref{app:benchmark_protocol} details source datasets, fields, and preprocessing.
 
 \subsection{Reference Labels and Causal Replay}
 \label{sec:reference_labels}
 
-Annotators view $e_t$ and complete strictly prior same-entity history $\mathcal{H}_{<t}$, independently of a tested agent's memory representation.
-Let $A$ denote a concrete, timely, feasible, low-risk opportunity visible in $e_t$, $B$ one made visible by prior evidence, and $N_t^{\mathrm{ref}}$ reference-episode novelty:
+Annotators assess $e_t$ and its complete prior same-stream history $\mathcal{H}_{<t}$.
+Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ reference-episode novelty:
 \begin{equation}
 \begin{aligned}
 y_t=1 \quad \Longleftrightarrow \quad &
@@ -62,16 +50,14 @@ y_t=1 \quad \Longleftrightarrow \quad &
 \end{aligned}
 \label{eq:or_semantics}
 \end{equation}
-These are annotation predicates, not additional model gates.
-The first reliable actionable window is \textsc{Intervene}; covered windows are \textsc{Abstain} unless evidence strengthens, service changes, or the episode reopens.
-Reference coverage follows the reviewed opportunity sequence, not model predictions.
+The reference protocol labels the first reliable actionable window \textsc{Intervene} and covered windows \textsc{Abstain}, allowing renewed opportunities when support strengthens, the service changes, or an episode reopens.
+Reference novelty follows the reviewed opportunity sequence independently of model outputs and is shared across methods.
+The event-level labels therefore assess timely identification of reviewed service windows.
 
-LLM-assisted screening prioritizes review but never assigns final labels automatically.
-Three team members independently annotate without evaluated-system decisions, then cross-review and adjudicate every event.
-For the main comparisons, we use protocol-fixed evaluation, not an independent development/test split: aggregation precedes row construction, and versioned labels, prompts, memory bounds, and validation settings are frozen before those runs.
-Labels represent reviewed service opportunities, not recipient acceptance.
+LLM-assisted screening prioritizes candidate opportunities; three team members then independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
+Appendix~\ref{app:label_review_450} reports a separate-team review of three contiguous 150-event segments with their preceding histories.
+Main comparisons use protocol-fixed evaluation on the jointly developed benchmark, with labels, prompts, memory bounds, and validation settings frozen before the corresponding runs.
 
-Each stream starts with empty method state and is replayed chronologically.
-Only current public fields and strictly prior same-stream state are accessible.
-Decisions precede memory commits; reference labels are joined only after inference.
-Early events before consolidated memory becomes available remain scored.
+Each stream is replayed chronologically from empty method state, with access to the current event and strictly prior same-stream context.
+Each decision is finalized before the current event is committed to memory; reference labels are joined after inference for scoring.
+Scoring includes the initial events and continues as history accumulates.

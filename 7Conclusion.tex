@@ -1,6 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented \system{}, which turns longitudinal observations into source-checked daily trajectories and replay-assessed temporal patterns for proactive service decisions.
-On ProactiveStream, it improves Intervention F1 and Balanced Accuracy over four baselines across three scopes; ablations support the hierarchy and its evidence checks.
-The resulting design treats history as traceable evidence with temporal applicability, while leaving present service value and opportunity novelty to the decision process.
+We presented \system{}, a proactive memory framework that combines bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
+Across the three scopes of ProactiveStream, \system{} achieves higher Intervention Score and Balanced Accuracy than the evaluated baselines and cross-week summary control.
+Ablations support the contributions of hierarchical organization, daily fact validation, and historical replay gating.
+These findings highlight the value of matching source-grounded, historically supported memory to current observations for service-opportunity detection.

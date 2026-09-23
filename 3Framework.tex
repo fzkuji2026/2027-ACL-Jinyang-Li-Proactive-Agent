@@ -1,69 +1,75 @@
 \section{Proactive Evidence Memory (\system{})}
 \label{sec:framework}
 
-\system{} organizes recent public events, fact-validated daily trajectories, and replay-assessed temporal patterns into three evidence levels (Figure~\ref{fig:architecture}).
-Construction checks source fidelity and historical support; retrieval selects applicable patterns; the decision LLM judges present service value.
+\system{} uses three complementary memory layers (Figure~\ref{fig:architecture}): Event Memory for recent public events, Daily Trajectory Memory for source-checked daily abstractions, and Temporal Pattern Memory for replay-assessed recurring patterns.
+Construction checks source fidelity and historical support, retrieval selects currently applicable patterns, and the decision LLM assesses present service value.
 
 \begin{figure*}[t]
     \centering
     \resizebox{\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}
-    \caption{\system{} separates memory construction (A) from online decision-making (B). Daily extraction is checked against cited events; temporal proposals are assessed by replay over completed daily records. Only lifecycle-eligible, currently relevant patterns enter the structured context. The decision LLM assesses service value, and the shared controller can suppress repeated interventions but cannot create them. Dashed feedback commits the current event after the output is finalized, whether \textsc{Intervene} or \textsc{Abstain}; $Q_t$ records prior episode coverage.}
+    \caption{\system{} separates memory construction (A) from online decision-making (B). Daily extraction is checked against cited events; temporal proposals are assessed by replay over completed daily records. Only lifecycle-eligible, currently relevant patterns enter the structured context. The decision LLM assesses service value, and the shared controller filters proposed interventions to suppress repetition. Dashed feedback commits the current event after the output is finalized, whether \textsc{Intervene} or \textsc{Abstain}; $Q_t$ describes observable episode state.}
     \label{fig:architecture}
 \end{figure*}
 
 \subsection{Memory Construction and Update}
 
 \paragraph{Bounded Event Memory.}
-For event $e_t$, Event Memory retains prior events without semantic rewriting, intersecting a temporal horizon $\Delta$ with capacity $K$:
+For event $e_t$, Event Memory retains prior events in their original public representation, intersecting a temporal horizon $\Delta$ with capacity $K$:
 \begin{equation}
 S_t=\operatorname{Tail}_{K-1}
 \left((e_i)_{i<t,\;0\leq\tau_t-\tau_i\leq\Delta}\right).
 \label{eq:source_memory}
 \end{equation}
-We use $\Delta=72$ hours and $K=100$, including the separately supplied current event.
-An independent buffer retains all committed events of the open local day for daily construction, unaffected by this truncation.
+Here $\operatorname{Tail}_{K-1}$ selects the most recent $K-1$ events in the filtered sequence.
+We use $\Delta=72$ hours and $K=100$: at most 99 prior events accompany the separately supplied current event.
+An independent daily buffer retains all committed events of the open local day, preserving complete input for daily construction.
 
 \paragraph{Fact-validated Daily Trajectory Memory.}
 After a local day closes, a construction LLM summarizes its buffered events as trajectory segments with intervals, typed facts, and event citations.
-For segment $d$, normalized checkable facts $F(d)$ and cited events $\mathcal{E}(d)$ must satisfy
+Let $F(\cdot)$ denote normalized checkable facts obtained from typed fields.
+For segment $d$ and its cited events $\mathcal{E}(d)$, source consistency requires
 \begin{equation}
 F(d)\subseteq\bigcup_{e\in\mathcal{E}(d)}F(e),
 \qquad \mathcal{E}(d)\subseteq E^u_{\text{completed day}}.
 \label{eq:daily_validation}
 \end{equation}
+Here $E^u_{\text{completed day}}$ contains the same entity's events from that completed day.
 The validator checks entity, interval, citations, and canonicalized scalar values at compatible field paths.
-Unsupported facts and unresolved citations are rejected; free text cannot substitute for typed evidence.
-Accepted daily trajectories form $W_t$, preserving evidence beyond Event Memory.
+Acceptance requires source-supported typed facts and resolved citations; free text provides accompanying descriptions.
+Accepted daily trajectories form $W_t$, retaining historical context beyond Event Memory.
 Appendix~\ref{app:implementation} details field handling and buffering.
 
 \paragraph{Replay-assessed Temporal Pattern Memory.}
-A weekly cycle is a non-overlapping block of seven completed daily records for one entity, not necessarily a calendar week.
+Weekly consolidation groups seven completed daily records per entity in time order, with each record assigned to one cycle.
+A cycle may span more than seven calendar days.
 An LLM proposes a trigger $g$, expected pattern $p$, time window, optional weekday restrictions, and source daily identifiers.
 Replay checks these conditions against validated daily facts: an observable triggered day is fulfilled when $p$ occurs at or after the trigger within the window and violated otherwise.
 Missing observations are censored, inapplicable days are excluded, and each date contributes at most once.
-For fulfilled and violated day counts $n_f,n_v$,
+Let $n_f$ count fulfilled (supporting) days and $n_v$ count violated days:
 \begin{equation}
 \operatorname{conf}_{\mathrm{replay}}=\frac{n_f}{n_f+n_v},
 \qquad
 \operatorname{lift}=\frac{\operatorname{conf}_{\mathrm{replay}}}{\operatorname{base}(p)}.
 \label{eq:replay_gate}
 \end{equation}
-The base rate is the frequency of $p$ over observable days under the same window/weekday restrictions without conditioning on $g$.
+The base rate is the frequency of $p$ over observable days under the same window/weekday restrictions across both triggered and other observable days.
 Zero denominators yield zero confidence or lift, respectively.
 
-A well-formed proposal becomes \emph{Active} with at least three supporting days, confidence $\geq0.5$, and lift $\geq1.0$; otherwise it remains decision-invisible \emph{Candidate}.
+A well-formed proposal becomes \emph{Active} when $n_f\geq3$, confidence $\geq0.5$, and lift $\geq1.0$; otherwise it remains decision-invisible \emph{Candidate}.
 Malformed proposals are rejected.
 Consolidation resets the online daily view, retaining records for audit.
 Later observations update pattern confidence and lifecycle: repeated violations can lower retrieval priority or suspend eligibility.
 Appendix~\ref{app:lifecycle} specifies these transitions.
-Historical support does not establish future validity or require intervention.
+Historical support characterizes observed recurrence; future applicability and present service value require separate assessment.
 
 \subsection{Memory Retrieval and Selection}
 
 Event Memory supplies the bounded sequence and $W_t$ supplies all completed daily trajectories in the current cycle.
 Pattern retrieval additionally checks entity-local trigger context, weekdays, and temporal applicability with a 30-minute lead/grace interval.
-Current and previously recorded causal trigger occurrences are eligible; fulfilled and unobservable (censored) occurrences are not.
-For pattern store $L_t^u$, lifecycle eligibility $\operatorname{Eligible}_t$, and occurrence state $s_t$,
+Matching considers current and previously recorded causal trigger occurrences.
+An occurrence is fulfilled when its expected behavior has been observed; censored occurrences have insufficient observations for assessment.
+Selection excludes both states.
+For pattern store $L_t^u$, lifecycle eligibility $\operatorname{Eligible}_t$, trigger/time matching $\operatorname{Match}_t$, and occurrence state $s_t$,
 \begin{equation}
 \begin{aligned}
 R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
@@ -72,24 +78,27 @@ R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
 \end{aligned}
 \label{eq:long_term_retrieval}
 \end{equation}
-Ranking prioritizes occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
-Selection uses no future observations: historical support and present applicability are separate requirements.
+The top-three selection ranks eligible patterns by occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
+All matching uses causally available observations to assess present applicability.
 
-\subsection{Proactive Decision and Episode Control}
+\subsection{Proactive Decision}
 \label{sec:decision_control}
 
-The decision context separates current observations, daily evidence, and selected patterns:
+The decision context combines the current event, recent events, daily trajectories, selected patterns, and observable episode state:
 \begin{equation}
 C_t=(e_t,S_t,W_t,R_t,Q_t),
 \label{eq:decision_context}
 \end{equation}
-where $Q_t$ records observable episode state and prior coverage.
-The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} prior evidence supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
-A deviation is neither required nor sufficient.
-The shared Episode Controller may suppress, but never create, an intervention.
-It identifies opportunities by observable state, service intent, and pattern evidence; changed state, stronger evidence, changed service, or a new local day permits reconsideration, not automatic intervention.
-All methods use the same controller policy, applied to their own observable state and available evidence; Appendix~\ref{app:episode_control} specifies identity construction.
+where $Q_t$ describes the service opportunity's observable state; the controller separately records previously allowed interventions to track service coverage.
+The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} historical context supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
+Service value governs intervention across both routine and deviating situations.
 
-Inference prepares prior memory, stages $e_t$, selects evidence, obtains and finalizes the decision, and only then commits $e_t$.
+Within each scope, all methods apply the same Episode Controller policy to their own context and intervention history.
+The controller compares proposed services with previously allowed interventions and converts duplicates to \textsc{Abstain}.
+Scope-specific changes in opportunity state, service identity, contextual patterns, or local day permit renewed assessment; each intervention originates from an LLM proposal.
+The controller finalizes the proposal as $(\hat y_t,\hat m_t)$, the output defined in Section~\ref{sec:problem}.
+Appendix~\ref{app:episode_control} specifies matching fields, phase transitions, and re-entry rules.
+
+Inference prepares prior memory, stages $e_t$, selects relevant context, obtains and finalizes the decision, and then commits $e_t$.
 Maintenance incorporating $e_t$ can affect only later decisions.
-Reference labels enter neither construction nor retrieval.
+Reference labels remain evaluator-private throughout construction and retrieval.

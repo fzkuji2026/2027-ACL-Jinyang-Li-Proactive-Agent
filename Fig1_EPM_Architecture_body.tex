@@ -17,7 +17,7 @@
   mem/.style={box,draw=store,line width=1pt,fill=white},
   lab/.style={fill=white,inner sep=2pt,font=\fontsize{10}{11}\selectfont}]
 
-% Panel backgrounds: structure and labels, not color alone, separate the paths.
+% Panel backgrounds, structure, and labels separate the paths.
 \filldraw[fill=panelA,draw=construct!40,rounded corners=2.5mm]
   (.45,5.25) rectangle (16,10.25);
 \filldraw[fill=panelB,draw=online!45,rounded corners=2.5mm]
@@ -87,7 +87,7 @@
 \draw[arrow] (context.east) -- (decision.west);
 \draw[arrow] (decision.east) -- (episode.west);
 
-% Commit happens after either finalized output, never before its own decision.
+% Commit happens after either finalized output.
 \node[align=center,font=\bfseries\fontsize{11}{12}\selectfont] (out) at (14,.32)
   {INTERVENE / ABSTAIN};
 \draw[arrow] (episode.south) -- (out.north);

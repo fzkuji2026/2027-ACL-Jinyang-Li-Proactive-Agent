@@ -4,65 +4,70 @@
 This appendix expands the evidence lifecycle in Section~\ref{sec:framework}; the core acceptance conditions and causal interfaces remain in the main paper.
 
 \subsection{Daily Buffer and Checkable Fields}
-Daily construction uses an independent buffer of committed events for the open local day, so Event Memory truncation does not discard construction evidence.
+Daily construction uses an independent buffer that preserves all committed events of the open local day alongside the bounded Event Memory.
 The buffer is cleared after that day is processed.
 Each daily segment records a local interval, typed \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields, and supporting event identifiers.
 These activity segments are distinct from service episodes used for intervention control.
 Scalar values are canonicalized; field paths must agree exactly or through a schema-preserving suffix.
 The validator also checks entity, interval, and citation consistency.
-Unsupported facts and unresolved or cross-entity citations are rejected.
-Free-text descriptions do not substitute for typed evidence in validation or replay.
+Accepted facts have matching source values and resolved same-entity citations.
+Validation and replay operate on typed evidence; free text supplies accompanying descriptions.
 Accepted segments form daily trajectories retained in the current construction cycle, even after their source events leave Event Memory.
 
 \subsection{Construction Clock and Replay Boundaries}
-A weekly cycle is a non-overlapping, time-ordered block of seven completed daily-trajectory records for one entity, not a fixed calendar week.
-Dates without a daily record are not filled in, so a cycle may span more than seven calendar days.
-Empty or unobservable records count toward cycle completion but provide no fulfilled or violated replay evidence.
+A weekly cycle is a time-ordered block of seven completed daily-trajectory records for one entity; each record belongs to one block.
+Cycles advance with available daily records, so a cycle may span more than seven calendar days.
+Empty or unobservable records advance cycle completion while leaving fulfilled and violated replay counts unchanged.
 After consolidation, the online daily-memory view starts a new cycle, while daily records remain available for audit.
 
 A proposal specifies trigger context $g$, expected pattern $p$, a local-time window, optional weekday restrictions, and supporting daily identifiers.
-It describes an expectation, not a recommendation to intervene.
-Replay excludes days outside applicability conditions and censors missing observations.
+It describes a conditional behavioral expectation.
+Replay evaluates days satisfying the applicability conditions and assigns censored status to missing observations.
 An observable day with a matching trigger is fulfilled if $p$ occurs at or after the trigger within the specified window; otherwise it is violated.
 Each date contributes at most once.
-Censored days do not enter the confidence denominator in Equation~\ref{eq:replay_gate}.
-Confidence is zero without eligible days; lift is zero when the base rate is zero.
-The base rate uses observable days under the same window and weekday restrictions, without conditioning on $g$.
+The confidence denominator in Equation~\ref{eq:replay_gate} includes only fulfilled and violated days.
+Confidence is zero when the eligible-day count is zero; lift is zero when the base rate is zero.
+The base rate uses observable days under the same window and weekday restrictions, including both triggered and other observable days.
 
 \subsection{Pattern Lifecycle}
 \label{app:lifecycle}
 Lifecycle status controls retrieval eligibility, separately from current occurrence and service-episode states.
 After admission, fulfilled and violated observations update stored confidence through a smoothed support ratio combining replay counts and subsequent outcomes with one initial success and one initial failure.
-Censored observations supply neither success nor failure evidence.
-Two consecutive violations move an Active pattern to \emph{weakening}, which remains retrievable at lower priority; four move it to \emph{dormant}, which is excluded.
+Censored observations leave success and failure counts unchanged.
+Two consecutive violations move an Active pattern to \emph{weakening}, which remains retrievable at lower priority; four move it to \emph{dormant}.
 A fulfilled observation restores a weakening pattern to Active when updated confidence is at least $0.5$.
 A dormant pattern returns only to Candidate and requires replay readmission.
-Explicitly retired patterns and all Candidates are excluded from \system{} retrieval.
+The retrieval-eligible lifecycle states are Active and weakening.
 
 \subsection{Current Occurrence Matching}
 \label{app:matching}
 A deterministic matcher checks trigger context, weekday restrictions, and expected windows using a 30-minute lead and grace interval.
 Triggers may be current or previously recorded causal occurrences.
-Each occurrence has one of five states: not-started, pending, fulfilled, deviated, or censored.
-Fulfilled and censored occurrences are excluded.
-The remainder are ranked by occurrence state (deviated, pending, then not-started), lifecycle priority, stored confidence, and temporal distance; at most three patterns enter $R_t$.
+Each occurrence has one of five states: upcoming, pending, fulfilled, deviated, or censored.
+Retrieval considers upcoming, pending, and deviated occurrences of lifecycle-eligible patterns.
+These occurrences are ranked by state (deviated, pending, then upcoming), lifecycle priority, stored confidence, and temporal distance; at most three patterns enter $R_t$.
 All matching and state assessment use only the current event and causally available observations.
-Daily Trajectory Memory supplies the current cycle's completed daily trajectories rather than a similarity-ranked subset.
+Daily Trajectory Memory supplies all completed daily trajectories in the current cycle.
 
 \subsection{Episode Identity and Causal Execution}
 \label{app:episode_control}
-The controller forms an intervention key from scope-specific episode state, proposed service action and target, and sorted pattern identifiers present in the decision context.
-When no pattern identifiers are present, that part of the key is an empty list; identifiers are not inferred from plain summaries or graph facts.
-State includes availability/activity context for AS, activity/room context for AL, and repository activity/target identifiers for RA.
+In AS/AL, the controller forms an intervention key from scope-specific episode state, proposed service action and target, and sorted pattern identifiers present in the decision context.
+The identifier component contains the explicit pattern identifiers available in context and defaults to an empty list for plain summaries or graph facts.
+State includes availability/activity context for AS and activity/room context for AL.
 AL additionally distinguishes onset, confirmed, and sustained phases at one, two, and three or more consecutive matching observations, respectively.
 When an explicit episode key is unavailable, scope-specific time or target fields identify the opportunity, and unchanged evidence is additionally required for duplicate suppression.
-Changed episode state, service, pattern identifiers, or local day can therefore produce a different intervention key; this permits reconsideration but does not itself request intervention.
-ProactiveAgent, Mem0, CSM, Graphiti, Event-only, Event+Daily, and \system{} share this policy, not identical keys: different available evidence can change the identity assigned to a proposal.
+Changed episode state, a restarted state sequence, changed service or pattern identifiers, or a new local day can produce a different intervention key; this permits the decision model to reassess service value.
+
+In RA, matching uses repository-object identity and the most recent allowed intervention's mode, recipient, content, and firing condition.
+An exact match suppresses a repeated \texttt{create} proposal by converting it to \textsc{Abstain}.
+Changed signatures or other episode operations pass this duplicate check.
+Re-entry follows these identity and phase rules, with each intervention originating from an LLM proposal.
+All main-table methods and memory-level variants share this policy; each method's available evidence determines its proposal's identity.
 
 The causal execution order is:
 \begin{enumerate}
 \item Prepare prior memory; any due maintenance uses only previously committed events.
-\item Stage $e_t$ without committing it, then select daily and temporal evidence.
+\item Stage $e_t$ as the current input, defer its memory commit until the decision is finalized, and select daily and temporal evidence.
 \item Obtain the decision LLM's proposal from the structured context.
 \item Apply repeated-opportunity suppression and finalize the output.
 \item Commit $e_t$ and update coverage state; maintenance incorporating $e_t$ affects only later decisions.
@@ -77,17 +82,17 @@ Reference labels are joined only for offline scoring.
 \paragraph{Activity Support.}
 This scope derives from HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps}.
 We retain 1,456 meta-events from nine complete participant streams, covering 367 observed participant-days.
-Complete streams preserve the chronology required for daily and longer-term memory construction without sampling within a participant.
+Complete participant streams preserve the chronology required for daily and longer-term memory construction.
 Public fields include decision-time availability, recognized activity, recent step summaries, location category, weather, and local decision slot.
 Randomized treatment assignments and future behavioral outcomes are excluded.
-Reference labels concern opportunities for optional activity support, rather than reproduction of the original intervention assignment or estimation of health effects.
+Reference labels concern opportunities for optional activity support.
 
 \paragraph{Ambient Living.}
 This scope derives from CASAS ambient-sensor traces~\citep{cook2013casas} and contains four homes with 14 consecutive days each.
 Within every local day, ten-minute preprocessing blocks are merged into 28 regular 50-minute segments and one 40-minute tail, producing 406 events per home.
 Every source block is assigned to exactly one segment, preserving the complete two-week chronology.
 A segment becomes available only after its interval closes and contains within-interval motion counts, room sequences, door actions, and compact numeric summaries.
-It neither summarizes earlier segments nor exposes a personal baseline, deviation score, or candidate judgment; historical evidence must therefore be recovered by the evaluated agent.
+Each public segment describes its own interval; the evaluated agent derives historical evidence from preceding same-home observations.
 The service space is restricted to gentle, low-risk check-ins and excludes disease, fall, travel, danger, and unsupported preference inference.
 
 \paragraph{Repository Assistance.}
@@ -97,13 +102,14 @@ We preserve GitHub's native event granularity, with each event corresponding to 
 Within each repository, records are ordered by event time, with event ID used to break ties deterministically.
 The source inventory includes public GH Archive records~\citep{gharchive}.
 Each repository independently maintains Event Memory, Daily Trajectory Memory, and Temporal Pattern Memory, together with its intervention history and episode state.
-Observations, extracted evidence, and coverage state are not transferred between repositories, even when contributors participate in multiple projects.
-The memory owner and evaluation unit is therefore the repository stream rather than an individual contributor.
+Observations, extracted evidence, and coverage state remain local to each repository, including projects with shared contributors.
+The repository stream is the memory owner and evaluation unit.
 Services include low-risk triage, review, and maintenance assistance.
+Native \texttt{PushEvent} denotes repository activity; \textsc{Intervene} denotes an agent's service decision.
 
 \paragraph{Public-input contract.}
 Reference-positive and reference-negative events follow the same scope-specific public schema.
-Public inputs contain event identifiers, stream identifiers, timestamps, and contemporaneously observable fields, but no reference label, candidate flag, episode annotation, trajectory summary, memory-level marker, or scoring mask.
+Public inputs contain only event identifiers, stream identifiers, timestamps, and contemporaneously observable fields. Reference labels, candidate flags, episode annotations, memory-level markers, and scoring masks remain evaluator-private; agents construct trajectory summaries and memory representations from public observations.
 The inventory includes early events observed before Daily Trajectory Memory or Temporal Pattern Memory becomes available.
 
 \subsection{Reference Labels and Causal Replay}
@@ -114,72 +120,78 @@ Annotators assess the current event $e_t$ and the complete strictly prior public
 Let $A(e_t)$ indicate that the current event itself establishes a concrete, timely, feasible, and low-risk service opportunity, and let $B(e_t,\mathcal{H}_{<t})$ indicate that prior evidence makes such an opportunity visible at the current event.
 Let $N_t^{\mathrm{ref}}$ indicate opportunity novelty under the reference episode protocol below.
 The reviewed label follows Equation~\ref{eq:or_semantics}.
-These predicates specify annotation semantics, rather than learned classifiers or additional decision gates.
-Historical deviation is neither necessary nor sufficient: an event may be actionable without a deviation, while an unusual event may still lack a useful or safe service action.
+These predicates specify annotation semantics.
+Annotators assess concrete service value in both routine and unusual situations, using current observations and prior evidence.
 Within a semantic episode, the first reliable and actionable window is labeled \textsc{Intervene}.
 Subsequent covered windows are labeled \textsc{Abstain} unless the evidence strengthens, the feasible service changes, or the episode reopens.
-Reference episode coverage, and hence $N_t^{\mathrm{ref}}$, is determined from the reviewed opportunity sequence up to the current event rather than from a method's predicted interventions.
-The labels consequently represent reviewed service opportunities, not recipient acceptance, treatment effects, or an optimal deployment policy.
+Reference episode coverage, and hence $N_t^{\mathrm{ref}}$, is determined from the reviewed opportunity sequence up to the current event, independently of a method's predicted interventions.
+The labels represent reviewed service opportunities.
 
 \paragraph{Annotation protocol.}
 An LLM-assisted screening stage identifies potential service opportunities and expands the review queue.
-Three team members then independently assign initial labels without access to the evaluated systems' decisions, followed by team cross-review and adjudication.
-Every public event enters final review, including events not selected during screening.
-The screening output can prioritize inspection but cannot determine a reference label automatically.
-We use protocol-fixed evaluation rather than claim an independent development/test split.
+Three team members then independently assign initial labels while blinded to the evaluated systems' decisions, followed by team cross-review and adjudication.
+Every public event enters final review, covering the full inventory beyond the screening shortlist.
+The screening output prioritizes inspection; team adjudication determines each reference label.
+We use protocol-fixed evaluation on the jointly developed benchmark; independent held-out testing remains future work.
 The Ambient Living aggregation rule is specified before its event rows are constructed, and each evaluation version jointly records its event inventory, reference-label map, intervention prompt, Event Memory boundary, and validation settings.
+For the main comparisons, these labels, prompts, memory bounds, and validation settings are frozen before the corresponding runs.
 
 \paragraph{Causal replay.}
 Every participant, home, or repository stream is replayed independently from empty method state and in timestamp order.
 At event $t$, a method may access the current event $e_t$, its own strictly prior same-stream memory, and any preceding outputs retained by its architecture.
-It may not access another stream, a future event, an evaluator-private label, or a summary computed from the complete sequence.
+Access is restricted to the current public event and causally available same-stream state.
 The intervention decision is finalized before $e_t$ is committed to memory.
 Daily and weekly maintenance involving $e_t$ can therefore affect only later decisions.
-Reference labels are joined after inference for scoring and never enter memory construction or retrieval.
+Reference labels remain evaluator-private during inference and are joined afterward for scoring.
 Annotation artifacts, reference episode states, and scoring metadata remain organizer-private.
 
 \section{Additional Experimental Configuration}
 \label{app:configuration}
 
 \paragraph{External baselines.}
-\emph{ProactiveAgent} adapts ProactiveAgent's released evaluation prompt and proposal/null output contract~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}, without its fine-tuned checkpoint.
-It retains causal event--decision history, capped at 1,000 events including the current event per request, without external structured memory.
+\emph{ProactiveAgent} adapts ProactiveAgent's released evaluation prompt and proposal/null output contract~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}, using the study backbone.
+It retains causal event--decision history, capped at 1,000 events including the current event per request, as its memory interface.
 \emph{Mem0} uses the open-source \texttt{mem0ai==2.0.12} extraction, consolidation, and retrieval pipeline~\citep{chhikara2025mem0,mem0ai2026mem0v2012}, local \texttt{all-MiniLM-L6-v2} embeddings, top-$8$ same-entity retrieval, and a $0.1$ search threshold.
 The baselines retain their method-specific memory and prompt interfaces while sharing the task semantics and final Episode Controller.
-This comparison does not impose equal context or token budgets.
+Each method retains its configured context and token budgets.
 
-\paragraph{Cross-week summary and temporal-graph baselines.}
-CSM is an in-house plain-summary control, not a reimplementation of an external summary agent.
+\emph{A-MEM} uses linked memory notes and association updates~\citep{xu2025amem}; retrieved notes augment the bounded event context.
+\emph{ContextAgent-ICL} uses the in-context proactive-service formulation of ContextAgent~\citep{yang2025contextagent}, adapted to the public event representation and study backbone.
+These event-stream adaptations are evaluated on the same scope-specific reference labels as the other main-table methods.
+
+\paragraph{Cross-week summary control.}
+CSM is an in-house plain-summary control.
 It summarizes each completed local day and, after seven completed daily records, combines that block with the previous cross-week summary.
-This recursive update retains information from earlier weeks rather than replacing it with the latest week alone.
+This recursive update combines retained information from earlier weeks with the latest block.
 The decision context contains the current event, bounded Event Memory, completed daily summaries in the current block, and the latest cross-week summary.
 The adapter caps daily and cross-week summaries at 2,000 and 6,000 characters, respectively.
-It applies output-format and length checks, but no ProEviMem typed-fact validation, replay thresholds, Candidate/Active lifecycle, or deterministic temporal-rule matching.
+CSM checks output format and length before supplying the summary text directly to the decision model.
 
+\paragraph{Temporal-graph baseline.}
 Graphiti uses the open-source temporal-graph framework~\citep{zep2026graphiti} to ingest committed public events into a stream-isolated graph.
 The adapter uses Graphiti 0.30.2, Neo4j, and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings.
 The current public event is the retrieval query; native hybrid edge search with reciprocal-rank fusion returns at most ten relation facts, including validity fields and source-record identifiers.
-Retrieved identifiers are not expanded into neighboring source events or daily trajectories.
-Graphiti's ingestion episodes denote source records, not service-opportunity episodes.
+The adapter supplies the retrieved relation facts and their source identifiers directly.
+Graphiti's ingestion episodes denote source records; evaluation episodes denote service opportunities.
 Both baselines retain ProEviMem's 72-hour/100-event bound for the event context and reuse the task policy, output contract, and Episode Controller with memory-specific guidance.
-Neither treats its summaries or graph facts as replay-assessed ProEviMem patterns.
-Their comparison isolates alternative memory interfaces, not identical prompt text or equal end-to-end computation.
+CSM supplies summary text and Graphiti supplies relation facts through their respective memory interfaces.
+The comparison evaluates alternative memory interfaces with method-specific prompt guidance and computational budgets.
 
 \paragraph{Memory variants and retrieval control.}
 \emph{Event-only} receives the current event and bounded Event Memory (Equation~\ref{eq:source_memory}).
 \emph{Event+Daily} additionally receives fact-validated daily trajectories; \system{} also receives eligible temporal patterns (Equation~\ref{eq:long_term_retrieval}).
 These three variants share the intervention prompt, output schema, and Episode Controller, differing in available memory evidence.
 For Activity Support and Ambient Living, \emph{Flat Retrieval Memory} adds to Event-only the three most similar older same-entity events outside its window.
-It uses fixed dense embeddings and cosine similarity, without daily consolidation, replay, neighbor expansion, or LLM reranking.
+Its retrieval path consists of fixed dense embeddings, cosine-similarity ranking, and direct inclusion of the selected source events.
 
 \paragraph{Mechanism ablations and controller diagnostic.}
-Section~\ref{sec:validation_ablations} defines two evidence-check ablations and a suppression diagnostic; Table~\ref{tab:validation_ablations_full} reports their intervention rates, precision, recall, and F1.
+Section~\ref{sec:validation_ablations} defines two evidence-check ablations and a suppression diagnostic; Table~\ref{tab:validation_ablations_full} reports their intervention rates, precision, ODR, and IS.
 Each validation ablation removes only its named check.
-The controller diagnostic compares recorded proposals with finalized outputs on the same RA sequence, without recomputing later states or decisions.
+The controller diagnostic compares recorded proposals with finalized outputs on the same RA sequence, holding later states and decisions fixed.
 
 \paragraph{Model roles and implementation.}
 In the primary setting, decision and memory-construction calls use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
-Decision generation and memory construction are separate call roles, not a single shared output budget.
+Decision generation and memory construction have separate call roles and output budgets.
 Decision limits are interface-specific (256 or 512 tokens); construction-call limits are configured separately and recorded by role in the run configuration.
 Event Memory contains at most 99 prior events within 72 hours, plus the separately supplied current event.
 Daily construction follows local-day closure; weekly construction and replay follow seven completed daily records as defined in Section~\ref{sec:framework}.
@@ -191,32 +203,36 @@ Input manifests, prompts, schemas, thresholds, and role-specific configurations 
 
 \paragraph{Scoring.}
 Section~\ref{sec:experimental_settings} defines the scoring policy and metrics.
-Intervention Rate measures decision frequency, not perceived interruption burden.
+Using event-level confusion counts, precision is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, Opportunity Detection Rate is $\mathrm{ODR}=\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, and Intervention Score is $\mathrm{IS}=2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$.
+IS is the harmonic mean of precision and ODR; the reported percentages use the same reference labels and finalized decisions as the other event-level metrics.
+Intervention Rate measures decision frequency.
 
 \subsection{Intervention-Rate Interpretation}
 \label{app:rate_interpretation}
-Intervention Rate is a behavioral operating point, not a standalone performance target.
-Writing $\rho$ for reference-positive prevalence, the exact identity $\mathrm{IR}=\rho\,\mathrm{Recall}+(1-\rho)\,\mathrm{FIR}$ separates opportunity recovery from false intervention, with all rates expressed as fractions.
+Intervention Rate describes a behavioral operating point interpreted alongside coverage and selectivity.
+Writing $\rho$ for reference-positive prevalence, the exact identity $\mathrm{IR}=\rho\,\mathrm{ODR}+(1-\rho)\,\mathrm{FPR}$ separates opportunity recovery from false intervention, with all rates expressed as fractions.
 The prevalences are 25.1\%, 11.7\%, and 11.9\% in AS, AL, and RA.
-However, prevalence alone cannot explain the variation: ProactiveAgent intervenes at 9.2\% of AL events but 53.1\% of RA events despite their similar prevalences.
-Their respective recall and false-intervention rates reveal different coverage--selectivity operating points under the scope-specific evidence and service semantics.
-This descriptive decomposition does not isolate an intrinsic LLM proactivity trait from memory, prompt, and controller effects.
+Scope-specific decision behavior also contributes to the variation: ProactiveAgent's intervention rates are 9.2\% on AL and 53.1\% on RA, whose reference-positive prevalences are similar.
+Their respective ODR and false-intervention rates reveal different coverage--selectivity operating points under the scope-specific evidence and service semantics.
+This descriptive decomposition summarizes the joint behavior of the LLM, memory, prompt, and controller.
 
 
 \section{Extended Ablation and Controller Results}
 \label{app:extended_ablations}
 
-Tables~\ref{tab:hierarchy_counts_full} and~\ref{tab:validation_ablations_full} expand main-paper Tables~\ref{tab:hierarchy_counts} and~\ref{tab:validation_ablations} with net TP increments, intervention rates, and recall.
-Net TP changes do not identify individual causal contributions. Intervention rates and recall are retained to expose coverage--selectivity trade-offs, including the RA-only Episode Controller comparison.
+Tables~\ref{tab:hierarchy_counts_full} and~\ref{tab:validation_ablations_full} expand Figure~\ref{fig:memory_hierarchy} and Table~\ref{tab:validation_ablations} with net TP increments, intervention rates, and ODR.
+Net TP changes summarize differences between aggregate method counts. Intervention rates and ODR are retained to expose coverage--selectivity trade-offs, including the RA-only Episode Controller comparison.
 
 \begin{table*}[t]
 \centering
+\caption{Memory-hierarchy ablation. IS and False Positive Rate (FPR) are percentages; $\Delta$TP is a net count. Daily $\Delta$TP compares Event+Daily with Event-only; Pattern $\Delta$TP compares \system{} with Event+Daily. The increments summarize aggregate count differences. Bold marks higher IS and lower FPR. Count increments are reported per scope.}
+\label{tab:hierarchy_counts_full}
 \small
 \setlength{\tabcolsep}{7pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{clcccc}
 \toprule
-Scope & Method & Intervention F1 $\uparrow$ & FIR $\downarrow$ & Daily $\Delta$TP & Pattern $\Delta$TP \\
+Scope & Method & IS $\uparrow$ & FPR $\downarrow$ & Daily $\Delta$TP & Pattern $\Delta$TP \\
 \midrule
 \multirow{3}{*}{AS} & Event-only & 38.3 & 51.3 & -- & -- \\
  & Event+Daily & 38.9 & 51.3 & +4 & -- \\
@@ -229,24 +245,20 @@ Scope & Method & Intervention F1 $\uparrow$ & FIR $\downarrow$ & Daily $\Delta$T
 \multirow{3}{*}{RA} & Event-only & 28.7 & 18.9 & -- & -- \\
  & Event+Daily & 48.5 & 19.1 & +64 & -- \\
  & \system{} & \textbf{55.4} & \textbf{18.1} & -- & +22 \\
-\midrule
-\multirow{3}{*}{Mean} & Event-only & 35.7 & 27.5 & -- & -- \\
- & Event+Daily & 44.2 & 27.6 & -- & -- \\
- & \system{} & \textbf{54.3} & \textbf{24.8} & -- & -- \\
 \bottomrule
 \end{tabular}
-\caption{Memory-hierarchy ablation. Intervention F1 and False Intervention Rate (FIR) are percentages; $\Delta$TP is a net count. Daily $\Delta$TP compares Event+Daily with Event-only; Pattern $\Delta$TP compares \system{} with Event+Daily. The increments are not individual-event attributions. Bold marks higher F1 and lower FIR. Mean averages displayed scope metrics; count increments are not averaged.}
-\label{tab:hierarchy_counts_full}
 \end{table*}
 
 \begin{table*}[t]
 \centering
+\caption{Evidence-check ablations and controller diagnostic (\%). Validation rows remove the named check; Before suppression scores proposals from the recorded RA run while holding later states fixed. \system{} is last. Bold marks the best directional score. The controller diagnostic is reported for RA alone.}
+\label{tab:validation_ablations_full}
 \small
 \setlength{\tabcolsep}{7pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{clcccc}
 \toprule
-Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \shortstack{Opportunity\\Recall $\uparrow$} & \shortstack{Intervention\\F1 $\uparrow$} \\
+Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \shortstack{ODR $\uparrow$} & \shortstack{IS $\uparrow$} \\
 \midrule
 \multirow{3}{*}{AS} & w/o Replay Gate & 55.0 & 31.1 & 68.2 & 42.7 \\
  & w/o Daily Validation & 55.8 & 34.4 & \textbf{76.7} & 47.5 \\
@@ -260,14 +272,8 @@ Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \short
  & w/o Daily Validation & 29.6 & 36.1 & 89.7 & 51.5 \\
  & Before suppression & 32.4 & 36.7 & \textbf{99.4} & 53.6 \\
  & \system{} & 26.7 & \textbf{40.1} & 89.7 & \textbf{55.4} \\
-\midrule
-\multirow{3}{*}{Mean} & w/o Replay Gate & 34.6 & 36.2 & 74.5 & 48.4 \\
- & w/o Daily Validation & 34.8 & 38.8 & \textbf{80.2} & 51.9 \\
- & \system{} & 32.7 & \textbf{41.5} & 80.0 & \textbf{54.3} \\
 \bottomrule
 \end{tabular}
-\caption{Evidence-check ablations and controller diagnostic (\%). Validation rows remove the named check; Before suppression scores proposals from the recorded RA run without recomputing later states. \system{} is last. Bold marks the best directional score. Mean covers the three scopes; the RA-only diagnostic has no mean.}
-\label{tab:validation_ablations_full}
 \end{table*}
 
 \FloatBarrier
