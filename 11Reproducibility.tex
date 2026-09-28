@@ -51,14 +51,14 @@ Daily Trajectory Memory supplies all completed daily trajectories in the current
 
 \subsection{Episode Identity and Causal Execution}
 \label{app:episode_control}
-In AS/AL, the controller forms an intervention key from scope-specific episode state, proposed service action and target, and sorted pattern identifiers present in the decision context.
+In Sports/Home, the controller forms an intervention key from scope-specific episode state, proposed service action and target, and sorted pattern identifiers present in the decision context.
 The identifier component contains the explicit pattern identifiers available in context and defaults to an empty list for plain summaries or graph facts.
-State includes availability/activity context for AS and activity/room context for AL.
-AL additionally distinguishes onset, confirmed, and sustained phases at one, two, and three or more consecutive matching observations, respectively.
+State includes availability/activity context for Sports and activity/room context for Home.
+Home additionally distinguishes onset, confirmed, and sustained phases at one, two, and three or more consecutive matching observations, respectively.
 When an explicit episode key is unavailable, scope-specific time or target fields identify the opportunity, and unchanged evidence is additionally required for duplicate suppression.
 Changed episode state, a restarted state sequence, changed service or pattern identifiers, or a new local day can produce a different intervention key; this permits the decision model to reassess service value.
 
-In RA, matching uses repository-object identity and the most recent allowed intervention's mode, recipient, content, and firing condition.
+In Code, matching uses repository-object identity and the most recent allowed intervention's mode, recipient, content, and firing condition.
 An exact match suppresses a repeated \texttt{create} proposal by converting it to \textsc{Abstain}.
 Changed signatures or other episode operations pass this duplicate check.
 Re-entry follows these identity and phase rules, with each intervention originating from an LLM proposal.
@@ -79,7 +79,7 @@ Reference labels are joined only for offline scoring.
 
 \subsection{Scopes and Public Events}
 
-\paragraph{Activity Support.}
+\paragraph{Sports.}
 This scope derives from HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps}.
 We retain 1,456 meta-events from nine complete participant streams, covering 367 observed participant-days.
 Complete participant streams preserve the chronology required for daily and longer-term memory construction.
@@ -87,7 +87,7 @@ Public fields include decision-time availability, recognized activity, recent st
 Randomized treatment assignments and future behavioral outcomes are excluded.
 Reference labels concern opportunities for optional activity support.
 
-\paragraph{Ambient Living.}
+\paragraph{Home.}
 This scope derives from CASAS ambient-sensor traces~\citep{cook2013casas} and contains four homes with 14 consecutive days each.
 Within every local day, ten-minute preprocessing blocks are merged into 28 regular 50-minute segments and one 40-minute tail, producing 406 events per home.
 Every source block is assigned to exactly one segment, preserving the complete two-week chronology.
@@ -95,7 +95,7 @@ A segment becomes available only after its interval closes and contains within-i
 Each public segment describes its own interval; the evaluated agent derives historical evidence from preceding same-home observations.
 The service space is restricted to gentle, low-risk check-ins and excludes disease, fall, travel, danger, and unsupported preference inference.
 
-\paragraph{Repository Assistance.}
+\paragraph{Code.}
 This scope organizes 1,459 repository activity records into four isolated streams, with 174 reference interventions (Table~\ref{tab:benchmark_stats}).
 Each event represents a timestamped repository activity, such as a commit push, issue update, pull-request action, or review.
 We preserve GitHub's native event granularity, with each event corresponding to one intervention decision.
@@ -133,7 +133,7 @@ Three team members then independently assign initial labels while blinded to the
 Every public event enters final review, covering the full inventory beyond the screening shortlist.
 The screening output prioritizes inspection; team adjudication determines each reference label.
 We use protocol-fixed evaluation on the jointly developed benchmark; independent held-out testing remains future work.
-The Ambient Living aggregation rule is specified before its event rows are constructed, and each evaluation version jointly records its event inventory, reference-label map, intervention prompt, Event Memory boundary, and validation settings.
+The Home aggregation rule is specified before its event rows are constructed, and each evaluation version jointly records its event inventory, reference-label map, intervention prompt, Event Memory boundary, and validation settings.
 For the main comparisons, these labels, prompts, memory bounds, and validation settings are frozen before the corresponding runs.
 
 \paragraph{Causal replay.}
@@ -156,16 +156,19 @@ The baselines retain their method-specific memory and prompt interfaces while sh
 Each method retains its configured context and token budgets.
 
 \emph{A-MEM} uses linked memory notes and association updates~\citep{xu2025amem}; retrieved notes augment the bounded event context.
-\emph{ContextAgent-ICL} uses the in-context proactive-service formulation of ContextAgent~\citep{yang2025contextagent}, adapted to the public event representation and study backbone.
+\emph{ContextAgent} uses the in-context proactive-service formulation of ContextAgent~\citep{yang2025contextagent}, adapted to the public event representation and study backbone.
 These event-stream adaptations are evaluated on the same scope-specific reference labels as the other main-table methods.
 
 \paragraph{Cross-week summary control.}
-CSM is an in-house plain-summary control.
-It summarizes each completed local day and, after seven completed daily records, combines that block with the previous cross-week summary.
+CSM is the in-house recursive-summary control evaluated in Section~\ref{sec:recursive_summary}.
+It summarizes each completed local day and, after seven completed observed daily records, combines that block with the previous cross-week summary.
+The block follows observed dates and may span more than seven calendar days.
 This recursive update combines retained information from earlier weeks with the latest block.
 The decision context contains the current event, bounded Event Memory, completed daily summaries in the current block, and the latest cross-week summary.
 The adapter caps daily and cross-week summaries at 2,000 and 6,000 characters, respectively.
 CSM checks output format and length before supplying the summary text directly to the decision model.
+Its construction inputs contain only committed public observations; prior decisions are recorded separately for controller state and resumption.
+Daily and cross-week versions retain source links for auditing, while the decision model interprets the summary prose for current service value.
 
 \paragraph{Temporal-graph baseline.}
 Graphiti uses the open-source temporal-graph framework~\citep{zep2026graphiti} to ingest committed public events into a stream-isolated graph.
@@ -173,21 +176,19 @@ The adapter uses Graphiti 0.30.2, Neo4j, and local 384-dimensional \texttt{all-M
 The current public event is the retrieval query; native hybrid edge search with reciprocal-rank fusion returns at most ten relation facts, including validity fields and source-record identifiers.
 The adapter supplies the retrieved relation facts and their source identifiers directly.
 Graphiti's ingestion episodes denote source records; evaluation episodes denote service opportunities.
-Both baselines retain ProEviMem's 72-hour/100-event bound for the event context and reuse the task policy, output contract, and Episode Controller with memory-specific guidance.
+CSM and Graphiti retain ProactMem's 72-hour/100-event bound for the event context and reuse the task policy, output contract, and Episode Controller with memory-specific guidance.
 CSM supplies summary text and Graphiti supplies relation facts through their respective memory interfaces.
 The comparison evaluates alternative memory interfaces with method-specific prompt guidance and computational budgets.
 
-\paragraph{Memory variants and retrieval control.}
+\paragraph{Memory-level variants.}
 \emph{Event-only} receives the current event and bounded Event Memory (Equation~\ref{eq:source_memory}).
 \emph{Event+Daily} additionally receives fact-validated daily trajectories; \system{} also receives eligible temporal patterns (Equation~\ref{eq:long_term_retrieval}).
 These three variants share the intervention prompt, output schema, and Episode Controller, differing in available memory evidence.
-For Activity Support and Ambient Living, \emph{Flat Retrieval Memory} adds to Event-only the three most similar older same-entity events outside its window.
-Its retrieval path consists of fixed dense embeddings, cosine-similarity ranking, and direct inclusion of the selected source events.
 
 \paragraph{Mechanism ablations and controller diagnostic.}
-Section~\ref{sec:validation_ablations} defines two evidence-check ablations and a suppression diagnostic; Table~\ref{tab:validation_ablations_full} reports their intervention rates, precision, ODR, and IS.
+Section~\ref{sec:validation_ablations} defines two evidence-check ablations and a suppression diagnostic; Table~\ref{tab:validation_ablations_full} reports their intervention rates, Relevance, Coverage, and Effectiveness.
 Each validation ablation removes only its named check.
-The controller diagnostic compares recorded proposals with finalized outputs on the same RA sequence, holding later states and decisions fixed.
+The controller diagnostic compares recorded proposals with finalized outputs on the same Code sequence, holding later states and decisions fixed.
 
 \paragraph{Model roles and implementation.}
 In the primary setting, decision and memory-construction calls use \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
@@ -198,80 +199,106 @@ Daily construction follows local-day closure; weekly construction and replay fol
 All memory and validation records are entity-scoped.
 
 We also test \texttt{gpt-5.6-terra} and \texttt{gpt-5.6-sol}.
-Both decision and construction LLMs change together; Appendix~\ref{app:backbone_sensitivity} provides the fixed settings and complete results.
+Both decision and construction LLMs change together; Section~\ref{sec:model_sensitivity} provides the fixed settings and complete results.
 Input manifests, prompts, schemas, thresholds, and role-specific configurations are versioned in the experiment ledger.
 
 \paragraph{Scoring.}
 Section~\ref{sec:experimental_settings} defines the scoring policy and metrics.
-Using event-level confusion counts, precision is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, Opportunity Detection Rate is $\mathrm{ODR}=\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, and Intervention Score is $\mathrm{IS}=2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$.
-IS is the harmonic mean of precision and ODR; the reported percentages use the same reference labels and finalized decisions as the other event-level metrics.
+Using event-level confusion counts, Relevance is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, Coverage is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, Effectiveness is $2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$, and Balance is $\tfrac{1}{2}[\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})+\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})]$.
+Effectiveness is the harmonic mean of Relevance and Coverage; the reported percentages use the same reference labels and finalized decisions as the other event-level metrics.
 Intervention Rate measures decision frequency.
 
 \subsection{Intervention-Rate Interpretation}
 \label{app:rate_interpretation}
-Intervention Rate describes a behavioral operating point interpreted alongside coverage and selectivity.
-Writing $\rho$ for reference-positive prevalence, the exact identity $\mathrm{IR}=\rho\,\mathrm{ODR}+(1-\rho)\,\mathrm{FPR}$ separates opportunity recovery from false intervention, with all rates expressed as fractions.
-The prevalences are 25.1\%, 11.7\%, and 11.9\% in AS, AL, and RA.
-Scope-specific decision behavior also contributes to the variation: ProactiveAgent's intervention rates are 9.2\% on AL and 53.1\% on RA, whose reference-positive prevalences are similar.
-Their respective ODR and false-intervention rates reveal different coverage--selectivity operating points under the scope-specific evidence and service semantics.
-This descriptive decomposition summarizes the joint behavior of the LLM, memory, prompt, and controller.
+Writing $\rho$ for reference-positive prevalence, the count decomposition is
+\begin{equation}
+\mathrm{IR}=\rho\,\mathrm{Coverage}+(1-\rho)\,\mathrm{FPR}.
+\label{eq:intervention_frequency}
+\end{equation}
+All quantities are fractions; the terms count recovered opportunities and false interventions.
+The prevalences are 25.1\%, 11.7\%, and 11.9\% in Sports, Home, and Code.
 
+
+\section{Complete Recursive-Summary Scores}
+\label{app:recursive_summary_scores}
+
+Table~\ref{tab:recursive_summary_full} retains all six metrics for the full-scope comparison in Section~\ref{sec:recursive_summary}; Figure~\ref{fig:recursive_summary} displays Effectiveness, Coverage, and FPR.
+
+\begin{table*}[!htbp]
+\centering
+\caption{Complete CSM control scores (\%, Luna). Bold/underlining mark best/second-best directional scores within each scope; IR is descriptive.}
+\label{tab:recursive_summary_full}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{clcccccc}
+\toprule
+Scope & Method & IR & Relevance $\uparrow$ & Coverage $\uparrow$ & Effectiveness $\uparrow$ & FPR $\downarrow$ & Balance $\uparrow$ \\
+\midrule
+Sports & CSM & 58.9 & \underline{30.8} & \underline{72.3} & \underline{43.2} & \underline{54.4} & \underline{59.0} \\
+ & \system{} & 53.8 & \textbf{35.8} & \textbf{76.7} & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
+Home & CSM & 17.1 & \underline{43.7} & \underline{63.7} & \underline{51.8} & \underline{10.9} & \underline{76.4} \\
+ & \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & \textbf{10.3} & \textbf{81.7} \\
+Code & CSM & 39.5 & \underline{28.6} & \textbf{94.8} & \underline{43.9} & \underline{32.1} & \underline{81.4} \\
+ & \system{} & 26.7 & \textbf{40.1} & \underline{89.7} & \textbf{55.4} & \textbf{18.1} & \textbf{85.8} \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 \section{Extended Ablation and Controller Results}
 \label{app:extended_ablations}
 
-Tables~\ref{tab:hierarchy_counts_full} and~\ref{tab:validation_ablations_full} expand Figure~\ref{fig:memory_hierarchy} and Table~\ref{tab:validation_ablations} with net TP increments, intervention rates, and ODR.
-Net TP changes summarize differences between aggregate method counts. Intervention rates and ODR are retained to expose coverage--selectivity trade-offs, including the RA-only Episode Controller comparison.
+Tables~\ref{tab:hierarchy_counts_full} and~\ref{tab:validation_ablations_full} expand Figure~\ref{fig:memory_hierarchy} and Table~\ref{tab:validation_ablations} with net TP increments, intervention rates, and Coverage.
+Net TP changes summarize differences between aggregate method counts. Intervention rates and Coverage are retained to expose coverage--selectivity trade-offs, including the Code-only Episode Controller comparison.
 
 \begin{table*}[t]
 \centering
-\caption{Memory-hierarchy ablation. IS and False Positive Rate (FPR) are percentages; $\Delta$TP is a net count. Daily $\Delta$TP compares Event+Daily with Event-only; Pattern $\Delta$TP compares \system{} with Event+Daily. The increments summarize aggregate count differences. Bold marks higher IS and lower FPR. Count increments are reported per scope.}
+\caption{Memory-hierarchy ablation. Effectiveness and False Positive Rate (FPR) are percentages; $\Delta$TP is a net count. Daily $\Delta$TP compares Event+Daily with Event-only; Pattern $\Delta$TP compares \system{} with Event+Daily. The increments summarize aggregate count differences. Bold/underlining mark the best/second-best directional scores per scope, with ties at displayed precision. Count increments are reported per scope.}
 \label{tab:hierarchy_counts_full}
 \small
 \setlength{\tabcolsep}{7pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{clcccc}
 \toprule
-Scope & Method & IS $\uparrow$ & FPR $\downarrow$ & Daily $\Delta$TP & Pattern $\Delta$TP \\
+Scope & Method & Effectiveness $\uparrow$ & FPR $\downarrow$ & Daily $\Delta$TP & Pattern $\Delta$TP \\
 \midrule
-\multirow{3}{*}{AS} & Event-only & 38.3 & 51.3 & -- & -- \\
- & Event+Daily & 38.9 & 51.3 & +4 & -- \\
- & \system{} & \textbf{48.8} & \textbf{46.1} & -- & +57 \\
+\multirow{3}{*}{Sports} & Event-only & 38.3 & \underline{51.3} & -- & -- \\
+  & Event+Daily & \underline{38.9} & \underline{51.3} & +4 & -- \\
+  & \system{} & \textbf{48.8} & \textbf{46.1} & -- & +57 \\
 \midrule
-\multirow{3}{*}{AL} & Event-only & 40.0 & 12.4 & -- & -- \\
- & Event+Daily & 45.1 & 12.4 & +15 & -- \\
- & \system{} & \textbf{58.6} & \textbf{10.3} & -- & +33 \\
+\multirow{3}{*}{Home} & Event-only & 40.0 & \underline{12.4} & -- & -- \\
+  & Event+Daily & \underline{45.1} & \underline{12.4} & +15 & -- \\
+  & \system{} & \textbf{58.6} & \textbf{10.3} & -- & +33 \\
 \midrule
-\multirow{3}{*}{RA} & Event-only & 28.7 & 18.9 & -- & -- \\
- & Event+Daily & 48.5 & 19.1 & +64 & -- \\
- & \system{} & \textbf{55.4} & \textbf{18.1} & -- & +22 \\
+\multirow{3}{*}{Code} & Event-only & 28.7 & \underline{18.9} & -- & -- \\
+  & Event+Daily & \underline{48.5} & 19.1 & +64 & -- \\
+  & \system{} & \textbf{55.4} & \textbf{18.1} & -- & +22 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \begin{table*}[t]
 \centering
-\caption{Evidence-check ablations and controller diagnostic (\%). Validation rows remove the named check; Before suppression scores proposals from the recorded RA run while holding later states fixed. \system{} is last. Bold marks the best directional score. The controller diagnostic is reported for RA alone.}
+\caption{Evidence-check ablations and controller diagnostic (\%). Validation rows remove the named check; Before suppression scores proposals from the recorded Code run while holding later states fixed. \system{} is last. Bold/underlining mark the best/second-best directional scores per scope, with ties at displayed precision. The controller diagnostic is reported for Code alone.}
 \label{tab:validation_ablations_full}
 \small
 \setlength{\tabcolsep}{7pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{clcccc}
 \toprule
-Scope & Method & \shortstack{Intervention\\Rate} & Precision $\uparrow$ & \shortstack{ODR $\uparrow$} & \shortstack{IS $\uparrow$} \\
+Scope & Method & \shortstack{Intervention\\Rate} & Relevance $\uparrow$ & \shortstack{Coverage $\uparrow$} & \shortstack{Effectiveness $\uparrow$} \\
 \midrule
-\multirow{3}{*}{AS} & w/o Replay Gate & 55.0 & 31.1 & 68.2 & 42.7 \\
- & w/o Daily Validation & 55.8 & 34.4 & \textbf{76.7} & 47.5 \\
- & \system{} & 53.8 & \textbf{35.8} & \textbf{76.7} & \textbf{48.8} \\
+\multirow{3}{*}{Sports} & w/o Replay Gate & 55.0 & 31.1 & \underline{68.2} & 42.7 \\
+  & w/o Daily Validation & 55.8 & \underline{34.4} & \textbf{76.7} & \underline{47.5} \\
+  & \system{} & 53.8 & \textbf{35.8} & \textbf{76.7} & \textbf{48.8} \\
 \midrule
-\multirow{3}{*}{AL} & w/o Replay Gate & 19.3 & 43.6 & 72.1 & 54.4 \\
- & w/o Daily Validation & 18.9 & 45.9 & \textbf{74.2} & 56.7 \\
- & \system{} & 17.7 & \textbf{48.6} & 73.7 & \textbf{58.6} \\
+\multirow{3}{*}{Home} & w/o Replay Gate & 19.3 & 43.6 & 72.1 & 54.4 \\
+  & w/o Daily Validation & 18.9 & \underline{45.9} & \textbf{74.2} & \underline{56.7} \\
+  & \system{} & 17.7 & \textbf{48.6} & \underline{73.7} & \textbf{58.6} \\
 \midrule
-\multirow{4}{*}{RA} & w/o Replay Gate & 29.4 & 33.8 & 83.3 & 48.1 \\
- & w/o Daily Validation & 29.6 & 36.1 & 89.7 & 51.5 \\
- & Before suppression & 32.4 & 36.7 & \textbf{99.4} & 53.6 \\
- & \system{} & 26.7 & \textbf{40.1} & 89.7 & \textbf{55.4} \\
+\multirow{4}{*}{Code} & w/o Replay Gate & 29.4 & 33.8 & 83.3 & 48.1 \\
+  & w/o Daily Validation & 29.6 & 36.1 & \underline{89.7} & 51.5 \\
+  & Before suppression & 32.4 & \underline{36.7} & \textbf{99.4} & \underline{53.6} \\
+  & \system{} & 26.7 & \textbf{40.1} & \underline{89.7} & \textbf{55.4} \\
 \bottomrule
 \end{tabular}
 \end{table*}

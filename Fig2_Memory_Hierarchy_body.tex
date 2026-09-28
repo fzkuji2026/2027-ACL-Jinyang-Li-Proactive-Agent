@@ -10,7 +10,7 @@
 \begin{tikzpicture}
 \pgfplotsset{memorybars/.style={
     ybar=1pt,bar width=8pt,width=0.46\textwidth,height=4.2cm,
-    symbolic x coords={AS,AL,RA},xtick=data,enlarge x limits=0.22,
+    symbolic x coords={Sports,Home,Code},xtick=data,enlarge x limits=0.22,
     ymin=0,ymax=65,ytick={0,20,40,60},ylabel={\%},
     axis x line*=bottom,axis y line*=left,tick align=outside,
     axis line style={black!55},tick style={black!55},
@@ -18,14 +18,14 @@
     font=\small,title style={font=\small\bfseries},
     every axis plot/.append style={draw=none}
 }}
-\begin{axis}[memorybars,name=ispanel,title={IS $\uparrow$}]
-\addplot[fill=eventblue] coordinates {(AS,38.3) (AL,40.0) (RA,28.7)};
-\addplot[fill=dailygold] coordinates {(AS,38.9) (AL,45.1) (RA,48.5)};
-\addplot[fill=patternteal] coordinates {(AS,48.8) (AL,58.6) (RA,55.4)};
+\begin{axis}[memorybars,name=ispanel,title={Effectiveness $\uparrow$}]
+\addplot[fill=eventblue] coordinates {(Sports,38.3) (Home,40.0) (Code,28.7)};
+\addplot[fill=dailygold] coordinates {(Sports,38.9) (Home,45.1) (Code,48.5)};
+\addplot[fill=patternteal] coordinates {(Sports,48.8) (Home,58.6) (Code,55.4)};
 \end{axis}
 \begin{axis}[memorybars,at={(ispanel.east)},anchor=west,xshift=1.15cm,title={False Positive Rate $\downarrow$}]
-\addplot[fill=eventblue] coordinates {(AS,51.3) (AL,12.4) (RA,18.9)};
-\addplot[fill=dailygold] coordinates {(AS,51.3) (AL,12.4) (RA,19.1)};
-\addplot[fill=patternteal] coordinates {(AS,46.1) (AL,10.3) (RA,18.1)};
+\addplot[fill=eventblue] coordinates {(Sports,51.3) (Home,12.4) (Code,18.9)};
+\addplot[fill=dailygold] coordinates {(Sports,51.3) (Home,12.4) (Code,19.1)};
+\addplot[fill=patternteal] coordinates {(Sports,46.1) (Home,10.3) (Code,18.1)};
 \end{axis}
 \end{tikzpicture}

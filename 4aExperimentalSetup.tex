@@ -1,46 +1,38 @@
 \section{Experimental Evaluation}
 \label{sec:experiments}
 
+We examine overall effectiveness (\textbf{RQ1}), memory organization (\textbf{RQ2}), and validation mechanisms (\textbf{RQ3}), with supplementary checks of reference sensitivity, episode behavior, and model choice.
+
 \subsection{Experimental Settings}
 \label{sec:experimental_settings}
 
-We examine overall effectiveness (\textbf{RQ1}), memory-level contributions (\textbf{RQ2}), validation mechanisms (\textbf{RQ3}), and temporal availability and decision behavior (\textbf{RQ4}).
-
 \paragraph{Baselines.}
 We evaluate five external methods:
-\begin{itemize}
-    \item \textbf{ProactiveAgent} uses the released evaluation prompt and proposal/null contract with the study backbone, retaining causal event--decision history capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
-    \item \textbf{ContextAgent-ICL} adapts ContextAgent's in-context proactive-service judgment to public event contexts using the study backbone~\citep{yang2025contextagent}.
-    \item \textbf{Mem0} uses open-source extraction, consolidation, and same-entity retrieval~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
-    \item \textbf{A-MEM} constructs linked memory notes, updates their associations as events arrive, and retrieves relevant notes~\citep{xu2025amem}.
-    \item \textbf{Graphiti} stores event-derived relations in a temporal graph and retrieves same-stream facts~\citep{zep2026graphiti}.
-\end{itemize}
+\begin{list}{\labelitemi}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+}
+    \item \textbf{ProactiveAgent} uses its released prompt and proposal/null contract, with causal event--decision history capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+    \item \textbf{ContextAgent} adapts in-context proactive-service judgment to public events~\citep{yang2025contextagent}.
+    \item \textbf{Mem0} extracts, consolidates, and retrieves same-entity memories~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
+    \item \textbf{A-MEM} constructs linked notes, updates associations, and retrieves relevant notes~\citep{xu2025amem}.
+    \item \textbf{Graphiti} stores event relations in a temporal graph and retrieves same-stream facts~\citep{zep2026graphiti}.
+\end{list}
 
-\paragraph{Summary-memory control.}
-\textbf{Cross-week Summary Memory (CSM)} recursively consolidates daily and cross-week summaries, providing a plain-summary control for retaining history beyond the recent-event window.
-Its results appear beside the external baselines in Table~\ref{tab:main_results}.
-
-\paragraph{Memory variants.}
-\textbf{Event-only} supplies the current event and bounded Event Memory; \textbf{Event+Daily} additionally supplies Daily Trajectory Memory.
-\textbf{Flat Retrieval Memory} augments Event-only with three similar older same-entity events on AS/AL, using fixed dense embeddings and cosine similarity.
-All methods share the task semantics and final Episode Controller, with method-specific memory interfaces.
-Event-only, Event+Daily, and \system{} also share their decision prompt, schema, and Event Memory bound.
-CSM, A-MEM, and Graphiti augment that same event bound with their respective representations.
-Appendix~\ref{app:configuration} records interface and retrieval settings.
-
-\paragraph{Model settings.}
-The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking disabled; ProEviMem uses the official OpenAI API.
-Terra/Sol comparisons replace both decision and memory-construction models (Appendix~\ref{app:backbone_sensitivity}).
+\paragraph{Implementation Details.}
+The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking disabled; \system{} uses the official OpenAI API.
+Methods share task semantics and Episode Controller, with interface-specific prompts and budgets.
+Event-only, Event+Daily, and \system{} share their decision prompt, schema, and 72-hour/100-event bound including the current event.
+CSM, A-MEM, and Graphiti augment that bound with their representations.
+Appendix~\ref{app:configuration} lists detailed configurations.
 
 \paragraph{Metrics.}
-We report results separately for AS, AL, and RA using final decisions after episode control.
-\textsc{Intervene} includes immediate and scheduled service; \textsc{Abstain} denotes silence at the current event.
-\textbf{Precision} measures the share of interventions matching reference opportunities.
-\textbf{Opportunity Detection Rate (ODR)} measures the fraction of reference-positive events identified for intervention.
-\textbf{Intervention Score (IS)} is the harmonic mean of precision and ODR.
-ODR and IS are task-oriented names for standard recall and F1, respectively.
-Appendix~\ref{app:configuration} provides their formulas.
-\textbf{False Positive Rate (FPR)}, also termed False Intervention Rate (FIR), is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$.
-\textbf{Balanced Accuracy (BA)} averages ODR and specificity.
-Higher precision, ODR, IS, and BA and lower FPR are preferred.
-\textbf{Intervention Rate (IR)} is the fraction of events receiving an intervention and describes decision frequency.
+Scores use post-controller decisions; immediate and scheduled services count as \textsc{Intervene}.
+\textbf{Relevance} (precision) is the share of interventions matching reference opportunities; \textbf{Coverage} (recall) is the share of opportunities recovered.
+\textbf{Effectiveness} (F1), their harmonic mean, balances relevant interventions against missed opportunities.
+\textbf{False Positive Rate (FPR)}, also called False Intervention Rate (FIR), is the share of reference negatives receiving interventions.
+\textbf{Balance} (balanced accuracy) averages Coverage and the share of reference negatives correctly left without intervention.
+Higher is preferred except for FPR.
+\textbf{Intervention Rate (IR)} is the share of all events receiving interventions, without a preferred direction.

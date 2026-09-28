@@ -6,7 +6,7 @@ It comprises 4,539 events across 17 isolated streams in three service scopes, wi
 
 \begin{table*}[t]
 \centering
-\caption{Composition and provenance of ProactiveStream. AS: Activity Support; AL: Ambient Living; RA: Repository Assistance. Each stream is an independent memory and replay unit. Reference interventions denote team-reviewed service opportunities.}
+\caption{Composition and provenance of ProactiveStream across Sports, Home, and Code. Each stream is an independent memory and replay unit. Reference interventions denote team-reviewed service opportunities.}
 \label{tab:benchmark_stats}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -14,9 +14,9 @@ It comprises 4,539 events across 17 isolated streams in three service scopes, wi
 \toprule
 Scope & Primary source & Entity & Streams & \shortstack{Input\\events} & Temporal coverage & \shortstack{Reference\\interventions} \\
 \midrule
-AS & HeartSteps & participant & 9 & 1,456 & 367 observed participant-days & 365 \\
-AL & CASAS & home & 4 & 1,624 & 14 consecutive days/home & 190 \\
-RA & GH Archive & repository & 4 & 1,459 & longitudinal repository histories & 174 \\
+Sports & HeartSteps & participant & 9 & 1,456 & 367 observed participant-days & 365 \\
+Home & CASAS & home & 4 & 1,624 & 14 consecutive days/home & 190 \\
+Code & GH Archive & repository & 4 & 1,459 & longitudinal repository histories & 174 \\
 \midrule
 Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal settings & 729 \\
 \bottomrule
@@ -25,12 +25,12 @@ Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal setting
 
 \subsection{Scopes and Public Events}
 
-\hspace*{\parindent}\textbf{Activity Support (AS)} uses participant activity and availability contexts for optional activity assistance.
+\hspace*{\parindent}\textbf{Sports} uses participant activity and availability contexts for optional walking and everyday physical-activity assistance.
 
-\textbf{Ambient Living (AL)} uses time-bounded home-sensor observations for gentle, low-risk check-ins.
+\textbf{Home} uses time-bounded home-sensor observations for gentle, low-risk check-ins.
 Each sensor segment becomes available at interval closure.
 
-\textbf{Repository Assistance (RA)} uses repository activity at GitHub's native event granularity for low-risk triage, review, and maintenance, with one decision per event.
+\textbf{Code} uses repository activity at GitHub's native event granularity for low-risk triage, review, and maintenance, with one decision per event.
 
 Each participant, home, or repository defines an isolated chronological stream, allowing earlier observations to inform later service opportunities.
 Public inputs contain contemporaneously available observations, using the same scope-specific schema for both label classes.
@@ -55,7 +55,10 @@ Reference novelty follows the reviewed opportunity sequence independently of mod
 The event-level labels therefore assess timely identification of reviewed service windows.
 
 LLM-assisted screening prioritizes candidate opportunities; three team members then independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
-Appendix~\ref{app:label_review_450} reports a separate-team review of three contiguous 150-event segments with their preceding histories.
+For a separate-team review, a fixed SHA256 rule selects one stream and 150 contiguous targets per scope from public metadata, requiring at least seven days of prior history and retaining each complete causal prefix.
+Three reviewers label these 450 targets with model outputs hidden and form consensus references.
+Agreement with earlier references is 88.7\%, 91.3\%, and 85.3\% for Sports, Home, and Code; these references do not replace the main labels.
+Section~\ref{sec:reviewed_diagnostics} reports paired rescoring of fixed diagnostic outputs.
 Main comparisons use protocol-fixed evaluation on the jointly developed benchmark, with labels, prompts, memory bounds, and validation settings frozen before the corresponding runs.
 
 Each stream is replayed chronologically from empty method state, with access to the current event and strictly prior same-stream context.

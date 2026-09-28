@@ -1,0 +1,48 @@
+% Editable vector figure: audit stage medians and one recorded causal trace.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\small,
+  trace/.style={draw=black!25,rounded corners=2pt,fill=blue!3,
+    text width=8.8cm,align=left,inner xsep=6pt,inner ysep=5pt,
+    font=\fontsize{9}{10.5}\selectfont},
+  link/.style={-{Stealth[length=4pt]},draw=black!50,line width=0.6pt}]
+\node[anchor=north west,font=\small\bfseries] at (0,0.25)
+  {(a) First online availability};
+\node[anchor=north west,font=\small\bfseries] at (6.3,0.25)
+  {(b) Historical pattern and current judgment};
+
+\node[anchor=west,font=\footnotesize] at (0,-0.60) {Daily trajectory ($n=13$)};
+\node[anchor=west,font=\footnotesize] at (0,-1.80) {Active pattern ($n=11$)};
+\node[anchor=west,font=\footnotesize] at (0,-3.00) {Matched pattern ($n=8$)};
+\foreach \level/\value/\shade in {-1.02/0.80/55,-2.22/6.79/70,-3.42/10.46/85} {
+  \draw[black!15,line width=0.5pt] (0,\level) -- (5.0,\level);
+  \draw[blue!\shade!black,line width=2.5pt] (0,\level) -- ({5*\value/12},\level);
+  \fill[blue!\shade!black] ({5*\value/12},\level) circle (2pt);
+  \node[anchor=west,font=\footnotesize] at (5.10,\level) {\value\ d};
+}
+\draw[black!50] (0,-3.90) -- (5,-3.90);
+\foreach \tick in {0,3,6,9,12} {
+  \draw[black!50] ({5*\tick/12},-3.90) -- ({5*\tick/12},-3.96);
+  \node[anchor=north,font=\scriptsize] at ({5*\tick/12},-3.99) {\tick};
+}
+\node[anchor=north,font=\footnotesize] at (2.5,-4.35) {Elapsed days from stream start};
+\node[anchor=north west,text width=5.8cm,align=left,font=\footnotesize,text=black!70]
+  at (0,-4.85) {Separate medians over entities reaching each stage. Audit: 9 participants and 4 homes.};
+
+\node[trace,anchor=north west] (history) at (6.3,-0.45)
+  {\textbf{Dec.\ 15, 17--19, 21: observed events}\\
+   STILL recorded in slots 2--4 on five cited days.};
+\node[trace,below=8pt of history] (daily)
+  {\textbf{Dec.\ 16--22: daily construction}\\
+   Completed days retain source-linked observations.};
+\node[trace,below=8pt of daily] (pattern)
+  {\textbf{Dec.\ 22: pattern admitted as Active}\\
+   Five daily trajectories; time window 16:00--22:00.};
+\node[trace,below=8pt of pattern] (current)
+  {\textbf{Dec.\ 24, 16:31:26: current event and context}\\
+   778 steps in past hour; 12 prior events, 2 daily trajectories, 1 matched pattern.};
+\node[trace,below=8pt of current,fill=green!5] (decision)
+  {\textbf{Decision LLM: ABSTAIN}\\
+   Controller preserves output; current event is then committed.};
+\foreach \before/\after in {history/daily,daily/pattern,pattern/current,current/decision} {
+  \draw[link] (\before.south) -- (\after.north);
+}
+\end{tikzpicture}

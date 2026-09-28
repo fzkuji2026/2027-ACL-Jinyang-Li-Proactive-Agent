@@ -16,9 +16,10 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
 \usetikzlibrary{arrows.meta,calc,positioning}
 
-\newcommand{\system}{ProEviMem}
+\newcommand{\system}{ProactMem}
 \title{Proactive Memory for Event-Driven LLM Agents}
 % Review mode suppresses author identities. The AAMAS source retains the
 % confirmed author list for a future accepted, non-anonymous version.
@@ -30,10 +31,10 @@
 \begin{abstract}
 Proactive LLM agents anticipate service opportunities from ongoing observations and accumulated history.
 A central challenge is determining which historical observations remain applicable to the current event and can support a timely service decision.
-We propose Proactive Evidence Memory (\system{}), combining bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
+We propose Proactive Memory (\system{}), combining bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
 Daily validation checks extracted facts against source events, while historical replay assesses recurring patterns before they are matched to current events.
 We also construct ProactiveStream, a longitudinal benchmark covering three application scopes, where agents process isolated event streams chronologically under episode-aware opportunity labels.
-\system{} improves Intervention Score by 4.3--11.5 percentage points over the strongest baseline in each scope.
+\system{} improves Effectiveness by 4.3--15.7 percentage points over the strongest external baseline in each scope.
 Ablation studies support the contributions of hierarchical memory organization and validation to service-opportunity detection.
 \end{abstract}
 

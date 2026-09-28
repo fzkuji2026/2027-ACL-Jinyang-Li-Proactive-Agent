@@ -1,4 +1,4 @@
-\section{Proactive Evidence Memory (\system{})}
+\section{Proactive Memory (\system{})}
 \label{sec:framework}
 
 \system{} uses three complementary memory layers (Figure~\ref{fig:architecture}): Event Memory for recent public events, Daily Trajectory Memory for source-checked daily abstractions, and Temporal Pattern Memory for replay-assessed recurring patterns.
@@ -91,7 +91,7 @@ C_t=(e_t,S_t,W_t,R_t,Q_t),
 \end{equation}
 where $Q_t$ describes the service opportunity's observable state; the controller separately records previously allowed interventions to track service coverage.
 The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} historical context supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
-Service value governs intervention across both routine and deviating situations.
+Pattern matching supplies evidence, not an intervention command: the LLM can abstain even when a historical pattern applies.
 
 Within each scope, all methods apply the same Episode Controller policy to their own context and intervention history.
 The controller compares proposed services with previously allowed interventions and converts duplicates to \textsc{Abstain}.
