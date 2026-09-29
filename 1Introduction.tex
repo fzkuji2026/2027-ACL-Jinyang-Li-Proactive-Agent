@@ -1,6 +1,13 @@
 \section{Introduction}
 \label{sec:introduction}
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{Fig_Intro_Scenario.pdf}
+    \caption{Illustrative Sports scenario. Both agents receive the same current event. A conventional proactive agent sees only recent events and abstains; with \system{}, source-checked daily trajectories and a replay-supported, currently applicable pattern support a timely suggestion.}
+    \label{fig:intro_scenario}
+\end{figure}
+
 Proactive LLM agents anticipate useful assistance as a user's situation evolves, taking initiative before an explicit request.
 Recent systems study when to propose a task, detect emerging needs, and use contextual or historical information to guide that judgment~\citep{lu2025proactiveagent,yang2025contextagent,xie2026pask,li2026memcog}.
 Across our Sports, Home, and Code scopes, this requires interpreting a continuing stream of observations and deciding whether a service opportunity warrants attention now.
@@ -9,13 +16,6 @@ Historical context is central to this decision.
 Figure~\ref{fig:intro_scenario} illustrates how earlier evening walks can inform a service judgment when current activity is low and the user is available.
 Daily trajectories and temporal patterns retain this context beyond a recent-event window.
 The agent must connect that history to a concrete, timely service.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{Fig_Intro_Scenario.pdf}
-    \caption{Illustrative Sports scenario. (a) Evening walks recur on earlier weekdays but fall outside the recent 72-hour event memory. (b) \system{} admits history only after source, replay, and applicability checks. (c) Decisions on today's low-activity events: the event-only agent misses the 18:30 opportunity, while generic memory with unchecked notes also intervenes at 10:05 and 14:20. Bells: \textsc{Intervene}; circles: \textsc{Abstain}; ticks/crosses: agreement with reference opportunities. Decisions are illustrative.}
-    \label{fig:intro_scenario}
-\end{figure*}
 
 Agent memory systems retain observations, consolidate experience, and retrieve related information~\citep{park2023generative,packer2023memgpt,chhikara2025mem0,xu2025amem}.
 To turn this history into decision context, proactive agents must assess whether an abstraction reflects its source events, whether a proposed temporal pattern has recurring support, and whether that pattern applies now.
