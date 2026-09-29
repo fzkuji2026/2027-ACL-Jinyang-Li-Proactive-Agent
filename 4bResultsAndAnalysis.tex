@@ -44,36 +44,34 @@ IR combines recovered opportunities and false interventions; lower frequency alo
 
 \paragraph{Reference sensitivity.}
 \label{sec:reviewed_diagnostics}
-Rescoring fixed outputs from separate 450-target runs against the two reference versions (Section~\ref{sec:reference_labels}) preserves \system{}'s Effectiveness advantage over CSM, our recursive-summary control (Section~\ref{sec:recursive_summary}), on Home/Code; the small Sports ranking reverses.
-Home scores fall from 68.7\% to 55.6\% for \system{} and 46.4\% to 37.2\% for CSM.
-Absolute scores are label-sensitive despite some stable comparisons; main labels and results remain unchanged.
+Rescoring fixed \system{} outputs from a separate 450-target diagnostic against the earlier and separate-team references (Section~\ref{sec:reference_labels}) changes Effectiveness from 42.6\% to 42.5\% on Sports, 68.7\% to 55.6\% on Home, and 57.6\% to 47.4\% on Code.
+Absolute scores are label-sensitive, especially on Home and Code.
 
-\paragraph{Episode-level boundary.}
-A model-assisted diagnostic on those targets defines 67 goal-and-object service episodes.
+\paragraph{Episode-level analysis.}
+A model-assisted post-hoc analysis on those targets reconstructs 67 goal-and-object episodes from 76 positive event anchors.
 First timely matching assistance covers an episode; repetition without actionable new evidence is redundant.
-\system{}/CSM cover 23/26 Sports episodes each, 10/10 versus 8/10 on Home, and 14/31 versus 18/31 on Code.
-On Code, \system{} uses fewer interventions (42 versus 65), but its redundant shares are higher in all scopes: 1.2/43.6/9.5\% versus CSM's 1.1/32.1/4.6\% (Sports/Home/Code).
-Only six Home follow-up classifications are human-confirmed; other references and matches remain provisional.
-Event-level gains do not establish uniformly better episode coverage, repetition control, or recipient benefit.
-Appendix~\ref{app:label_review_450} retains paired scores and episode-matching records.
+\system{} covers 23/26 Sports episodes, 10/10 Home episodes, and 14/31 Code episodes.
+Its redundant-intervention shares are 1.2\%, 43.6\%, and 9.5\%, respectively: full Home coverage coexists with 17 redundant interventions out of 39, while Code leaves 17 reference episodes uncovered.
+Episode-level analysis complements event-level evaluation by measuring opportunity coverage and repeated interventions.
+Appendix~\ref{app:label_review_450} retains reference-sensitivity scores and episode-matching records.
 
-\subsection{Ablation Study}
+\subsection{Ablation Study and Memory Analysis}
 \label{sec:hierarchy}
 \label{sec:validation_ablations}
 
 \paragraph{Memory levels.}
 Event-only supplies current and bounded recent events; Event+Daily adds source-checked daily trajectories; \system{} adds temporal patterns.
 These three variants in Figure~\ref{fig:memory_hierarchy} share Luna, decision prompt, schema, event bound, and controller.
+The controller uses representation-dependent keys, so the comparison measures memory-layer contributions within the implemented pipeline.
 Daily trajectories recover more opportunities, most on Code, with unchanged Sports/Home false-positive counts and two additional Code false positives.
 Patterns further increase Effectiveness by 9.9/13.5/7.0 points (Sports/Home/Code), increasing true positives and reducing false positives (RQ2).
 Daily abstraction expands context; supported, currently applicable patterns improve selectivity.
 
 \begin{figure*}[t]
 \centering
-\input{Fig_Memory_Comparisons_body}
-\caption{Memory comparisons (\%, Luna). Event-only, Event+Daily, and \system{} form the controlled memory-level ablation (Section~\ref{sec:hierarchy}). CSM is a complete-strategy control with different memory guidance and construction budgets (Section~\ref{sec:recursive_summary}). The middle panel highlights its Coverage trade-off with \system{}. Textual gains use unrounded scores.}
+\input{Fig2_Memory_Hierarchy_body}
+\caption{Memory-level ablation (\%, Luna). Event-only, Event+Daily, and \system{} share the decision prompt, schema, event bound, and controller policy, applied to each variant's memory context. The panels report Effectiveness and FPR. Textual gains use unrounded scores.}
 \label{fig:memory_hierarchy}
-\label{fig:recursive_summary}
 \end{figure*}
 
 \paragraph{Validation mechanisms.}
@@ -107,34 +105,22 @@ Before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
 \paragraph{Episode control.}
 Before suppression scores recorded Code proposals with later states and decisions fixed, not a controller-free rerun.
 Filtering removes 66 false-positive and 17 true-positive proposals: Relevance and Effectiveness improve, but Coverage falls.
-
-\label{sec:validation_results}
-\label{sec:case_analysis}
-The Sports/Home audit finds daily trajectories for 13 entities, Active patterns for 11, and current-event pattern matches for eight.
-Thus, construction, admission, and actual use are distinct stages; stored history does not guarantee a later applicable opportunity.
-Appendices~\ref{app:construction_audit} and~\ref{app:extended_ablations} retain audit counts, timings, and expanded scores.
-
-\subsection{Comparison of Memory Strategies}
-\label{sec:recursive_summary}
-
-\paragraph{Recursive-summary control.}
-Cross-week Summary Memory (CSM) summarizes each completed day's committed events, then recursively merges seven observed daily records with its previous cross-week summary; this can span more than seven calendar days.
-Decisions receive current/recent events, unconsolidated daily summaries, and the cross-week summary.
-CSM checks format/length; \system{} also checks source facts, replays support, and selects applicable patterns.
-Both share Luna, streams, labels, the 72-hour/100-event bound, task policy, output contract, and controller.
-Memory guidance and construction budgets differ, making this a complete-strategy control rather than a component ablation (RQ2).
-
-Against CSM, \system{} has higher Relevance, Effectiveness, and Balance, and lower FPR across scopes (Figure~\ref{fig:recursive_summary}).
-Code Effectiveness rises 43.9\% to 55.4\% and FPR falls 32.1\% to 18.1\%, but Coverage falls 94.8\% to 89.7\%: 179 fewer false interventions accompany nine fewer true positives.
-IR falls on Sports/Code but rises on Home; gains are not simply reduced intervention frequency.
-Appendix~\ref{app:configuration} details CSM's configuration; Table~\ref{tab:recursive_summary_full} reports its complete scores.
+Appendix~\ref{app:extended_ablations} reports expanded ablation and controller scores.
 
 \subsection{Model Sensitivity}
 \label{sec:model_sensitivity}
 
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.90\textwidth]{Fig_Model_Sensitivity_Radar.png}
+\caption{Single-run Event-only model comparison on three selected streams. Scores pool event-level confusion counts across domains; specificity equals $1-\mathrm{FPR}$. All axes start at zero, with metric-specific ranges.}
+\label{fig:event_only_model_radar}
+\end{figure*}
+
+\paragraph{Within-series pipeline sensitivity.}
 Table~\ref{tab:backbone_sensitivity} jointly replaces decision and construction LLMs; benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller remain fixed.
 Luna--Terra--Sol improves Effectiveness and lowers FPR in every scope.
-Memory content also changes, so this measures pipeline sensitivity within one model series, not decision-only gains or cross-family transfer.
+This comparison measures pipeline sensitivity within one model series, with memory content and decision behavior changing together.
 Controlled ablations retain Luna.
 
 \begin{table}[tbp]
@@ -153,3 +139,9 @@ Sol & \textbf{58.6} / \textbf{34.4} & \textbf{69.3} / \textbf{7.5} & \textbf{66.
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Cross-family Event-only comparison.}
+We compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash.
+Task instructions, the 72-hour/100-event bound, and Episode Controller policy are shared.
+Figure~\ref{fig:event_only_model_radar} pools confusion counts across domains.
+Luna leads in F1 (37.4\%) and recall; Gemini leads in precision.

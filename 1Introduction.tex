@@ -13,7 +13,7 @@ The agent must connect that history to a concrete, timely service.
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{Fig_Intro_Scenario.pdf}
-    \caption{Illustrative Sports scenario. Both agents receive the same current event. \system{} supplements recent events with daily trajectories and temporal patterns built from earlier walking observations, informing the assessment of a timely activity suggestion. The two responses depict possible decisions in this conceptual example.}
+    \caption{Illustrative Sports scenario. Both agents receive the same current event and recent history. \system{} retains earlier walking observations as daily trajectories and temporal patterns, providing context for a timely activity suggestion. Responses depict possible decisions.}
     \label{fig:intro_scenario}
 \end{figure*}
 
@@ -30,11 +30,11 @@ The decision LLM assesses whether current observations or historical context sup
 We construct \emph{ProactiveStream} to study these decisions over 4,539 events from 17 isolated streams.
 Its three scopes preserve causal history and define episode-aware reference opportunities, allowing evaluation of memory formation and repeated service decisions within the same streams.
 \system{} improves Effectiveness by 4.3--15.7 percentage points over the strongest of five external baselines in each scope.
-A separate recursive-summary comparison and targeted ablations examine the roles of historical organization and support checks.
+Targeted ablations examine the roles of hierarchical memory organization and support checks.
 
 Our contributions are:
 \begin{itemize}
     \item \textbf{Method.} \system{} combines source-checked daily abstraction, replay-based pattern assessment, and selection of currently applicable patterns to supply historical context for proactive service decisions.
     \item \textbf{Benchmark.} ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions, preserving causal history, entity isolation, and episode-aware reference opportunities across three scopes.
-    \item \textbf{Empirical findings.} \system{} achieves higher Effectiveness than the evaluated baselines and summary control in all three scopes; targeted ablations support the contributions of hierarchical organization and validation.
+    \item \textbf{Empirical findings.} \system{} achieves higher event-level Effectiveness and Balance than the evaluated external baselines in all three scopes; targeted ablations support the contributions of hierarchical organization and validation.
 \end{itemize}

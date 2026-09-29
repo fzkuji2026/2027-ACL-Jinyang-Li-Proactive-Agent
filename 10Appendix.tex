@@ -1,249 +1,86 @@
-% Supporting records and reproducibility details; conclusions and boundaries are stated in the main paper.
-\section{Memory-Construction Audit and Online Availability}
-\label{app:construction_audit}
-
-Complementing the evidence-check ablations in Section~\ref{sec:validation_ablations}, we audit existing memory-construction artifacts and maintenance logs from Sports and Home, covering nine participants and four homes.
-Table~\ref{tab:validation_audit} records maintenance operations and unique retained artifacts in separate units.
-The audit checks source support, entity consistency, and replay consistency.
-
-
-\paragraph{Retained evidence.}
-The daily store contains 423 trajectories, with 367 from Sports and 56 from Home, comprising 1,279 retained segments.
-All retained segments pass the configured source-support and entity-consistency checks, with all evidence linked to the same entity.
-Separately, construction logs record 311 rejected daily validation checks.
-
-The final temporal-pattern store contains 54 source-linked proposals whose recorded replay results are consistent with offline recomputation: 42 are Active and 12 remain Candidate.
-Decision contexts use lifecycle-eligible patterns that satisfy current-applicability conditions (Appendices~\ref{app:lifecycle} and~\ref{app:matching}).
-Across weekly maintenance updates, 118 of 140 replay attempts pass the activation gate, while 22 remain below its thresholds.
-These operation counts are distinct from the 42 unique Active patterns in the final store.
-
-\paragraph{Online availability.}
-Daily Trajectory Memory first becomes available for all 13 entities at a median elapsed time of 0.80 days.
-An Active temporal pattern first becomes available for 11 entities at a median of 6.79 days.
-Current-applicability matching first supplies a temporal pattern for eight entities at a median of 10.46 days.
-Each median is calculated over entities reaching the corresponding stage.
-Pattern activation and current relevance are checked separately: admitted patterns enter a decision context after current-applicability matching.
-
-The stage counts summarized in Section~\ref{sec:validation_results} use different eligible-entity sets; the timings above retain those denominators.
+% Reference and behavior diagnostics; interpretations remain in the main paper.
+\section{Reference and Episode Diagnostics}
+\label{app:label_review_450}
 
 \begin{table*}[!t]
 \centering
-\caption{Memory-construction audit for Sports and Home (nine participants and four homes). Log rows count maintenance operations; store rows count unique retained artifacts.}
-\label{tab:validation_audit}
+\caption{Reference sensitivity on 150 targets per scope. $I$ is the number of final interventions; positives and confusion counts use the separate team's references. Effectiveness is F1 (\%). Earlier diagnostic references use original Sports/Home labels and 122 original plus 28 additional Code annotations. Both columns score the same diagnostic outputs.}
+\label{tab:reference_sensitivity_450}
 \small
-\setlength{\tabcolsep}{5.0pt}
-\begin{tabular}{@{}p{0.22\textwidth}p{0.28\textwidth}p{0.45\textwidth}@{}}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{lrrrrrrcc}
 \toprule
-View & Counting unit & Audit result \\
+Scope & Positives & $I$ & TP & FP & FN & TN & \shortstack{Earlier diagnostic\\Effectiveness} & \shortstack{Separate-team\\Effectiveness} \\
 \midrule
-Daily validation log & validation attempt & 311 rejected before storage \\
-Retained daily store & unique evidence-linked segment & 1,279 checked; all source-supported; 0 cross-entity \\
-Weekly replay log & replay attempt & 140 attempts; 118 pass; 22 remain below the gate at that update \\
-Retained pattern store & unique temporal-pattern proposal & 54 checked; 42 Active; 12 Candidate; 0 inconsistent replays \\
+Sports & 27 & 86 & 24 & 62 & 3 & 61 & 42.6 & 42.5 \\
+Home & 15 & 39 & 15 & 24 & 0 & 111 & 68.7 & 55.6 \\
+Code & 34 & 42 & 18 & 24 & 16 & 92 & 57.6 & 47.4 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\section{Source-Linked Decision Records}
-\label{app:case_examples}
-
-Table~\ref{tab:case_flows} traces one recorded Sports decision from the 450-target diagnostic run, selected because its source events, daily artifacts, contemporaneous weekly proposal, and matched-pattern telemetry can be linked.
-It uses the proposal version available at decision time.
-The following table retains the recorded fields and operation timestamps.
-
 \begin{table*}[!t]
 \centering
-\caption{A source-to-decision timeline for one Sports participant. Dates are in December 2015; times use the stored UTC timestamps. Text condenses source events and construction/decision logs.}
-\label{tab:case_flows}
+\caption{\system{} episode diagnostic on 150 targets per scope. Covered/New includes Episode Coverage (\%) in parentheses; SR and RIR are percentages. $I$ is the sum of first valid ($F$), valuable follow-up ($V$), redundant ($R$), uncertain ($U$), unmatched, late, and unresolved outcomes. $U=0$ in all three scopes; unresolved semantic or condition matches remain separate from supported or redundant assistance.}
+\label{tab:episode_review_450}
 \small
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.08}
-\begin{tabular}{@{}p{0.20\textwidth}p{0.75\textwidth}@{}}
+\begin{tabular}{lcrrrrrrrcc}
 \toprule
-Stage and recorded time & Source-linked observation or operation \\
+Scope & \shortstack{Covered/New\\(Coverage)} & $I$ & $F$ & $V$ & $R$ & Unmatched & Late & Unresolved & SR & RIR \\
 \midrule
-Historical events\newline Dec.\ 15, 17--19, 21 & Participant 35 has recorded STILL observations in slots 2--4 across five cited days. For example, Dec.\ 15 at 16:32:38 records slot 2, work, STILL, and 586 steps in the preceding hour (event \texttt{5fd72a80\ldots}). STILL describes activity at the recorded observation time. \\
-\addlinespace[3pt]
-Daily construction\newline Dec.\ 16--22 & Each cited day becomes a source-linked daily trajectory at the next daily rollover. The Dec.\ 15 trajectory retains the example's event reference and observed fields; its recorded creation time is Dec.\ 16 at 12:02:49. \\
-\addlinespace[3pt]
-Weekly proposal\newline Dec.\ 22 & At the weekly update on Dec.\ 22, the proposal cites the five completed trajectories dated Dec.\ 15, 17--19, and 21: recognized activity repeatedly equals STILL in slots 2--4, with applicability window 16:00--22:00. The maintenance record at 12:02:27 reports one proposed and one activated pattern. \\
-\addlinespace[3pt]
-Current event\newline Dec.\ 24, 16:31:26 & Event \texttt{c956aa51\ldots}: slot 2, available, in-transit status false, store location, activity UNKNOWN, 256 steps in the preceding 30 minutes and 778 in the preceding hour. The context contains 12 prior events, two daily trajectories, and the matched pattern \texttt{93463c34\ldots}. \\
-\addlinespace[3pt]
-Decision, then commit & Both model proposal and final output are ABSTAIN; controller action is ALLOW, preserving the model output. Telemetry records that the current event is committed after context construction. Here, the matched recurring observation accompanies an ABSTAIN decision. \\
+Sports & 23/26 (88.5) & 86 & 23 & 1 & 1 & 60 & 0 & 1 & 27.9 & 1.2 \\
+Home & 10/10 (100.0) & 39 & 10 & 6 & 17 & 6 & 0 & 0 & 41.0 & 43.6 \\
+Code & 14/31 (45.2) & 42 & 14 & 3 & 4 & 16 & 4 & 1 & 40.5 & 9.5 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-The proposal and final decision both record ABSTAIN; the controller does not suppress an intervention in this trace.
+\subsection{Reference Sensitivity}
 
-The separate frozen 16-case inventory includes two false positives and two false negatives from Event-only logs.
-In Sports, the false-positive case receives an activity suggestion following substantial movement during the preceding hour; the false-negative case receives ABSTAIN at a reference-positive low-activity event.
-In Home, the false-positive case receives a check-in during ordinary bedroom--bathroom movement; the false-negative case receives ABSTAIN during a reference-positive quiet period spanning two consecutive segments.
+The diagnostic selects 150 consecutive targets from one stream per scope using a fixed SHA256 ranking of eligible streams and contiguous starts based only on public metadata, with at least seven days of preceding history.
+The streams are Sports participant\_35, Home home\_0004, and Code repository \texttt{callstack/react-native-pager-view}.
+Their target periods are December 16, 2015--January 18, 2016; June 23--28, 2011; and June 21--November 4, 2025.
+All 37, 203, and 152 preceding events are processed chronologically, respectively: 842 public events supply context for 450 scored targets.
 
+A separate three-reviewer team independently labels each target with its prior same-stream history while blinded to evaluated-system outputs, then discusses judgments to obtain consensus references.
+Relative to the earlier diagnostic references, Sports/Home have 13/13 changes from \textsc{Intervene} to \textsc{Abstain} and 4/0 changes in the reverse direction; Code has 6 removals and 16 additions.
+These counts describe differences between the earlier diagnostic references and the separate team's judgments on 450 targets across three selected streams.
 
-\section{Independent Human Review Across Three Scopes}
-\label{app:label_review_450}
+Table~\ref{tab:reference_sensitivity_450} scores identical recorded \system{} outputs against these two sets of references.
+The predictions come from separate diagnostic runs on the selected targets.
+The diagnostic uses Luna with temperature zero, thinking disabled, decision limits of 256 tokens for Sports/Home and 512 for Code, and the same 72-hour/100-event bound, daily validation, replay gating, and episode-control policy.
+Immediate and scheduled services both count as \textsc{Intervene}.
 
-We conduct a sampled label review within the main benchmark, selecting 150 consecutive target events per scope (450 in total).
-A separate three-reviewer team independently annotates these segments while blinded to ProactMem and CSM outputs, and discusses its judgments to obtain consensus references.
-Each segment belongs to exactly one participant, home, or project repository.
-A fixed SHA256-based rule first ranks eligible streams and then eligible contiguous starts using public metadata only, and requires at least seven days of preceding history.
-The selected streams are Sports participant\_35, Home home\_0004, and the Code repository \texttt{callstack/react-native-pager-view}.
-Their target periods are December 16, 2015--January 18, 2016; June 23--28, 2011; and June 21--November 4, 2025, respectively.
-The corresponding ProactMem pipeline processes all 37, 203, and 152 preceding events chronologically to provide historical context; scoring covers the 150 target events in each scope.
-Thus, 842 public events supply causal context for 450 scored targets; each target can use only its current observation and strictly prior same-stream history.
-
-The reviewers inspect each target together with its preceding same-stream history.
-The confirmed review yields 27/123, 15/135, and 34/116 \textsc{Intervene}/\textsc{Abstain} labels for Sports, Home, and Code, respectively.
-Agreement with the earlier diagnostic references is 88.7\% (133/150), 91.3\% (137/150), and 85.3\% (128/150) for Sports, Home, and Code, respectively.
-In Sports and Home, 13 and 13 labels change from \textsc{Intervene} to \textsc{Abstain}, compared with 4 and 0 changes in the reverse direction; Code has 6 removals and 16 additions.
-The reported counts quantify agreement between label versions and the directions of label changes.
-These annotations serve as references for the additional evaluation; the main benchmark labels and result tables remain unchanged.
-For model comparison, we use the recorded ProactMem and CSM decisions from the selected-segment diagnostic runs, which are separate from the main runs.
-For each method, exactly the same target decisions are scored against both label versions; rescoring preserves the recorded outputs.
-Like the main experiment, this diagnostic uses \texttt{gpt-5.6-luna} through the official OpenAI API, with temperature zero and thinking disabled.
-Decision-output limits are 256 tokens for Sports/Home and 512 for Code.
-Both methods retain the 72-hour/100-event bound and episode control; ProactMem additionally retains daily validation and replay gating.
-
-Tables~\ref{tab:paired_label_f1_450} and~\ref{tab:label_review_450} retain the paired scores and confusion counts underlying Section~\ref{sec:reviewed_diagnostics}.
-The diagnostic segment and recorded outputs are fixed; the main evaluation uses its own full-scope events and runs.
-Across scopes, immediate and scheduled service decisions share the \textsc{Intervene} label.
-The paired episode analysis in Appendix~\ref{app:episode_review_450} uses references grounded in these reviewed events and their causal histories, with its annotation status specified below.
-
-
-\begin{table}[!htbp]
-\centering
-\caption{Effectiveness (\%) under two reference versions, using identical diagnostic outputs for each method (150 targets per scope). Earlier references are original Sports/Home labels; Code combines 122 original and 28 subsequently completed human labels. Bold/underlining mark the best/second-best scores within each scope and reference version.}
-\label{tab:paired_label_f1_450}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{cccc}
-\toprule
-Scope & Method & \shortstack{Earlier\\Effectiveness} & \shortstack{Reviewed\\Effectiveness} \\
-\midrule
-Sports & CSM & \textbf{44.4} & \underline{41.0} \\
-  & ProactMem & \underline{42.6} & \textbf{42.5} \\
-Home & CSM & \underline{46.4} & \underline{37.2} \\
-  & ProactMem & \textbf{68.7} & \textbf{55.6} \\
-Code & CSM & \underline{49.4} & \underline{46.5} \\
-  & ProactMem & \textbf{57.6} & \textbf{47.4} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[!htbp]
-\centering
-\caption{Recorded ProactMem decisions evaluated against consensus labels from a team blinded to model outputs, on 450 targets with 150 contiguous decisions per scope. Each segment and its prefix are entity-isolated. Counts use final intervention decisions after episode control, including immediate and scheduled outputs. Prefix events supply historical context.}
-\label{tab:label_review_450}
-\small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.06}
-\begin{tabular}{lccc}
-\toprule
-Quantity & Sports & Home & Code \\
-\midrule
-Scored decisions & 150 & 150 & 150 \\
-Context-only preceding events & 37 & 203 & 152 \\
-Reference interventions & 27 & 15 & 34 \\
-Reference abstentions & 123 & 135 & 116 \\
-ProactMem interventions & 86 & 39 & 42 \\
-TP & 24 & 15 & 18 \\
-FP & 62 & 24 & 24 \\
-FN & 3 & 0 & 16 \\
-TN & 61 & 111 & 92 \\
-\midrule
-Intervention Rate & 57.3\% & 26.0\% & 28.0\% \\
-Relevance & 27.9\% & 38.5\% & 42.9\% \\
-Coverage & 88.9\% & 100.0\% & 52.9\% \\
-Effectiveness & 42.5\% & 55.6\% & 47.4\% \\
-False Positive Rate & 50.4\% & 17.8\% & 20.7\% \\
-Balance & 69.2\% & 91.1\% & 66.1\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Episode References, Matching Rules, and Counts}
+\subsection{Episode References and Matching}
 \label{app:episode_review_450}
 
-On the same 450 targets and 392 preceding events, we compare recorded CSM and \system{} decisions using a common set of 67 proposed episodes: 26 in Sports, 10 in Home, and 31 in Code.
-The analysis separates first effective assistance, useful follow-up, and repetition, using fixed recorded outputs and event labels.
-Each episode specifies a service goal and object, causal evidence, onset, valid observed event positions, and any explicit deadline or closure evidence.
-This post-hoc paired diagnostic uses model-assisted episode references and semantic matches, assessed separately from the blinded event-label review. Six Home follow-up classifications have human confirmation; the remaining episode and matching proposals retain provisional status.
-Validity is assessed at the listed observations in each episode reference.
+Each reference specifies a service goal and object, causal evidence, onset, explicitly listed valid observations, and any deadline or closure evidence.
+Semantic matching uses these fields to associate interventions with reference episodes.
 
-\paragraph{Reference and model histories.}
-Fixed event labels use reference-opportunity novelty (Equation~\ref{eq:or_semantics}); episode coverage follows the evaluated method's actual preceding interventions.
-Each method initializes coverage from its own prefix outputs. Scoring counts only target interventions, and each method maintains an independent coverage history.
-A target intervention must match an episode's service goal and object at a listed valid observation.
-For timeliness, intended service time is the decision time plus the specified delay, with zero delay for immediate intervention.
-If an explicit reference deadline exists, coverage credit requires the intended service time to meet that deadline.
+\paragraph{Matching and follow-up.}
+Coverage follows \system{}'s own interventions, initialized from recorded prefix outputs; fixed event-label novelty instead follows the reference sequence (Equation~\ref{eq:or_semantics}).
+Only target interventions are scored.
+An intervention must match the goal and object at a listed valid observation.
+Its proposed service time is the decision time plus its specified delay (zero for immediate service), and must meet any explicit episode deadline.
 The first timely match covers the episode.
-For subsequent matches, we compare the message and available evidence with that method's preceding assistance for the same episode.
-A follow-up is valuable when new causal evidence changes the actionable service or next step and the message addresses that change; rephrasing the same advice or continued status alone is redundant.
-Cases requiring unobserved delivery, recipient response, or task completion are left uncertain.
-Valuable follow-ups contribute to service quality within the existing episode; coverage counts each episode once.
-Each output credits at most one episode: among compatible references, the first uncovered one in the fixed reference order takes precedence; otherwise the first already covered one is used.
+Each output receives at most one credit: the first uncovered compatible episode in the fixed reference order, otherwise the first already covered one.
 
-\paragraph{Metrics.}
-Let $I$ be all target interventions, $F$ first valid interventions, $V$ valuable follow-ups, and $R$ redundant follow-ups.
-Episode Coverage is covered new episodes divided by all new episodes; its unit is the service episode, whereas main-table Coverage uses reference-positive events.
-Supported Relevance (SR) is $(F+V)/I$, extending the first-only Episode Relevance $F/I$ while retaining single-credit episode coverage.
-Redundant Intervention Rate (RIR) is $R/I$.
-All target interventions contribute to $I$ in SR and RIR, including uncertain follow-ups ($U$), unmatched outputs, late outputs, and unresolved matches.
-Their numerators count supported assistance ($F+V$) and redundant follow-ups ($R$), respectively; Episode Coverage uses the number of new reference episodes as its denominator.
-These categories describe compatibility with the proposed references. Recipient benefit requires prospective validation.
-Table~\ref{tab:episode_review_450} retains coverage and rates, and Table~\ref{tab:episode_categories_450} retains their count decomposition.
+Subsequent matches are compared with the method's preceding assistance for that episode.
+A valuable follow-up requires new causal evidence that changes the actionable service or next step, and a message addressing that change.
+Rephrasing or continued status alone is redundant; value requiring unobserved delivery, recipient response, or completion remains uncertain.
+Valuable follow-ups do not create additional covered episodes.
 
-\begin{table*}[!htbp]
-\centering
-\caption{Paired episode diagnostic on 150 targets per scope with partially confirmed references and matches. Both methods use the same references and their own causal histories. Rates are percentages. SR credits first valid assistance and valuable follow-up; RIR counts redundant follow-up. Bold/underlining mark the best/second-best directional scores within each scope; ties share marks at displayed precision.}
-\label{tab:episode_review_450}
-\small
-\setlength{\tabcolsep}{7pt}
-\renewcommand{\arraystretch}{1.06}
-\begin{tabular}{cccccc}
-\toprule
-Scope & Method & Covered / New & Episode Coverage $\uparrow$ & SR $\uparrow$ & RIR $\downarrow$ \\
-\midrule
-Sports & CSM & 23/26 & \textbf{88.5} & \underline{26.7} & \textbf{1.1} \\
-  & \system{} & 23/26 & \textbf{88.5} & \textbf{27.9} & \underline{1.2} \\
-\midrule
-Home & CSM & 8/10 & \underline{80.0} & \underline{39.3} & \textbf{32.1} \\
-  & \system{} & 10/10 & \textbf{100.0} & \textbf{41.0} & \underline{43.6} \\
-\midrule
-Code & CSM & 18/31 & \textbf{58.1} & \underline{33.8} & \textbf{4.6} \\
-  & \system{} & 14/31 & \underline{45.2} & \textbf{40.5} & \underline{9.5} \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\paragraph{Metrics and boundaries.}
+Let $I$ count all target interventions, $F$ first valid interventions, $V$ valuable follow-ups, $R$ redundant follow-ups, and $U$ uncertain follow-ups.
+Episode Coverage divides covered new episodes by all new reference episodes; Supported Relevance is $\mathrm{SR}=(F+V)/I$, and Redundant Intervention Rate is $\mathrm{RIR}=R/I$.
+Uncertain, unmatched, late, and unresolved outputs remain in $I$ but receive no supported-assistance credit.
+Table~\ref{tab:episode_review_450} combines the rates and outcome counts.
 
+Coverage is conditional on the observed segment and onset convention.
+The main diagnostic treats the first Home opportunity as target-onset; treating it as a continuation from the prefix instead gives 9/9 new opportunities covered.
+These exploratory scores depend on the constructed references and semantic matches.
 
-\begin{table*}[t]
-\centering
-\caption{Intervention counts underlying Table~\ref{tab:episode_review_450}. $I$ equals the sum of all seven outcome categories. $U$ denotes uncertain follow-up value; Unresolved denotes a pending semantic or condition match. Both remain separate from redundant or supported assistance. Each episode contributes once to the episode count.}
-\label{tab:episode_categories_450}
-\small
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{cccccccccc}
-\toprule
-Scope & Method & $I$ & $F$ & $V$ & $R$ & $U$ & Unmatched & Late & Unresolved \\
-\midrule
-Sports & CSM & 90 & 23 & 1 & 1 & 0 & 64 & 0 & 1 \\
- & \system{} & 86 & 23 & 1 & 1 & 0 & 60 & 0 & 1 \\
-\midrule
-Home & CSM & 28 & 8 & 3 & 9 & 0 & 8 & 0 & 0 \\
- & \system{} & 39 & 10 & 6 & 17 & 0 & 6 & 0 & 0 \\
-\midrule
-Code & CSM & 65 & 18 & 4 & 3 & 3 & 30 & 6 & 1 \\
- & \system{} & 42 & 14 & 3 & 4 & 0 & 16 & 4 & 1 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\paragraph{Observation boundaries.}
-The main diagnostic treats the first Home opportunity as target-onset; a plausible continuation from the prefix changes both methods' denominator to nine, with CSM covering 7/9 and \system{} 9/9.
-Coverage describes the observed segment; lifetime coverage requires follow-up beyond that segment.
-Code has six late CSM outputs and four late \system{} outputs; scheduled decisions are assessed using their intended service times and explicit deadlines.
-Three CSM Code follow-ups have uncertain value: accepting all three would raise its SR from 33.8\% to 38.5\%, a sensitivity scenario for those three judgments.
-Alternative service interpretations of other unmatched and unresolved outputs remain open for review.
+\FloatBarrier

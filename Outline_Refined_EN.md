@@ -1,0 +1,282 @@
+# Proactive Memory for Event-Driven LLM Agents
+
+## Abstract
+
+- Proactive LLM agents use ongoing observations and accumulated history to identify timely service opportunities.
+- Proactive Memory (ProactMem) combines bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
+- Daily validation checks extracted facts against source events; historical replay assesses recurring support; retrieval selects patterns applicable to the current event.
+- ProactiveStream evaluates chronological decisions across three service scopes with isolated streams and episode-aware opportunity labels.
+- ProactMem improves Effectiveness by 4.3–15.7 percentage points over the strongest external baseline in each scope. Ablations support the contributions of hierarchical memory organization and validation.
+
+---
+
+## 1. Introduction
+
+1. **Proactive service over event streams**
+   - Agents in activity support, smart homes, and software collaboration assess whether an evolving situation warrants assistance before an explicit request.
+   - Useful decisions can depend on observations beyond the recent-event window.
+   - An illustrative Sports scenario shows how earlier walking observations can inform a timely activity suggestion.
+
+2. **From historical observations to applicable evidence**
+   - Agent memory systems retain observations, consolidate experience, and retrieve related information.
+   - Proactive decisions require source-supported abstractions, recurring historical support, and evidence relevant to the present situation.
+   - The central question is how to turn longitudinal history into reliable, currently applicable context for proactive service decisions.
+
+3. **Proposed approach**
+   - Event Memory preserves bounded recent observations.
+   - Daily Trajectory Memory retains source-checked daily abstractions.
+   - Temporal Pattern Memory consolidates recurring conditions and assesses their historical support through replay.
+   - The decision LLM combines these representations with current observations to assess concrete, timely, feasible, low-risk assistance.
+   - Episode control tracks prior interventions and filters repeated proposals.
+
+4. **Contributions**
+   - **Method:** a hierarchical framework combining daily source checking, replay-based pattern assessment, and current-applicability selection for proactive decisions.
+   - **Benchmark:** ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions across three scopes, preserving causal history, entity isolation, and episode-aware reference opportunities.
+   - **Empirical findings:** ProactMem achieves higher event-level Effectiveness and Balance than the evaluated external baselines in all three scopes; targeted ablations support hierarchical organization and validation.
+
+---
+
+## 2. Problem Formulation
+
+- Each participant, household, or repository defines an isolated, chronologically ordered public event stream.
+- For each incoming event, the agent produces an `Intervene` or `Abstain` decision and an optional evidence-grounded service message.
+- Decisions use the current public event and causally available same-entity state.
+- State updates occur after the output is finalized, so maintenance incorporating the current event affects subsequent decisions.
+- The objective is to identify timely, actionable service opportunities supported by current observations or prior same-entity history.
+- Evaluation uses fixed reference decisions under the annotation protocol; reference labels and annotation metadata remain evaluator-private.
+
+---
+
+## 3. Proactive Memory (ProactMem)
+
+### 3.1 Memory Construction and Update
+
+1. **Bounded Event Memory**
+   - Retains up to 99 prior events within the preceding 72 hours, alongside the current event.
+   - Preserves events in their original public representation.
+   - An independent daily buffer collects all committed events from the open local day for daily construction.
+
+2. **Fact-validated Daily Trajectory Memory**
+   - After a local day closes, a construction LLM extracts trajectory segments with intervals, typed facts, and source-event citations.
+   - Validation checks entity consistency, intervals, resolved citations, and canonicalized scalar values at compatible field paths.
+   - Source-consistency checks apply to typed evidence; semantic assessment of accompanying free text requires additional evaluation.
+   - Accepted trajectories retain context beyond the recent-event window and remain available during the current construction cycle.
+
+3. **Replay-assessed Temporal Pattern Memory**
+   - Consolidation operates on seven completed daily records per entity; a cycle can span more than seven calendar days.
+   - Proposed patterns specify triggers, expected behavior, temporal windows, optional weekday restrictions, and source daily records.
+   - Replay counts fulfilled and violated observable days, censors missing observations, and excludes inapplicable days.
+   - Activation requires at least three fulfilled days, replay confidence of at least 0.5, and lift of at least 1.0.
+   - Later observations update confidence and lifecycle eligibility.
+   - Historical support, current applicability, and present service value are assessed separately.
+
+### 3.2 Memory Retrieval and Selection
+
+- Event Memory supplies the bounded recent sequence, and Daily Trajectory Memory supplies completed trajectories from the current cycle.
+- Pattern selection checks entity-local trigger context, weekday restrictions, temporal applicability, and occurrence state.
+- Matching uses current and previously recorded causal triggers with a 30-minute lead/grace interval.
+- Fulfilled and censored occurrences are excluded from selection.
+- Up to three eligible patterns are ranked by occurrence state, lifecycle priority, confidence, and temporal distance.
+
+### 3.3 Proactive Decision
+
+- The decision context combines the current event, recent events, daily trajectories, selected patterns, and observable service-episode state.
+- The LLM proposes assistance when current observations or historical context support a concrete, timely, feasible, low-risk service.
+- A matching historical pattern supplies evidence; the LLM retains the option to abstain.
+- The Episode Controller compares proposed services with prior allowed interventions and suppresses duplicates.
+- Changes in opportunity state, service identity, contextual patterns, or local day permit renewed assessment.
+- Each method applies the controller policy to its own context and intervention history.
+- Execution proceeds through prior-memory preparation, current-event staging, context selection, proposal, finalization, and event commitment.
+
+---
+
+## 4. ProactiveStream Benchmark
+
+### 4.1 Scopes and Public Events
+
+| Scope | Primary source | Isolated entity | Streams | Public events | Temporal coverage | Reference interventions |
+| --- | --- | --- | ---: | ---: | --- | ---: |
+| Sports | HeartSteps | Participant | 9 | 1,456 | 367 observed participant-days | 365 |
+| Home | CASAS | Home | 4 | 1,624 | 14 consecutive days per home | 190 |
+| Code | GH Archive | Repository | 4 | 1,459 | Longitudinal repository histories | 174 |
+| **Total** | Three scopes | Isolated stream | **17** | **4,539** | Three longitudinal settings | **729** |
+
+- **Sports:** optional walking and everyday physical-activity assistance from participant activity and availability contexts.
+- **Home:** gentle, low-risk check-ins from sensor segments available at interval closure.
+- **Code:** low-risk triage, review, and maintenance from native repository events, with one decision per event.
+- Public inputs contain contemporaneously available observations with the same scope-specific schema across label classes.
+- Results are reported separately for each scope using event-level decisions.
+
+### 4.2 Reference Labels and Causal Replay
+
+- Annotators assess each event together with its complete prior same-stream history.
+- A positive label requires a concrete service opportunity supported by the current event or history, together with reference-episode novelty.
+- The first reliable actionable window receives `Intervene`; covered windows receive `Abstain`. Stronger support, changed service, or a reopened episode can create a renewed opportunity.
+- Reference novelty follows the reference opportunity sequence independently of model outputs.
+- LLM-assisted screening prioritizes candidate opportunities. Three team members independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
+- Main comparisons use labels, prompts, memory bounds, and validation settings frozen before the corresponding runs.
+- Each stream starts from empty method state and includes its initial events in scoring. Labels are joined after inference.
+
+---
+
+## 5. Experimental Evaluation
+
+- **RQ1:** How does ProactMem compare with external methods on event-level opportunity detection?
+- **RQ2:** How do daily trajectories and temporal patterns contribute within the memory hierarchy?
+- **RQ3:** How do daily fact validation and replay gating affect decision quality?
+
+### 5.1 Experimental Settings
+
+#### Baselines
+
+- **ProactiveAgent:** released evaluation prompt and proposal/null contract, with causal event–decision history capped at 1,000 events.
+- **ContextAgent:** in-context proactive-service judgment adapted to public event representations.
+- **Mem0:** extraction, consolidation, and retrieval of same-entity memories.
+- **A-MEM:** linked notes, association updates, and relevant-note retrieval.
+- **Graphiti:** temporal relations and same-stream fact retrieval.
+
+#### Implementation
+
+- The primary model is `gpt-5.6-luna`, with temperature zero and thinking disabled; ProactMem uses the official OpenAI API.
+- Methods share task semantics, scope-specific references, and the Episode Controller policy, with method-specific prompts, retrieval interfaces, and computational budgets.
+- Event-only, Event+Daily, and ProactMem share the decision prompt, output schema, and 72-hour/100-event bound.
+- A-MEM and Graphiti augment the bounded event context with their memory representations.
+- Decision and memory-construction calls have separate roles and output budgets.
+
+#### Metrics
+
+- **Relevance:** precision of interventions against reference opportunities.
+- **Coverage:** recall of reference opportunities.
+- **Effectiveness:** F1, the harmonic mean of Relevance and Coverage.
+- **False Positive Rate (FPR), also called False Intervention Rate (FIR):** the fraction of reference negatives receiving interventions.
+- **Balance:** balanced accuracy, averaging Coverage and the correct-silence rate.
+- **Intervention Rate (IR):** the fraction of all events receiving interventions.
+- Scores use post-controller decisions; immediate and scheduled service proposals both count as `Intervene`.
+- Higher scores are preferred for Relevance, Coverage, Effectiveness, and Balance; lower FPR is preferred. IR describes intervention frequency.
+
+### 5.2 Main Results
+
+1. **External-method comparisons**
+   - ProactMem achieves the highest Effectiveness and Balance among the evaluated methods in every scope.
+   - Effectiveness is 48.8% on Sports, 58.6% on Home, and 55.4% on Code.
+   - Gains over the strongest external baseline in each scope range from 4.3 to 15.7 percentage points.
+   - Compared with A-MEM, ProactMem recovers more opportunities with fewer false interventions across all scopes.
+   - Mem0 has higher Sports Coverage; some methods attain lower Home or Code FPR alongside lower Coverage.
+
+2. **Reference sensitivity**
+   - A separate three-reviewer team reviews 450 targets: 150 consecutive events from one stream per scope, selected by a fixed SHA256 rule using public metadata.
+   - Each target segment has at least seven days of preceding history, and its complete causal prefix is processed.
+   - Reviewers independently label the targets with evaluated-system outputs hidden and discuss judgments to form consensus references.
+   - Fixed outputs from separate diagnostic runs are scored against earlier and reviewed references for these targets.
+   - Effectiveness changes from 42.6% to 42.5% on Sports, 68.7% to 55.6% on Home, and 57.6% to 47.4% on Code.
+   - The analysis characterizes label sensitivity within the selected streams.
+
+3. **Episode-level behavior**
+   - A post-hoc, model-assisted diagnostic on the same targets reconstructs 67 goal-and-object episodes from 76 positive event anchors.
+   - Episode coverage is 23/26 on Sports, 10/10 on Home, and 14/31 on Code.
+   - Redundant-intervention shares are 1.2%, 43.6%, and 9.5%, respectively.
+   - Full Home coverage coexists with 17 redundant interventions out of 39; Code leaves 17 reference episodes uncovered.
+   - These exploratory results characterize coverage and repetition under the constructed episode references and semantic matching rules.
+
+### 5.3 Ablation Study and Memory Analysis
+
+1. **Memory levels**
+   - Event-only supplies current and bounded recent events.
+   - Event+Daily adds source-checked daily trajectories.
+   - ProactMem further adds temporal patterns.
+   - The comparison measures memory-layer contributions within the implemented pipeline, including representation-dependent controller keys.
+   - Daily trajectories recover additional opportunities, with the largest increase on Code.
+   - Temporal patterns further improve Effectiveness by 9.9, 13.5, and 7.0 percentage points on Sports, Home, and Code, respectively, with increased true positives and reduced false positives.
+
+2. **Validation mechanisms**
+   - **w/o Replay Gate:** bypasses activation thresholds for well-formed, source-linked, online-reconstructable candidates while retaining current-applicability matching.
+   - **w/o Daily Validation:** stores schema-valid, same-entity daily extractions without fact checking while retaining temporal construction and replay.
+   - Both removals reduce Relevance and Effectiveness.
+   - Replay gating yields the larger Effectiveness contribution and improves Coverage in all three scopes.
+   - On Code, daily validation removes 43 false interventions while retaining the same true-positive count.
+
+3. **Episode control**
+   - The Code diagnostic scores recorded proposals before suppression while holding subsequent states and decisions fixed.
+   - Suppression removes 66 false-positive and 17 true-positive proposals.
+   - Relevance and Effectiveness improve, while Coverage decreases from 99.4% to 89.7%.
+
+### 5.4 Model Sensitivity
+
+- Luna, Terra, and Sol jointly replace the decision and memory-construction LLMs under fixed benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy.
+- Effectiveness increases and FPR decreases from Luna to Terra to Sol in every scope.
+- This comparison assesses whole-pipeline sensitivity within one model series, including changes in constructed memory.
+- Controlled component ablations use Luna.
+
+---
+
+## 6. Related Work
+
+1. **Agent memory and long-horizon retrieval**
+   - Observation storage, reflection, tiered context management, extracted memories, linked notes, and graph-based retrieval.
+   - ProactMem connects daily abstraction, historical pattern assessment, and current-event matching.
+
+2. **Proactive decision and memory**
+   - Task proposals, latent-need detection, context-based service judgment, and proactive memory use in reasoning and execution.
+   - ProactMem focuses on constructing service-relevant temporal memory for event-driven decisions.
+
+3. **Evaluation of proactive service**
+   - Long-term conversational memory benchmarks, proactive-agent evaluations, and notification-timing research.
+   - ProactiveStream evaluates sequential decisions as agents accumulate memory within isolated causal streams, using episode-aware references for intervention timing.
+
+---
+
+## 7. Conclusion
+
+- ProactMem combines bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
+- Across the three ProactiveStream scopes, it achieves higher event-level Effectiveness and Balance than the evaluated external baselines.
+- Ablations support hierarchical organization, daily fact validation, and historical replay gating.
+- The findings highlight the value of matching source-grounded, historically supported memory to current observations for service-opportunity detection.
+
+---
+
+## Limitations
+
+- The benchmark covers 17 streams in three low-risk scopes under a protocol fixed after joint method and benchmark development.
+- Independent held-out evaluation and cross-family model transfer require further study.
+- Reference-sensitivity analysis covers three selected streams; episode diagnostics depend on reconstructed opportunities and semantic matching.
+- The fixed-state Code suppression diagnostic characterizes recorded proposals. Evaluating controller-free behavior requires a sequential comparison.
+- Historical replay measures observed recurrence; prospective validity under changing behavior requires further evaluation.
+- Recipient benefit, interruption burden, end-to-end cost, and deployment safety require prospective measurements.
+
+---
+
+## Ethical Considerations
+
+- The evaluated services concern optional activity support, gentle check-ins, and low-risk repository assistance.
+- Medical and high-risk safety decisions require domain-specific validation and safeguards.
+- Stream isolation and evaluator-private annotations define the inference information boundary.
+- Longitudinal events and derived memories require access controls, retention protections, data minimization, and respect for source permissions.
+- Deployment should provide informed opt-in, memory inspection and correction, deletion, retention control, and an option to disable proactive assistance.
+- Consequential actions require separate authorization; deployment safeguards require implementation and evaluation.
+
+---
+
+## Appendix
+
+### A. Benchmark and Annotation Protocol
+
+- Source datasets, public fields, preprocessing, event availability, and entity isolation.
+- Opportunity-label semantics, independent annotation, adjudication, and chronological replay.
+
+### B. Implementation and Experimental Configuration
+
+- Daily buffering, typed-evidence checks, replay counting, and construction cycles.
+- Pattern lifecycle transitions, current matching, and top-three selection.
+- Scope-specific episode identity, duplicate suppression, and re-entry conditions.
+- External-method interfaces, model settings, role-specific budgets, and metric definitions.
+
+### C. Additional Ablation and Controller Results
+
+- Intervention Rate and Coverage for the validation ablations.
+- Expanded Code suppression results and aggregate true-positive increments across memory levels.
+
+### D. Reference and Episode Diagnostics
+
+- Sample selection, causal prefixes, local reference versions, and reference-sensitivity scoring.
+- Episode construction, matching order, follow-up classification, and intended service-time assessment.
+- Episode Coverage, Supported Relevance, Redundant Intervention Rate, and counts of unmatched, late, and unresolved outputs.

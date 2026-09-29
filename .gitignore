@@ -1,0 +1,16 @@
+# Local compilation and rendering artifacts.
+/build/
+/tmp/
+/figure_backups/
+/output/
+/revisions/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+/0EPM.pdf
+/0HCPM.pdf
