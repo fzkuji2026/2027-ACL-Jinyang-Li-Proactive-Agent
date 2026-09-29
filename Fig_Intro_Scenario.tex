@@ -1,248 +1,186 @@
 % Editable vector illustration. Observations and decisions are conceptual.
-% Three agents receive the same history and current event; they differ in
-% which historical observations reach the decision.
-\documentclass[tikz,border=3pt]{standalone}
+% (a) one entity's event stream as a day-by-hour raster; (b) the three checks
+% ProactMem applies before history reaches the decision; (c) decisions of
+% three agents on today's low-activity events.
+\documentclass[tikz,border=2pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{times}
 \usepackage{amsmath}
-\usetikzlibrary{arrows.meta,calc}
+\usetikzlibrary{arrows.meta,calc,shapes.geometric}
 \definecolor{ink}{HTML}{22364A}
-\definecolor{muted}{HTML}{617182}
-\definecolor{edge}{HTML}{D9E3EB}
-\definecolor{blue}{HTML}{527696}
-\definecolor{bluepale}{HTML}{F3F7FB}
-\definecolor{teal}{HTML}{287E75}
-\definecolor{tealpale}{HTML}{EEF8F4}
-\definecolor{amber}{HTML}{BC803B}
-\definecolor{amberpale}{HTML}{FFF5E7}
-\definecolor{purple}{HTML}{776AA4}
-\definecolor{purplepale}{HTML}{F4F1FA}
-\definecolor{rose}{HTML}{B4545E}
-\definecolor{rosepale}{HTML}{FBF2F3}
-\definecolor{skin}{HTML}{F1CFB5}
+\definecolor{muted}{HTML}{6B7A8A}
+\definecolor{edge}{HTML}{CFDAE3}
+\definecolor{grid}{HTML}{E6ECF1}
+\definecolor{blue}{HTML}{4F7396}
+\definecolor{bluepale}{HTML}{EEF3F8}
+\definecolor{teal}{HTML}{23796F}
+\definecolor{tealpale}{HTML}{EDF7F3}
+\definecolor{amber}{HTML}{C07F32}
+\definecolor{purple}{HTML}{7264A6}
+\definecolor{purplepale}{HTML}{F1EEF8}
+\definecolor{rose}{HTML}{B4505B}
+\definecolor{slate}{HTML}{8A96A3}
 \tikzset{
-  txt/.style={text=ink,font=\fontsize{10.5}{12.5}\selectfont,inner sep=0pt,align=left},
-  secondary/.style={txt,font=\fontsize{9.5}{11}\selectfont,text=muted},
-  heading/.style={txt,font=\bfseries\fontsize{12}{14}\selectfont},
-  label/.style={txt,font=\bfseries\fontsize{10}{12}\selectfont},
-  box/.style={rounded corners=5pt,line width=.7pt,draw=edge,fill=white},
-  chip/.style={rounded corners=2.5pt,line width=.6pt},
-  arrow/.style={-{Stealth[length=2.0mm,width=1.4mm]},draw=muted,line width=1pt},
-  flow/.style={line width=1.1pt,rounded corners=3pt}
+  txt/.style={text=ink,font=\fontsize{10}{12}\selectfont,inner sep=0pt,align=left},
+  small/.style={txt,font=\fontsize{9}{10.5}\selectfont},
+  note/.style={txt,font=\fontsize{9}{10.5}\selectfont,text=muted},
+  title/.style={txt,font=\bfseries\fontsize{11}{13}\selectfont},
+  panel/.style={rounded corners=4pt,line width=.6pt,draw=edge,fill=white},
+  stepbox/.style={rounded corners=3pt,line width=.6pt},
+  arrow/.style={-{Stealth[length=2.2mm,width=1.6mm]},line width=1.1pt},
 }
-% ---------------------------------------------------------------- icons
-\newcommand{\walker}[3]{% x, y, shirt colour
-  \begin{scope}[shift={(#1,#2)},line cap=round,line join=round]
-    \fill[skin] (0,-.48) circle (.105);
-    \draw[ink,line width=1.2pt] (-.07,-.54) to[bend left=32] (.075,-.54);
-    \draw[#3,line width=3.6pt] (-.025,-.32)--(-.09,.04);
-    \draw[#3,line width=1.55pt] (-.03,-.28)--(.15,-.08)--(.32,-.10);
-    \draw[#3,line width=1.55pt] (-.055,-.24)--(-.23,-.07)--(-.31,.06);
-    \draw[ink,line width=1.9pt] (-.09,.04)--(.07,.25)--(.25,.39);
-    \draw[ink,line width=1.9pt] (-.09,.04)--(-.23,.27)--(-.32,.41);
-    \draw[ink,line width=1.5pt] (.23,.4)--(.34,.4);
-    \draw[ink,line width=1.5pt] (-.32,.42)--(-.22,.42);
-  \end{scope}}
-\newcommand{\cmark}[3]{% x, y, colour
-  \draw[#3,line width=1.3pt,line cap=round,line join=round]
-    (#1-.075,#2)--(#1-.02,#2+.06)--(#1+.085,#2-.07);}
-\newcommand{\xmark}[3]{%
-  \draw[#3,line width=1.3pt,line cap=round]
-    (#1-.065,#2-.065)--(#1+.065,#2+.065) (#1-.065,#2+.065)--(#1+.065,#2-.065);}
-% Bell = INTERVENE, open circle = ABSTAIN; colour and badge show agreement
-% with the reference opportunity.
+% hour of day (decimal) -> x position on the raster
+\newcommand{\hx}[1]{1.35+(#1-6)*0.335}
+\newcommand{\tick}[2]{\draw[slate!70,line width=.8pt] ({\hx{#1}},#2-.09)--({\hx{#1}},#2+.09);}
+\newcommand{\walk}[3]{\fill[teal,rounded corners=1.2pt] ({\hx{#1}},#3-.11) rectangle ({\hx{#2}},#3+.11);}
+\newcommand{\cmark}[3]{\draw[#3,line width=1.25pt,line cap=round,line join=round]
+  (#1-.075,#2)--(#1-.02,#2+.06)--(#1+.085,#2-.075);}
+\newcommand{\xmark}[3]{\draw[#3,line width=1.25pt,line cap=round]
+  (#1-.065,#2-.065)--(#1+.065,#2+.065) (#1-.065,#2+.065)--(#1+.065,#2-.065);}
 \newcommand{\bellicon}[3]{%
-  \begin{scope}[shift={(#1,#2)}]
+  \begin{scope}[shift={(#1,#2)},scale=.85]
     \fill[#3] (-.15,.10) .. controls (-.15,-.20) and (-.10,-.21) .. (0,-.21)
       .. controls (.10,-.21) and (.15,-.20) .. (.15,.10) -- cycle;
     \fill[#3,rounded corners=.6pt] (-.20,.07) rectangle (.20,.13);
     \fill[#3] (0,.18) circle (.045);
   \end{scope}}
 \newcommand{\abstainicon}[3]{%
-  \draw[#3,line width=1.1pt,fill=white] (#1,#2) circle (.17);
-  \draw[#3,line width=1.1pt,line cap=round] (#1-.08,#2)--(#1+.08,#2);}
-\newcommand{\badge}[4]{% x, y, colour, 1=check 0=cross
-  \fill[white,draw=#3,line width=.8pt] (#1,#2) circle (.13);
-  \ifnum#4=1 \cmark{#1}{#2}{#3}\else\xmark{#1}{#2}{#3}\fi}
-% Decision track: x0, width. Events at 10:05, 14:20 (no opportunity) and
-% 18:30 (reference opportunity, current event).
-\newcommand{\dtrack}[2]{%
-  \node[secondary,font=\bfseries\fontsize{9.5}{11}\selectfont,anchor=west]
-    at (#1+.25,7.34) {Decisions today};
-  \draw[edge,line width=1.2pt] (#1+.25,7.94)--(#1+#2-.25,7.94);
-  \foreach \f/\t in {.22/10:05,.50/14:20}{
-    \fill[muted!45] (#1+\f*#2,7.94) circle (.05);
-    \node[secondary,anchor=center] at (#1+\f*#2,7.67) {\t};}
-  \fill[amber] (#1+.80*#2,7.94) circle (.065);
-  \node[secondary,text=amber,font=\bfseries\fontsize{9.5}{11}\selectfont,
-    anchor=center] at (#1+.80*#2,7.67) {18:30};}
-\newcommand{\decision}[5]{% x0, width, fraction, kind (I/A), correct (1/0)
-  \def\mx{#1+#3*#2}
-  \ifnum#5=1 \def\mc{teal}\else\def\mc{rose}\fi
-  \if#4I\bellicon{\mx}{8.32}{\mc}\else\abstainicon{\mx}{8.32}{\mc}\fi
-  \badge{\mx+.27}{8.15}{\mc}{#5}}
+  \draw[#3,line width=1pt,fill=white] (#1,#2) circle (.14);
+  \draw[#3,line width=1pt,line cap=round] (#1-.065,#2)--(#1+.065,#2);}
+% decision marker: x, y, I/A, 1=agrees with reference, 0=disagrees
+\newcommand{\dec}[4]{%
+  \ifnum#4=1 \def\mc{teal}\else\def\mc{rose}\fi
+  \if#3I\bellicon{#1}{#2}{\mc}\else\abstainicon{#1}{#2}{\mc}\fi
+  \ifnum#4=1 \cmark{#1+.27}{#2-.13}{\mc}\else\xmark{#1+.27}{#2-.13}{\mc}\fi}
 
 \begin{document}
 \begin{tikzpicture}[x=1cm,y=-1cm]
-  \path[use as bounding box] (0,0) rectangle (18.8,9.30);
-  \fill[white] (0,0) rectangle (18.8,9.30);
+  \path[use as bounding box] (0,0) rectangle (18.8,6.05);
 
-  % ============================================================ shared input
-  \path[box,fill=bluepale] (.30,.22) rectangle (11.50,2.50);
-  \node[heading,text=muted,anchor=west] at (.55,.56) {Earlier days};
-  \node[secondary,anchor=east] at (11.25,.56) {beyond the 72 h event window};
-  \foreach \x/\day/\act/\tm/\col in
-      {.55/Monday/Walk/18:20/teal, 3.27/Tuesday/Walk/18:35/teal,
-       5.99/Wednesday/Run/07:10/muted, 8.71/Thursday/Walk/18:25/teal}{
-    \path[box] (\x,.88) rectangle ++(2.55,1.42);
-    \path[fill=\col!10,rounded corners=5pt] (\x,.88) rectangle ++(2.55,.38);
-    \fill[\col!10] (\x,1.10) rectangle ++(2.55,.16);
-    \node[txt,text=\col,font=\bfseries\fontsize{10}{12}\selectfont,anchor=west]
-      at (\x+.16,1.07) {\day};
-    \walker{\x+.50}{1.86}{\col}
-    \node[txt,anchor=west] at (\x+1.00,1.60) {\act};
-    \node[secondary,anchor=west] at (\x+1.00,2.02) {\tm};
-  }
-  \node[secondary,font=\itshape\fontsize{9}{10}\selectfont,anchor=east]
-    at (8.35,1.60) {once};
+  % ================================================= (a) event stream
+  \path[panel] (.15,.15) rectangle (7.45,5.90);
+  \node[title,anchor=west] at (.35,.47) {(a) One user's event stream};
 
-  \path[box,draw=amber!40,fill=amberpale] (11.80,.22) rectangle (18.50,2.50);
-  \node[heading,text=amber,anchor=west] at (12.05,.56) {Today, 18:30};
-  \path[fill=tealpale,draw=teal!25,rounded corners=6pt,line width=.6pt]
-    (16.40,.36) rectangle (18.25,.80);
-  \fill[teal] (16.62,.58) circle (.05);
-  \node[txt,text=teal,font=\fontsize{10}{12}\selectfont,anchor=west]
-    at (16.76,.58) {Available};
-  \node[secondary,anchor=west] at (16.45,1.13) {low activity};
-  % Awake reclining user holding a phone.
-  \begin{scope}[shift={(1.06,-.10)},line cap=round,line join=round]
-    \path[fill=blue!12,draw=blue!25,rounded corners=5pt,line width=.7pt]
-      (11.02,1.62) rectangle (15.28,2.26);
-    \path[fill=blue!20,draw=blue!25,rounded corners=3pt,line width=.7pt]
-      (10.91,1.53) rectangle (11.28,2.39);
-    \path[fill=blue!20,draw=blue!25,rounded corners=3pt,line width=.7pt]
-      (15.11,1.94) rectangle (15.42,2.39);
-    \draw[blue!55,line width=2pt] (11.24,2.39)--(11.19,2.50);
-    \draw[blue!55,line width=2pt] (15.13,2.39)--(15.18,2.50);
-    \path[fill=white,draw=blue!23,rounded corners=3pt,line width=.6pt]
-      (11.19,1.73)--(11.38,1.39)--(11.94,1.73)--(11.70,2.04)--cycle;
-    \draw[ink,line width=5.7pt] (12.55,2.01)--(13.56,1.95)--(14.60,2.13);
-    \draw[ink!75,line width=5.2pt] (12.54,2.09)--(13.55,2.16)--(14.43,2.22);
-    \draw[ink,line width=2.5pt] (14.59,2.14)--(14.78,2.12);
-    \draw[ink,line width=2.5pt] (14.42,2.23)--(14.60,2.23);
-    \draw[blue,line width=8pt] (11.84,1.64)--(12.60,2.02);
-    \draw[blue,line width=3.8pt] (11.88,1.69)--(11.83,1.95)--(12.26,2.07);
-    \draw[skin,line width=3pt] (12.25,2.07)--(12.39,2.06);
-    \draw[blue,line width=3.8pt] (11.98,1.70)--(12.35,1.59)--(12.62,1.32);
-    \draw[skin,line width=3pt] (12.61,1.33)--(12.68,1.27);
-    \draw[skin,line width=4pt] (11.83,1.64)--(11.69,1.50);
-    \fill[skin] (11.61,1.37) circle (.19);
-    \path[fill=ink] (11.42,1.38) to[bend left=30] (11.74,1.22)
-      to[bend left=20] (11.58,1.16) to[bend left=28] (11.42,1.25)--cycle;
-    \fill[ink] (11.72,1.36) circle (.016);
-    \draw[ink!60,line width=.45pt] (11.71,1.47) to[bend right=20] (11.77,1.45);
-    \path[fill=ink,rounded corners=1.2pt] (12.61,.99) rectangle (12.82,1.32);
-    \path[fill=white,rounded corners=.6pt] (12.64,1.025) rectangle (12.79,1.255);
+  % hour axis
+  \foreach \h/\l in {6/06:00,12/12:00,18/18:00,22/{}}{
+    \draw[grid,line width=.6pt] ({\hx{\h}},1.12)--({\hx{\h}},4.82);
+    \node[note,anchor=center] at ({\hx{\h}},.93) {\l};}
+  % recurring-pattern window (18:00-19:00) across all days
+  \fill[purple,opacity=.13] ({\hx{18}},1.12) rectangle ({\hx{19}},4.82);
+  % recent 72 h window
+  \path[fill=bluepale,draw=blue!35,line width=.6pt,rounded corners=2pt]
+    (.30,3.05) rectangle (7.30,4.82);
+  \fill[purple,opacity=.13] ({\hx{18}},3.05) rectangle ({\hx{19}},4.82);
+  \node[txt,font=\bfseries\fontsize{8.5}{10}\selectfont,text=blue,anchor=east]
+    at (7.20,3.23) {recent 72 h (event memory)};
+
+  % rows: label, y
+  \foreach \d/\y in {Mon/1.35,Tue/1.75,Wed/2.15,Thu/2.55,Sat/3.55,Sun/3.95}{
+    \node[small,anchor=west] at (.40,\y) {\d};
+    \draw[grid,line width=.6pt] ({\hx{6}},\y)--({\hx{22}},\y);}
+  \node[note,anchor=west] at (.48,2.87) {$\vdots$};
+  \node[txt,font=\bfseries\fontsize{9}{10.5}\selectfont,text=amber,anchor=west]
+    at (.40,4.45) {Today};
+  \draw[grid,line width=.6pt] ({\hx{6}},4.45)--({\hx{18.5}},4.45);
+
+  % ordinary events (activity logs)
+  \foreach \h in {8.2,9.6,12.4,15.1,20.6}{\tick{\h}{1.35}}
+  \foreach \h in {7.8,10.5,13.2,16.4,21.0}{\tick{\h}{1.75}}
+  \foreach \h in {9.1,12.0,15.6,19.8,21.4}{\tick{\h}{2.15}}
+  \foreach \h in {8.5,11.3,13.9,16.0,20.9}{\tick{\h}{2.55}}
+  \foreach \h in {9.8,11.9,14.6,17.3,20.2}{\tick{\h}{3.55}}
+  \foreach \h in {8.9,12.6,15.3,19.4,21.2}{\tick{\h}{3.95}}
+  \foreach \h in {7.9,12.8,16.7}{\tick{\h}{4.45}}
+  % evening walks and a one-off morning run
+  \walk{18.33}{18.85}{1.35}
+  \walk{18.58}{19.10}{1.75}
+  \walk{18.42}{18.92}{2.55}
+  \fill[slate,rounded corners=1.2pt] ({\hx{7.17}},2.04) rectangle ({\hx{7.75}},2.26);
+  % today: low-activity events and the current event
+  \foreach \h/\t in {10.08/10:05,14.33/14:20}{
+    \draw[muted,line width=.9pt,fill=white] ({\hx{\h}},4.45) circle (.085);
+    \node[txt,font=\fontsize{7.5}{9}\selectfont,text=muted,anchor=center]
+      at ({\hx{\h}},4.68) {\t};}
+  \node[diamond,fill=amber,inner sep=0pt,minimum size=.30cm] at ({\hx{18.5}},4.45) {};
+  \node[txt,font=\bfseries\fontsize{7.5}{9}\selectfont,text=amber,anchor=center]
+    at ({\hx{18.5}},4.68) {18:30};
+  \node[txt,font=\bfseries\fontsize{8.5}{10}\selectfont,text=amber,anchor=west]
+    at ({\hx{18.5}+.24},4.45) {now};
+
+  % replay outcomes on weekday rows
+  \node[txt,font=\bfseries\fontsize{8.5}{10}\selectfont,text=purple,anchor=center]
+    at (7.05,.93) {replay};
+  \cmark{7.08}{1.35}{purple}
+  \cmark{7.08}{1.75}{purple}
+  \xmark{7.08}{2.15}{rose}
+  \cmark{7.08}{2.55}{purple}
+
+  % legend
+  \begin{scope}[shift={(.40,5.30)}]
+    \fill[teal,rounded corners=1.2pt] (0,-.10) rectangle (.34,.10);
+    \node[note,anchor=west] at (.45,0) {walk};
+    \fill[slate,rounded corners=1.2pt] (1.22,-.10) rectangle (1.56,.10);
+    \node[note,anchor=west] at (1.67,0) {run};
+    \draw[slate!70,line width=.8pt] (2.40,-.09)--(2.40,.09);
+    \node[note,anchor=west] at (2.52,0) {other event};
+    \fill[purple,opacity=.25] (4.15,-.13) rectangle (4.50,.13);
+    \node[note,anchor=west] at (4.60,0) {pattern window};
   \end{scope}
-  \path[fill=amber,rounded corners=1.2pt] (17.78,1.66) rectangle ++(.42,.42);
 
-  % Same input to all three agents.
-  \draw[flow,draw=muted!70] (5.90,2.50)--(5.90,2.90);
-  \draw[flow,draw=amber] (17.99,2.08)--(17.99,2.90);
-  \draw[flow,draw=muted!70] (2.75,2.90)--(17.99,2.90);
-  \foreach \x in {2.75,8.20,14.85}{\draw[arrow,draw=muted!70] (\x,2.90)--(\x,3.22);}
+  % ================================================= (b) ProactMem checks
+  \draw[arrow,draw=teal] (7.50,3.00)--(7.82,3.00);
+  \path[panel,draw=teal!45,fill=tealpale] (7.85,.15) rectangle (13.25,5.90);
+  \node[title,text=teal,anchor=west] at (8.05,.47) {(b) ProactMem checks};
 
-  % ============================================================ (a) event-only
-  \path[box,fill=bluepale] (.30,3.30) rectangle (5.20,9.10);
-  \node[heading,text=blue,anchor=west] at (.55,3.66) {Event-only agent};
-  \node[secondary,anchor=west] at (.55,4.05) {Sees recent events only};
-  \path[box] (.55,4.40) rectangle (4.95,5.55);
-  \node[label,anchor=west] at (.75,4.70) {Recent events (72 h)};
-  \draw[edge,line width=1pt] (.75,5.17)--(4.75,5.17);
-  \foreach \s in {0,...,4}{
-    \path[fill=blue!35,rounded corners=1.2pt] (.80+\s*.66,5.00) rectangle ++(.34,.34);}
-  \path[fill=amber,rounded corners=1.2pt] (4.36,4.97) rectangle ++(.40,.40);
-  \draw[draw=blue!65,line width=1.1pt,fill=white] (1.05,6.45) circle (.32);
-  \node[txt,text=blue,font=\bfseries\fontsize{15}{16}\selectfont,anchor=center]
-    at (1.05,6.47) {?};
-  \node[txt,anchor=west] at (1.55,6.27) {No walking evidence};
-  \node[txt,anchor=west] at (1.55,6.67) {in the window};
-  \dtrack{.30}{4.90}
-  \decision{.30}{4.90}{.22}{A}{1}
-  \decision{.30}{4.90}{.50}{A}{1}
-  \decision{.30}{4.90}{.80}{A}{0}
-  \node[txt,text=rose,font=\bfseries\fontsize{10.5}{12.5}\selectfont,anchor=west]
-    at (.55,8.84) {Missed opportunity};
+  \newcommand{\stepbox}[5]{% y-top, number, colour, heading, body
+    \path[stepbox,draw=#3!40,fill=white] (8.05,#1) rectangle (13.05,#1+1.40);
+    \fill[#3] (8.35,#1+.33) circle (.16);
+    \node[txt,text=white,font=\bfseries\fontsize{9}{10}\selectfont,anchor=center]
+      at (8.35,#1+.34) {#2};
+    \node[txt,font=\bfseries\fontsize{10}{12}\selectfont,text=#3,anchor=west]
+      at (8.62,#1+.33) {#4};
+    \node[small,anchor=north west] at (8.22,#1+.62) {#5};}
+  \stepbox{.85}{1}{teal}{Source-checked days}
+    {Summaries must match cited events;\\\textcolor{rose}{``Tue: walked 5\,km''} is dropped}
+  \stepbox{2.45}{2}{purple}{Replay-supported pattern}
+    {\textcolor{purple}{Weekday walk, 18:00--19:00}\\3 fulfilled, 1 violated $\Rightarrow$ \textbf{Active}}
+  \stepbox{4.05}{3}{teal}{Currently applicable}
+    {18:30 is in the window, no walk yet;\\$\Rightarrow$ pattern \textbf{selected} as context}
 
-  % ============================================================ (b) generic memory
-  \path[box,draw=rose!30,fill=rosepale] (5.50,3.30) rectangle (10.90,9.10);
-  \node[heading,text=rose,anchor=west] at (5.75,3.66) {Generic-memory agent};
-  \node[secondary,anchor=west] at (5.75,4.05) {Retrieves similar notes, unchecked};
-  \foreach \y/\note/\flag/\bd in
-      {4.40/Walks in the evening/{}/edge,
-       5.05/Walked 5 km (Tue)/unsupported/rose!40,
-       5.70/Goes running at 07:10/one-off/rose!40}{
-    \path[chip,fill=white,draw=\bd]
-      (5.75,\y) rectangle (10.65,\y+.50);
-    \node[txt,anchor=west] at (5.95,\y+.25) {\note};
-    \node[secondary,text=rose,font=\itshape\fontsize{9}{10}\selectfont,
-      anchor=east] at (10.48,\y+.25) {\flag};
-  }
-  \node[txt,font=\fontsize{10}{12}\selectfont,anchor=west] at (5.75,6.62) {$\rightarrow$ advice whenever activity is low};
-  \dtrack{5.50}{5.40}
-  \decision{5.50}{5.40}{.22}{I}{0}
-  \decision{5.50}{5.40}{.50}{I}{0}
-  \decision{5.50}{5.40}{.80}{I}{1}
-  \node[txt,text=rose,font=\bfseries\fontsize{10.5}{12.5}\selectfont,anchor=west]
-    at (5.75,8.84) {Two false interventions};
+  % ================================================= (c) decisions
+  \draw[arrow,draw=teal] (13.27,4.72)--(13.63,4.72);
+  \path[panel] (13.65,.15) rectangle (18.65,5.90);
+  \node[title,anchor=west] at (13.85,.47) {(c) Decisions today};
+  \foreach \x/\t in {16.32/10:05,17.20/14:20}{
+    \node[note,font=\fontsize{8.5}{10}\selectfont,anchor=center] at (\x,.98) {\t};}
+  \node[txt,font=\bfseries\fontsize{8.5}{10}\selectfont,text=amber,anchor=center]
+    at (18.08,.98) {18:30};
+  \draw[edge,line width=.6pt] (13.85,1.22)--(18.45,1.22);
 
-  % ============================================================ (c) ProactMem
-  \path[box,draw=teal!40,fill=tealpale] (11.20,3.30) rectangle (18.50,9.10);
-  \node[heading,text=teal,anchor=west] at (11.45,3.66) {Agent with ProactMem};
-  \node[secondary,anchor=west] at (11.45,4.05) {Checks history before it reaches the decision};
+  % Event-only
+  \node[txt,font=\bfseries\fontsize{9.5}{11}\selectfont,text=blue,anchor=west]
+    at (13.85,1.72) {Event-only};
+  \node[note,anchor=west] at (13.85,2.10) {sees recent 72 h};
+  \dec{16.32}{2.12}{A}{1}\dec{17.20}{2.12}{A}{1}\dec{18.08}{2.12}{A}{0}
+  \node[txt,font=\itshape\fontsize{9}{10.5}\selectfont,text=rose,anchor=east]
+    at (18.45,2.52) {misses the opportunity};
+  \draw[grid,line width=.6pt] (13.85,2.78)--(18.45,2.78);
 
-  % (1) Source check on daily trajectories.
-  \path[box,draw=teal!30] (11.45,4.36) rectangle (18.25,5.36);
-  \node[label,text=teal,anchor=west] at (11.62,4.62) {\textcircled{\scriptsize 1} Daily trajectories};
-  \node[secondary,anchor=east] at (18.08,4.62) {source check};
-  \foreach \x/\d in {11.65/Mon,12.84/Tue,14.03/Thu}{
-    \path[chip,draw=teal!35,fill=tealpale] (\x,4.87) rectangle ++(1.10,.36);
-    \node[txt,text=teal,font=\bfseries\fontsize{9}{10}\selectfont,anchor=west]
-      at (\x+.08,5.05) {\d};
-    \cmark{\x+.94}{5.05}{teal}}
-  \path[chip,draw=rose!40,fill=white] (15.30,4.87) rectangle ++(2.78,.36);
-  \node[txt,text=rose!80,font=\fontsize{8.5}{10}\selectfont,anchor=west]
-    (km) at (15.42,5.05) {Tue: walked 5 km};
-  \draw[rose!80,line width=.7pt] (km.west)--(km.east);
-  \xmark{17.94}{5.05}{rose}
+  % Generic memory
+  \node[txt,font=\bfseries\fontsize{9.5}{11}\selectfont,text=rose,anchor=west]
+    at (13.85,3.26) {Generic memory};
+  \node[note,anchor=west] at (13.85,3.64) {unchecked notes};
+  \dec{16.32}{3.66}{I}{0}\dec{17.20}{3.66}{I}{0}\dec{18.08}{3.66}{I}{1}
+  \node[txt,font=\itshape\fontsize{9}{10.5}\selectfont,text=rose,anchor=east]
+    at (18.45,4.06) {two false interventions};
+  \draw[grid,line width=.6pt] (13.85,4.32)--(18.45,4.32);
 
-  % (2) Replay-assessed temporal patterns.
-  \path[box,draw=purple!35,fill=purplepale] (11.45,5.50) rectangle (18.25,6.62);
-  \node[label,text=purple,anchor=west] at (11.62,5.76) {\textcircled{\scriptsize 2} Temporal patterns};
-  \node[secondary,anchor=east] at (18.08,5.76) {replay support};
-  \node[txt,text=purple,font=\bfseries\fontsize{9.5}{11}\selectfont,anchor=west]
-    at (11.65,6.09) {Evening walk, 18:00--19:00};
-  \node[txt,text=purple,font=\bfseries\fontsize{9.5}{11}\selectfont,anchor=east]
-    at (18.08,6.09) {Active\,\textmd{(3/3 days)}};
-  \node[secondary,font=\fontsize{9.5}{11}\selectfont,anchor=west]
-    at (11.65,6.42) {Morning run, 07:00--08:00};
-  \node[secondary,font=\itshape\fontsize{9.5}{11}\selectfont,anchor=east]
-    at (18.08,6.42) {Candidate\,\textup{(1 day)}};
-
-  % (3) Current applicability.
-  \node[label,text=teal,anchor=west] at (11.62,6.86)
-    {\textcircled{\scriptsize 3} Applies now:};
-  \node[txt,font=\fontsize{9.5}{11}\selectfont,anchor=west] at (14.12,6.86)
-    {18:30 in window; no walk yet};
-
-  \dtrack{11.20}{7.30}
-  \decision{11.20}{7.30}{.22}{A}{1}
-  \decision{11.20}{7.30}{.50}{A}{1}
-  \decision{11.20}{7.30}{.80}{I}{1}
-  \node[txt,text=teal,font=\bfseries\fontsize{10.5}{12.5}\selectfont,anchor=west]
-    at (11.45,8.84) {Timely};
-  \node[txt,font=\fontsize{10.5}{12.5}\selectfont,anchor=west]
-    at (12.62,8.84) {\textquotedblleft Up for a short walk?\textquotedblright};
-  \node[secondary,anchor=east] at (18.25,8.84) {no false alarms};
+  % ProactMem
+  \node[txt,font=\bfseries\fontsize{9.5}{11}\selectfont,text=teal,anchor=west]
+    at (13.85,4.80) {ProactMem};
+  \node[note,anchor=west] at (13.85,5.18) {checked context};
+  \dec{16.32}{5.20}{A}{1}\dec{17.20}{5.20}{A}{1}\dec{18.08}{5.20}{I}{1}
+  \node[txt,font=\itshape\fontsize{9}{10.5}\selectfont,text=teal,anchor=east]
+    at (18.45,5.62) {``Up for a short walk?''};
 \end{tikzpicture}
 \end{document}
