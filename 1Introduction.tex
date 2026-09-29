@@ -13,7 +13,7 @@ The agent must connect that history to a concrete, timely service.
 \begin{figure*}[t]
     \centering
     \includegraphics[width=\textwidth]{Fig_Intro_Scenario.pdf}
-    \caption{Illustrative Sports scenario. Both agents receive the same current event and recent history. \system{} retains earlier walking observations as daily trajectories and temporal patterns, providing context for a timely activity suggestion. Responses depict possible decisions.}
+    \caption{Illustrative Sports scenario with shared history and current event. The event-only agent cannot see walks beyond its 72-hour window; the generic-memory agent acts on unchecked notes whenever activity is low. \system{} uses history only after (1) source checks, (2) replay support, and (3) current applicability. Bells: \textsc{Intervene}; circles: \textsc{Abstain}; ticks/crosses: agreement with reference opportunities. Decisions are illustrative.}
     \label{fig:intro_scenario}
 \end{figure*}
 
