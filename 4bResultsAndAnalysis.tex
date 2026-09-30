@@ -1,90 +1,88 @@
-\subsection{Main Results}
+\subsection{Main results}
 \label{sec:main_results}
 
-\system{} achieves the highest Effectiveness and Balance in every scope (Table~\ref{tab:main_results}, RQ1), exceeding the strongest external baseline's Effectiveness by 4.3--15.7 percentage points.
+We compare proactive-service and memory-based agents on ProactiveStream using the same Luna backbone and intervention controller policy.
+
+\paragraph{Comparisons with external methods.}
+\system{} achieves higher effectiveness and balance than all evaluated external methods in every scope (Table~\ref{tab:main_results}, RQ1).
+
 \begin{table*}[t]
 \centering
-\caption{Full-scope results (\%, Luna). Relevance: share of interventions matching opportunities; Coverage: share of opportunities recovered; Effectiveness: combined Relevance--Coverage score (F1); FPR: share of reference negatives receiving interventions; Balance: average of Coverage and correct-silence rate; IR: share of events receiving interventions. Bold/underlining mark best/second-best directional scores per scope, including ties; IR has no preferred direction.}
+\caption{Full-scope results (Luna). The frequency metric is reported in multiples ($\times$); all other scores are percentages. Metric definitions are relevance: share of interventions matching opportunities; coverage: share of opportunities recovered; effectiveness: harmonic mean of relevance and coverage (F1); intrusion: share of reference negatives receiving interventions; balance: average of coverage and correct-silence rate. Bold and underlined values indicate the best and second-best directional scores per scope, including ties.}
 \label{tab:main_results}
 \small
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.06}
-\begin{tabular}{clcccccc}
+\begin{tabular}{@{}clcccccc@{}}
 \toprule
-Scope & Method & IR & Relevance $\uparrow$ & Coverage $\uparrow$ & Effectiveness $\uparrow$ & FPR $\downarrow$ & Balance $\uparrow$ \\
+scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & balance $\uparrow$ \\
 \midrule
-\multirow{6}{*}{Sports} & ProactiveAgent & 69.0 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
-  & ContextAgent & 54.3 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
-  & Mem0 & 85.2 & 28.8 & \textbf{97.8} & \underline{44.5} & 81.0 & 58.4 \\
-  & A-MEM & 60.5 & 30.6 & 74.0 & 43.3 & 56.0 & \underline{59.0} \\
-  & Graphiti & 55.1 & 29.3 & 64.4 & 40.3 & 52.0 & 56.2 \\
-  & \system{} & 53.8 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
+\multirow{6}{*}{Sports} & ProactiveAgent & 2.75 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
+  & ContextAgent & 2.16 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
+  & Mem0 & 3.40 & 28.8 & \textbf{97.8} & \underline{44.5} & 81.0 & 58.4 \\
+  & A-MEM & 2.41 & 30.6 & 74.0 & 43.3 & 56.0 & \underline{59.0} \\
+  & Graphiti & 2.20 & 29.3 & 64.4 & 40.3 & 52.0 & 56.2 \\
+  & \system{} & 2.15 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
 \midrule
-\multirow{6}{*}{Home} & ProactiveAgent & 9.2 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
-  & ContextAgent & 16.1 & \underline{35.9} & 49.5 & 41.6 & 11.7 & 68.9 \\
-  & Mem0 & 8.5 & 23.9 & 17.4 & 20.1 & \underline{7.3} & 55.0 \\
-  & A-MEM & 19.0 & 34.6 & \underline{56.3} & \underline{42.9} & 14.1 & \underline{71.1} \\
-  & Graphiti & 17.9 & 33.4 & 51.1 & 40.4 & 13.5 & 68.8 \\
-  & \system{} & 17.7 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
+\multirow{6}{*}{Home} & ProactiveAgent & 0.78 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
+  & ContextAgent & 1.38 & \underline{35.9} & 49.5 & 41.6 & 11.7 & 68.9 \\
+  & Mem0 & 0.73 & 23.9 & 17.4 & 20.1 & \underline{7.3} & 55.0 \\
+  & A-MEM & 1.63 & 34.6 & \underline{56.3} & \underline{42.9} & 14.1 & \underline{71.1} \\
+  & Graphiti & 1.53 & 33.4 & 51.1 & 40.4 & 13.5 & 68.8 \\
+  & \system{} & 1.52 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
 \midrule
-\multirow{6}{*}{Code} & ProactiveAgent & 53.1 & 17.5 & \underline{78.2} & 28.7 & 49.7 & 64.2 \\
-  & ContextAgent & 32.0 & 22.5 & 60.3 & 32.8 & 28.2 & 66.1 \\
-  & Mem0 & 7.7 & \underline{39.8} & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
-  & A-MEM & 30.4 & 30.4 & 77.6 & \underline{43.7} & 24.0 & \underline{76.8} \\
-  & Graphiti & 28.1 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
-  & \system{} & 26.7 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
+\multirow{6}{*}{Code} & ProactiveAgent & 4.45 & 17.5 & \underline{78.2} & 28.7 & 49.7 & 64.2 \\
+  & ContextAgent & 2.68 & 22.5 & 60.3 & 32.8 & 28.2 & 66.1 \\
+  & Mem0 & 0.65 & \underline{39.8} & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
+  & A-MEM & 2.55 & 30.4 & 77.6 & \underline{43.7} & 24.0 & \underline{76.8} \\
+  & Graphiti & 2.36 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
+  & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\paragraph{\mdseries Comparisons with external methods.}
-Against A-MEM, \system{} recovers more opportunities with fewer false interventions in every scope.
-However, Mem0 has higher Sports Coverage, and some methods attain lower Home/Code FPR with lower Coverage.
-IR combines recovered opportunities and false interventions; lower frequency alone does not imply better decisions.
-
 \paragraph{Reference sensitivity.}
 \label{sec:reviewed_diagnostics}
-Rescoring fixed \system{} outputs from a separate 450-target diagnostic against the earlier and separate-team references (Section~\ref{sec:reference_labels}) changes Effectiveness from 42.6\% to 42.5\% on Sports, 68.7\% to 55.6\% on Home, and 57.6\% to 47.4\% on Code.
+Rescoring fixed \system{} outputs from a separate 450-target diagnostic against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references (Section~\ref{sec:reference_labels}).
 Absolute scores are label-sensitive, especially on Home and Code.
 
 \paragraph{Episode-level analysis.}
-A model-assisted post-hoc analysis on those targets reconstructs 67 goal-and-object episodes from 76 positive event anchors.
+A model-assisted post-hoc analysis on those targets reconstructs goal-and-object episodes from positive event anchors.
 First timely matching assistance covers an episode; repetition without actionable new evidence is redundant.
-\system{} covers 23/26 Sports episodes, 10/10 Home episodes, and 14/31 Code episodes.
-Its redundant-intervention shares are 1.2\%, 43.6\%, and 9.5\%, respectively: full Home coverage coexists with 17 redundant interventions out of 39, while Code leaves 17 reference episodes uncovered.
+Episode coverage is highest on Home and lowest on Code; the share of redundant interventions is highest on Home and lowest on Sports.
 Episode-level analysis complements event-level evaluation by measuring opportunity coverage and repeated interventions.
 Appendix~\ref{app:label_review_450} retains reference-sensitivity scores and episode-matching records.
 
-\subsection{Ablation Study and Memory Analysis}
+\subsection{Ablation study and memory analysis}
 \label{sec:hierarchy}
 \label{sec:validation_ablations}
 
-\paragraph{Memory levels.}
-Event-only supplies current and bounded recent events; Event+Daily adds source-checked daily trajectories; \system{} adds temporal patterns.
+\paragraph{Proactive agent ablation.}
+The event-only variant supplies current and bounded recent events; the event and trajectory memory variant adds source-checked temporal trajectories; \system{} adds behavioral regularities.
 These three variants in Figure~\ref{fig:memory_hierarchy} share Luna, decision prompt, schema, event bound, and controller.
 The controller uses representation-dependent keys, so the comparison measures memory-layer contributions within the implemented pipeline.
-Daily trajectories recover more opportunities, most on Code, with unchanged Sports/Home false-positive counts and two additional Code false positives.
-Patterns further increase Effectiveness by 9.9/13.5/7.0 points (Sports/Home/Code), increasing true positives and reducing false positives (RQ2).
-Daily abstraction expands context; supported, currently applicable patterns improve selectivity.
+The temporal trajectories recover more opportunities, most on Code, with unchanged false-positive counts on Sports and Home and more false positives on Code.
+The behavioral regularities further improve effectiveness in every scope, recovering more opportunities with fewer false interventions (RQ2).
+Trajectory abstraction expands context; supported, currently applicable regularities improve selectivity.
 
 \begin{figure*}[t]
 \centering
 \input{Fig2_Memory_Hierarchy_body}
-\caption{Memory-level ablation (\%, Luna). Event-only, Event+Daily, and \system{} share the decision prompt, schema, event bound, and controller policy, applied to each variant's memory context. The panels report Effectiveness and FPR. Textual gains use unrounded scores.}
+\caption{Proactive agent ablation (GPT-5.6 Luna). The event-only, event and trajectory memory, and \system{} variants share the decision prompt, schema, event bound, and controller policy, applied to each variant's memory context. The panels report effectiveness and intrusion.}
 \label{fig:memory_hierarchy}
 \end{figure*}
 
 \paragraph{Validation mechanisms.}
 Table~\ref{tab:validation_ablations} fixes model, prompt, event bound, context capacity, and controller.
-\emph{w/o Replay Gate} bypasses activation thresholds for well-formed, source-linked, online-reconstructable Candidates, retaining current-applicability matching.
-\emph{w/o Daily Validation} stores schema-valid, same-entity daily extractions without fact checking, retaining weekly construction and replay.
-Both removals lower Relevance and Effectiveness (RQ3).
-Replay gating contributes more Effectiveness and improves Coverage in every scope.
-On Code, daily validation removes 43 false interventions without losing true positives, supporting improved selectivity.
+\emph{w/o replay gate} bypasses activation thresholds for well-formed, source-linked, online-reconstructable candidates, retaining current-applicability matching.
+\emph{w/o trajectory validation} stores schema-valid, same-entity trajectory extractions without fact checking, retaining weekly construction and replay.
+Both removals lower relevance and effectiveness (RQ3).
+Replay gating contributes more effectiveness and improves coverage in every scope.
+On Code, trajectory validation yields fewer false interventions while retaining the same true-positive count, supporting improved selectivity.
 
 \begin{table*}[t]
 \centering
-\caption{Validation ablations and Code controller diagnostic (\%, Luna). Higher is better. Before suppression scores recorded proposals with later states fixed. Bold/underlining mark best/second-best scores per column.}
+\caption{Validation ablations and Code intervention control diagnostic (\%, Luna). Higher is better. The before suppression diagnostic scores recorded proposals with later states fixed. Bold and underlined values indicate the best and second-best scores per column.}
 \label{tab:validation_ablations}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -92,56 +90,61 @@ On Code, daily validation removes 43 false interventions without losing true pos
 \toprule
 & \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-Method & Relevance & Effectiveness & Relevance & Effectiveness & Relevance & Effectiveness \\
+method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
 \midrule
-w/o Replay Gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
-w/o Daily Validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
-Before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
+w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
+w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
+before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
 \system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\paragraph{Episode control.}
-Before suppression scores recorded Code proposals with later states and decisions fixed, not a controller-free rerun.
-Filtering removes 66 false-positive and 17 true-positive proposals: Relevance and Effectiveness improve, but Coverage falls.
-Appendix~\ref{app:extended_ablations} reports expanded ablation and controller scores.
+\paragraph{Intervention control.}
+The before suppression diagnostic scores recorded Code proposals while holding later states and decisions fixed.
+Filtering removes more false-positive than true-positive proposals, yielding higher relevance and effectiveness alongside lower coverage.
+Appendix~\ref{app:extended_ablations} reports expanded ablation and intervention control scores.
 
-\subsection{Model Sensitivity}
+\subsection{Model scaling}
 \label{sec:model_sensitivity}
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.90\textwidth]{Fig_Model_Sensitivity_Radar.png}
-\caption{Single-run Event-only model comparison on three selected streams. Scores pool event-level confusion counts across domains; specificity equals $1-\mathrm{FPR}$. All axes start at zero, with metric-specific ranges.}
+\caption{Single-run event-only model comparison on three selected streams. Scores pool event-level confusion counts across domains; specificity equals $1-\mathrm{intrusion}$. All axes start at zero, with metric-specific ranges.}
 \label{fig:event_only_model_radar}
 \end{figure*}
 
-\paragraph{Within-series pipeline sensitivity.}
-Table~\ref{tab:backbone_sensitivity} jointly replaces decision and construction LLMs; benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller remain fixed.
-Luna--Terra--Sol improves Effectiveness and lowers FPR in every scope.
-This comparison measures pipeline sensitivity within one model series, with memory content and decision behavior changing together.
-Controlled ablations retain Luna.
+\paragraph{Within-series model scaling.}
+Construction and decision LLMs change together.
+Table~\ref{tab:backbone_sensitivity} keeps the benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy fixed.
+The comparison shows increasing effectiveness and decreasing intrusion from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol in every scope.
+These gains are consistent with stronger abilities to extract task-relevant details, induce conditional behavioral regularities, and perform compositional reasoning over temporal evidence, supporting more accurate memory construction and more selective intervention.
+Our hierarchical memory architecture engages these abilities in both historical representation and current decision-making.
+Controlled ablations retain GPT-5.6 Luna.
 
-\begin{table}[tbp]
+\begin{table*}[t]
 \centering
-\caption{Model sensitivity (\%). Each cell gives Effectiveness $\uparrow$ / FPR $\downarrow$. Bold/underlining mark best/second-best per scope. Construction and decision LLMs change together.}
+\caption{Model scaling (\%). Bold and underlined values indicate the best and second-best scores in each column.}
 \label{tab:backbone_sensitivity}
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lccc}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{@{}lcccccc@{}}
 \toprule
-Model & Sports & Home & Code \\
+\multirow{2}{*}{model} & \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+ & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ \\
 \midrule
-Luna & 48.8 / 46.1 & 58.6 / 10.3 & 55.4 / 18.1 \\
-Terra & \underline{54.1} / \underline{39.4} & \underline{64.4} / \underline{9.1} & \underline{60.3} / \underline{14.9} \\
-Sol & \textbf{58.6} / \textbf{34.4} & \textbf{69.3} / \textbf{7.5} & \textbf{66.4} / \textbf{11.8} \\
+GPT-5.6 Luna & 48.8 & 46.1 & 58.6 & 10.3 & 55.4 & 18.1 \\
+GPT-5.6 Terra & \underline{54.1} & \underline{39.4} & \underline{64.4} & \underline{9.1} & \underline{60.3} & \underline{14.9} \\
+GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \textbf{66.4} & \textbf{11.8} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
-\paragraph{Cross-family Event-only comparison.}
+\paragraph{Cross-family event-only comparison.}
 We compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash.
-Task instructions, the 72-hour/100-event bound, and Episode Controller policy are shared.
+Task instructions, the context bound of 72 hours and at most 100 events, and the intervention controller policy are shared.
 Figure~\ref{fig:event_only_model_radar} pools confusion counts across domains.
-Luna leads in F1 (37.4\%) and recall; Gemini leads in precision.
+Luna leads in F1 and recall; Gemini leads in precision.

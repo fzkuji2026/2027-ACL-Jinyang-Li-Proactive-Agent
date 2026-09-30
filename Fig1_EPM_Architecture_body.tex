@@ -1,98 +1,78 @@
-% Canonical editable vector artwork, shared by the paper and standalone export.
+% Editable vector architecture with broad stages and single-level module boundaries.
 \definecolor{ink}{HTML}{223342}
 \definecolor{construct}{HTML}{286575}
-\definecolor{online}{HTML}{98642B}
-\definecolor{panelA}{HTML}{F1F7F8}
-\definecolor{panelB}{HTML}{FCF6ED}
-\definecolor{store}{HTML}{53649A}
-
-\begin{tikzpicture}[x=1cm,y=1cm, font=\fontsize{11}{12.5}\selectfont,
+\definecolor{online}{HTML}{B37B35}
+\definecolor{eventtone}{HTML}{577EA2}
+\definecolor{store}{HTML}{76669E}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\fontsize{12}{13.5}\selectfont,
   line cap=round,line join=round,text=ink,
-  arrow/.style={-{Latex[length=2.0mm,width=1.35mm]},line width=.85pt,draw=ink},
+  arrow/.style={-{Latex[length=2mm,width=1.3mm]},line width=.8pt,draw=ink},
   build/.style={arrow,draw=construct},
-  evidence/.style={arrow,draw=store},
-  commit/.style={arrow,dashed,draw=construct,line width=.8pt},
-  box/.style={draw=ink!45,fill=white,rounded corners=2mm,line width=.7pt,
-    align=center,inner sep=4pt,minimum height=1.12cm},
-  mem/.style={box,draw=store,line width=1pt,fill=white},
-  lab/.style={fill=white,inner sep=2pt,font=\fontsize{10}{11}\selectfont}]
+  memoryflow/.style={line width=.8pt,draw=construct},
+  feedback/.style={arrow,dashed,draw=construct!75,line width=.7pt},
+  labeltext/.style={font=\fontsize{10.5}{12}\selectfont,inner sep=2pt},
+  module/.style={draw=ink!55,line width=.6pt,fill=white,rounded corners=1pt,
+    align=center,inner sep=5pt,minimum height=1.06cm},
+  memory/.style={draw=ink!55,line width=.6pt,dashed,align=center,
+    inner sep=5pt,minimum width=4.2cm,minimum height=.78cm},
+  heading/.style={anchor=west,font=\bfseries\fontsize{13}{14.5}\selectfont}]
+\path[use as bounding box] (0,0) rectangle (16.8,8.18);
 
-% Panel backgrounds, structure, and labels separate the paths.
-\filldraw[fill=panelA,draw=construct!40,rounded corners=2.5mm]
-  (.45,5.25) rectangle (16,10.25);
-\filldraw[fill=panelB,draw=online!45,rounded corners=2.5mm]
-  (.45,.9) rectangle (16,4.95);
-\node[anchor=west,font=\bfseries\fontsize{12}{13}\selectfont,text=construct]
-  at (.75,9.88) {A. Memory construction};
-\node[anchor=east,font=\itshape\fontsize{10}{11}\selectfont] at (15.7,9.88)
-  {Completed history only};
-\node[anchor=west,font=\bfseries\fontsize{12}{13}\selectfont,text=online]
-  at (.75,4.57) {B. Online service-opportunity decision};
+% Two stage-level backgrounds; each internal module has one thin boundary.
+\path[fill=construct!7,rounded corners=5pt] (.35,4.29) rectangle (16.55,8.05);
+\path[fill=online!8,rounded corners=5pt] (.35,.28) rectangle (16.55,4.13);
+\draw[ink!35,line width=.65pt] (.35,4.21)--(6.16,4.21);
+\draw[ink!35,line width=.65pt] (6.64,4.21)--(16.55,4.21);
+\node[heading,text=construct] at (.65,7.73) {A. memory construction};
 
-% Daily construction. The validator is visible as a distinct operation.
-\node[box,text width=2.55cm] (buffer) at (2,8.65)
-  {\textbf{Daily buffer}\\Committed events};
-\node[box,text width=4.15cm,minimum height=1.65cm] (dailybuild) at (7.6,8.65) {};
-\node at (7.6,9.02) {\textbf{Daily extraction (LLM)}};
-\fill[construct!12] (5.61,7.99) rectangle (9.59,8.59);
-\node[align=center,text=construct] at (7.6,8.30)
-  {\textbf{Fact validation}\\Typed facts + citations};
-\node[mem,text width=3.20cm] (daily) at (14,8.65)
-  {\textbf{Daily Trajectory}\\\textbf{Memory} $W_t$};
-\draw[build] (buffer.east) -- node[lab,above]{Day closes} (dailybuild.west);
-\draw[build] (dailybuild.east) -- node[lab,above]{Accepted} (daily.west);
+% Independent committed history supports both bounded events and daily buffering.
+\node[module,minimum width=3.9cm] (history) at (2.90,6.90)
+  {\textbf{committed events}\\[-1pt]\fontsize{10.5}{12}\selectfont daily buffer};
+\node[module,minimum width=3.9cm] (extract) at (8.50,6.90)
+  {\textbf{trajectory extraction}\\[-1pt]\fontsize{10.5}{12}\selectfont source check};
+\node[module,minimum width=3.9cm] (replay) at (14.05,6.90)
+  {\textbf{regularity proposal}\\[-1pt]\fontsize{10.5}{12}\selectfont historical replay};
+\draw[build] (history.east)--node[labeltext,above=2pt]{day ends}(extract.west);
+\draw[build] (extract.east)--node[labeltext,above=2pt]{7 records}(replay.west);
 
-% Temporal construction. A completed block precedes all proposal/replay use.
-\node[box,text width=4.15cm,minimum height=1.65cm] (patternbuild) at (7.6,6.30) {};
-\node at (7.6,6.67) {\textbf{Pattern proposal (LLM)}};
-\fill[construct!12] (5.61,5.64) rectangle (9.59,6.24);
-\node[align=center,text=construct] at (7.6,5.95)
-  {\textbf{Historical replay gate}\\Observable-day support};
-\node[mem,text width=3.20cm] (patterns) at (14,6.30)
-  {\textbf{Temporal Pattern}\\\textbf{Memory} $L_t$};
-\draw[build] (daily.south) -- (14,7.48) -- (2,7.48) -- (2,7.15);
-\node[align=center,font=\fontsize{10}{11}\selectfont] at (2,6.68)
-  {Seven completed\\daily records};
-\foreach \i in {0,...,6} {
-  \draw[draw=construct!60,fill=white,rounded corners=.35mm]
-    ({.68+.4*\i},5.85) rectangle ++(.31,.46);
-  \draw[draw=construct!50,line width=.45pt]
-    ({.73+.4*\i},6.17) -- ++(.2,0)
-    ({.73+.4*\i},6.06) -- ++(.2,0);
-}
-\draw[build] (3.57,6.3) -- (patternbuild.west);
-\draw[build] (patternbuild.east) -- (patterns.west);
+% Colored memory modules retain names and notation; details are in the text.
+\node[memory,draw=eventtone,fill=eventtone!9,text=eventtone] (events) at (2.90,5.49)
+  {event memory $S_t$};
+\node[memory,draw=construct,fill=construct!9,text=construct] (daily) at (8.50,5.49)
+  {temporal trajectories $W_t$};
+\node[memory,draw=store,fill=store!10,text=store] (patterns) at (14.05,5.49)
+  {behavioral regularities $L_t$};
+\draw[build] (history.south)--(events.north);
+\draw[build] (extract.south)--(daily.north);
+\draw[build,draw=store] (replay.south)--(patterns.north);
 
-% Only current-relevant, admitted patterns enter the online evidence path.
-\node[box,text width=3.20cm,minimum height=.74cm] (match) at (14,3.73)
-  {\textbf{Relevance match}\\Use $e_t$; top 3};
-\draw[evidence] (patterns.south) -- (match.north);
-\node[mem,text width=2.75cm,font=\fontsize{10}{11.5}\selectfont] (eventmem) at (2,3.48)
-  {\textbf{Event Memory}\\$S_t$: last 72 h\\$\leq 99$ prior events};
-\node[box,text width=2.55cm,minimum height=.75cm] (current) at (2,1.95)
-  {\textbf{Current event}\\$e_t$};
-\node[box,text width=3.25cm,minimum height=1.24cm] (context) at (6.25,1.95)
-  {\textbf{Structured context}\\$e_t,\ S_t,\ W_t,\ R_t,\ Q_t$};
-\node[box,text width=2.80cm,minimum height=1.24cm] (decision) at (10.20,1.95)
-  {\textbf{Decision LLM}\\Service value?};
-\node[box,text width=3.00cm,minimum height=1.24cm] (episode) at (14,1.95)
-  {\textbf{Episode control}\\Suppress repeats};
-\draw[arrow] (current.east) -- (context.west);
-\draw[evidence] (eventmem.east) -- (4.25,3.48) |- (context.west);
-\draw[evidence] (match.west) -- (5.70,3.73) -- ([xshift=-.55cm]context.north);
-\draw[evidence] (daily.east) -- (16.28,8.65) -- (16.28,2.97) --
-  (6.80,2.97) -- ([xshift=.55cm]context.north);
-\node[lab,text=store] at (8.5,3.73) {Applicable patterns $R_t$};
-\node[lab,text=store] at (10.4,2.97) {Daily evidence $W_t$};
-\draw[arrow] (context.east) -- (decision.west);
-\draw[arrow] (decision.east) -- (episode.west);
+% All layers supply context; retrieval selects up to three matching patterns.
+\draw[memoryflow] (events.south)--(2.90,4.72)--(14.05,4.72)--(patterns.south);
+\draw[memoryflow] (daily.south)--(8.50,4.72);
+\fill[construct] (6.40,4.72) circle (.04);
+\node[heading,text=online] at (.65,3.90) {B. event-driven decision};
 
-% Commit happens after either finalized output.
-\node[align=center,font=\bfseries\fontsize{11}{12}\selectfont] (out) at (14,.32)
-  {INTERVENE / ABSTAIN};
-\draw[arrow] (episode.south) -- (out.north);
-\draw[commit] (out.west) -- (.12,.32) -- (.12,8.65) -- (buffer.west);
-\draw[commit] (.12,3.48) -- (eventmem.west);
-\node[lab,anchor=west,text=construct] at (.9,.32)
-  {After either output: commit $e_t$; update $Q_{t+1}$ for the next event};
+\node[align=center] at (2.90,3.17) {current event};
+\path[fill=online,rounded corners=1pt] (2.69,2.41) rectangle (3.11,2.83);
+\node[anchor=east,text=online] at (2.48,2.62) {$e_t$};
+\node[module,minimum width=3.15cm] (retrieve) at (6.40,2.62)
+  {\textbf{retrieval}\\[-1pt]\fontsize{10.5}{12}\selectfont top 3 regularities};
+\node[module,minimum width=2.85cm] (decision) at (10.45,2.62)
+  {\textbf{decision LLM}};
+\node[module,minimum width=3.30cm] (control) at (14.05,2.62)
+  {\textbf{intervention control}\\[-1pt]\fontsize{10.5}{12}\selectfont filter repeats};
+\draw[build] (6.40,4.72)--(retrieve.north);
+\draw[arrow,draw=online] (3.22,2.62)--(retrieve.west);
+\draw[arrow] (retrieve.east)--node[labeltext,above=2pt]{$C_t$}(decision.west);
+\draw[arrow] (decision.east)--(control.west);
+
+\node[align=center,font=\fontsize{10.5}{12}\selectfont] (state) at (6.40,1.46)
+  {episode state $Q_t$};
+\draw[arrow,draw=ink!60] (state.north)--(retrieve.south);
+\node[align=center] (output) at (14.05,.80) {intervene or abstain};
+\draw[arrow] (control.south)--(output.north);
+
+% Only the finalized current event is committed to history.
+\draw[feedback] (output.west)--(.18,.80)--(.18,6.90)--(history.west);
+\node[labeltext,text=construct,fill=online!8] at (6.40,.80) {commit after decision};
 \end{tikzpicture}

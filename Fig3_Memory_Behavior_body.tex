@@ -5,22 +5,22 @@
     font=\fontsize{9}{10.5}\selectfont},
   link/.style={-{Stealth[length=4pt]},draw=black!50,line width=0.6pt}]
 \node[anchor=north west,font=\small\bfseries] at (0,0.25)
-  {Historical pattern and current judgment};
+  {historical regularity and current judgment};
 
 \node[trace,anchor=north west] (history) at (0,-0.45)
   {\textbf{Dec.\ 15, 17--19, 21: observed events}\\
    STILL recorded in slots 2--4 on five cited days.};
 \node[trace,below=8pt of history] (daily)
-  {\textbf{Dec.\ 16--22: daily construction}\\
+  {\textbf{Dec.\ 16--22: trajectory construction}\\
    Completed days retain source-linked observations.};
 \node[trace,below=8pt of daily] (pattern)
-  {\textbf{Dec.\ 22: pattern admitted as Active}\\
-   Five daily trajectories; time window 16:00--22:00.};
+  {\textbf{Dec.\ 22: regularity admitted as active}\\
+   Five temporal trajectories; time window 16:00--22:00.};
 \node[trace,below=8pt of pattern] (current)
   {\textbf{Dec.\ 24, 16:31:26: current event and context}\\
-   778 steps in past hour; 12 prior events, 2 daily trajectories, 1 matched pattern.};
+   778 steps in past hour; 12 prior events, 2 temporal trajectories, 1 matched regularity.};
 \node[trace,below=8pt of current,fill=green!5] (decision)
-  {\textbf{Decision LLM: ABSTAIN}\\
+  {\textbf{decision LLM: abstain}\\
    Controller preserves output; current event is then committed.};
 \foreach \before/\after in {history/daily,daily/pattern,pattern/current,current/decision} {
   \draw[link] (\before.south) -- (\after.north);

@@ -1,8 +1,8 @@
-\section{ProactiveStream Benchmark}
+\section{ProactiveStream benchmark}
 \label{sec:benchmark}
 
 ProactiveStream evaluates service-opportunity detection in longitudinal event streams, where agents assess incoming observations using their own accumulated history.
-It comprises 4,539 events across 17 isolated streams in three service scopes, with 729 reference interventions (Table~\ref{tab:benchmark_stats}).
+Table~\ref{tab:benchmark_stats} summarizes its composition and provenance across Sports, Home, and Code.
 
 \begin{table*}[t]
 \centering
@@ -23,7 +23,7 @@ Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal setting
 \end{tabular}
 \end{table*}
 
-\subsection{Scopes and Public Events}
+\subsection{Scopes and public events}
 
 \hspace*{\parindent}\textbf{Sports} uses participant activity and availability contexts for optional walking and everyday physical-activity assistance.
 
@@ -37,7 +37,7 @@ Public inputs contain contemporaneously available observations, using the same s
 Agents construct their own memory from these events; annotation and scoring metadata remain evaluator-private.
 Appendix~\ref{app:benchmark_protocol} details source datasets, fields, and preprocessing.
 
-\subsection{Reference Labels and Causal Replay}
+\subsection{Reference labels and causal replay}
 \label{sec:reference_labels}
 
 Annotators assess $e_t$ and its complete prior same-stream history $\mathcal{H}_{<t}$.
@@ -50,7 +50,7 @@ y_t=1 \quad \Longleftrightarrow \quad &
 \end{aligned}
 \label{eq:or_semantics}
 \end{equation}
-The reference protocol labels the first reliable actionable window \textsc{Intervene} and covered windows \textsc{Abstain}, allowing renewed opportunities when support strengthens, the service changes, or an episode reopens.
+The reference protocol labels the first reliable actionable window \emph{intervene} and covered windows \emph{abstain}, allowing renewed opportunities when support strengthens, the service changes, or an episode reopens.
 Reference novelty follows the reference opportunity sequence independently of model outputs and is shared across methods.
 The event-level labels therefore assess timely identification of service windows defined by the annotation protocol.
 
