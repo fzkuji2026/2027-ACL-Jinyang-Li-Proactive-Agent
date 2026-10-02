@@ -1,11 +1,11 @@
-\section{Related Work}
+\section{Related work}
 \label{sec:related}
 
 \paragraph{Agent memory and long-horizon retrieval.}
 Generative Agents, MemoryBank, and MemGPT organize observations and experience through reflection, updating, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
 Mem0, A-MEM, and HippoRAG develop extracted memories, linked records, and graph-based retrieval~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
 Graphiti maintains event-derived relations with temporal validity and provenance for retrieval~\citep{zep2026graphiti}.
-\system{} derives recurring conditional patterns from daily trajectories, assesses their historical support, and matches applicable patterns to incoming events.
+\system{} derives recurring conditional regularities from temporal trajectories, assesses their historical support, and matches applicable regularities to incoming events.
 
 \paragraph{Proactive decision and memory.}
 ProactiveAgent studies whether an agent should propose a task or remain silent and uses annotated event data to elicit this capability~\citep{lu2025proactiveagent}.
@@ -16,6 +16,6 @@ Memory-oriented proactivity also supports internal reasoning and execution: MemC
 \paragraph{Evaluation of proactive service.}
 LoCoMo and LongMemEval assess long-term conversational memory and reasoning~\citep{maharana2024locomo,wu2025longmemeval}.
 Proactive benchmarks examine task proposals, latent-need detection, or memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.
-ProactiveStream evaluates sequential \textsc{Intervene}/\textsc{Abstain} decisions as agents accumulate memory within isolated, causally replayed event streams, using episode-aware references to assess intervention timing.
+ProactiveStream evaluates sequential \emph{intervene} or \emph{abstain} decisions as agents accumulate memory within isolated, causally replayed event streams, using episode-aware references to assess intervention timing.
 Research on notification timing further shows that interruption cost depends on task phase and receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
 This motivates evaluating opportunity recovery together with unnecessary intervention.

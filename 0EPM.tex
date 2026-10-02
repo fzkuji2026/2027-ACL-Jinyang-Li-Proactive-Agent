@@ -31,10 +31,10 @@
 \begin{abstract}
 Proactive LLM agents anticipate service opportunities from ongoing observations and accumulated history.
 A central challenge is determining which historical observations remain applicable to the current event and can support a timely service decision.
-We propose Proactive Memory (\system{}), combining bounded recent events, source-checked daily trajectories, and replay-assessed temporal patterns.
-Daily validation checks extracted facts against source events, while historical replay assesses recurring patterns before they are matched to current events.
+We propose Proactive Memory (\system{}), combining bounded recent events, source-checked temporal trajectories, and replay-assessed behavioral regularities.
+The trajectory validation step checks extracted facts against source events, while historical replay assesses recurring regularities before they are matched to current events.
 We also construct ProactiveStream, a longitudinal benchmark covering three application scopes, where agents process isolated event streams chronologically under episode-aware opportunity labels.
-\system{} improves Effectiveness by 4.3--15.7 percentage points over the strongest external baseline in each scope.
+\system{} achieves higher effectiveness than the evaluated external baselines in every scope.
 Ablation studies support the contributions of hierarchical memory organization and validation to service-opportunity detection.
 \end{abstract}
 

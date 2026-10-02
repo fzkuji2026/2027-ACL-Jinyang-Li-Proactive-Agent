@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="870" viewBox="0 0 1100 870">
+<title>Event-only performance</title>
+<desc>Sports 184, Home 406, Code 365. Original frozen ground truth. Each axis starts at zero; axis ranges are printed next to the labels. Data provenance and exact scores accompany this figure.</desc>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, sans-serif" fill="#213547">
+<text x="550.00" y="43.00" font-size="32" text-anchor="middle" fill="#213547" font-weight="600" >Event-only performance</text>
+<text x="550.00" y="80.00" font-size="23" text-anchor="middle" fill="#607080" font-weight="400" >Sports · Home · Code</text>
+<polygon points="550.00,372.50 609.44,415.69 586.74,485.56 513.26,485.56 490.56,415.69" fill="none" stroke="#d9e1e7" stroke-width="1.3"/>
+<polygon points="550.00,310.00 668.88,396.37 623.47,536.13 476.53,536.13 431.12,396.37" fill="none" stroke="#d9e1e7" stroke-width="1.3"/>
+<polygon points="550.00,247.50 728.32,377.06 660.21,586.69 439.79,586.69 371.68,377.06" fill="none" stroke="#d9e1e7" stroke-width="1.3"/>
+<polygon points="550.00,185.00 787.76,357.75 696.95,637.25 403.05,637.25 312.24,357.75" fill="none" stroke="#d9e1e7" stroke-width="1.3"/>
+<line x1="550" y1="435" x2="550.00" y2="185.00" stroke="#d9e1e7" stroke-width="1.3"/>
+<line x1="550" y1="435" x2="787.76" y2="357.75" stroke="#d9e1e7" stroke-width="1.3"/>
+<line x1="550" y1="435" x2="696.95" y2="637.25" stroke="#d9e1e7" stroke-width="1.3"/>
+<line x1="550" y1="435" x2="403.05" y2="637.25" stroke="#d9e1e7" stroke-width="1.3"/>
+<line x1="550" y1="435" x2="312.24" y2="357.75" stroke="#d9e1e7" stroke-width="1.3"/>
+<polygon points="550.00,335.00 627.65,409.77 608.18,515.07 424.18,608.18 424.91,394.36" fill="none" stroke="#a95817" stroke-width="3.8" stroke-dasharray="9 6" stroke-linejoin="round"/>
+<circle cx="550.00" cy="335.00" r="4.5" fill="#a95817"/>
+<circle cx="627.65" cy="409.77" r="4.5" fill="#a95817"/>
+<circle cx="608.18" cy="515.07" r="4.5" fill="#a95817"/>
+<circle cx="424.18" cy="608.18" r="4.5" fill="#a95817"/>
+<circle cx="424.91" cy="394.36" r="4.5" fill="#a95817"/>
+<polygon points="550.00,321.86 633.00,408.03 613.93,523.00 422.36,610.69 421.83,393.36" fill="none" stroke="#5554a5" stroke-width="3.8" stroke-dasharray="3 6" stroke-linejoin="round"/>
+<circle cx="550.00" cy="321.86" r="4.5" fill="#5554a5"/>
+<circle cx="633.00" cy="408.03" r="4.5" fill="#5554a5"/>
+<circle cx="613.93" cy="523.00" r="4.5" fill="#5554a5"/>
+<circle cx="422.36" cy="610.69" r="4.5" fill="#5554a5"/>
+<circle cx="421.83" cy="393.36" r="4.5" fill="#5554a5"/>
+<polygon points="550.00,265.19 694.59,388.02 653.39,577.30 422.17,610.94 403.21,387.31" fill="none" stroke="#007f78" stroke-width="3.8" stroke-dasharray="" stroke-linejoin="round"/>
+<circle cx="550.00" cy="265.19" r="4.5" fill="#007f78"/>
+<circle cx="694.59" cy="388.02" r="4.5" fill="#007f78"/>
+<circle cx="653.39" cy="577.30" r="4.5" fill="#007f78"/>
+<circle cx="422.17" cy="610.94" r="4.5" fill="#007f78"/>
+<circle cx="403.21" cy="387.31" r="4.5" fill="#007f78"/>
+<polygon points="550.00,286.78 750.81,369.75 659.93,586.31 435.47,592.64 397.10,385.32" fill="none" stroke="#c33760" stroke-width="3.8" stroke-dasharray="12 5" stroke-linejoin="round"/>
+<rect x="545.50" y="282.28" width="9" height="9" fill="#c33760"/>
+<rect x="746.31" y="365.25" width="9" height="9" fill="#c33760"/>
+<rect x="655.43" y="581.81" width="9" height="9" fill="#c33760"/>
+<rect x="430.97" y="588.14" width="9" height="9" fill="#c33760"/>
+<rect x="392.60" y="380.82" width="9" height="9" fill="#c33760"/>
+<text x="566.00" y="316.00" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" stroke="white" stroke-width="4" paint-order="stroke">25</text>
+<text x="673.83" y="417.59" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" stroke="white" stroke-width="4" paint-order="stroke">30</text>
+<text x="610.53" y="551.53" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" stroke="white" stroke-width="4" paint-order="stroke">25</text>
+<text x="463.58" y="532.72" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" stroke="white" stroke-width="4" paint-order="stroke">50</text>
+<text x="436.06" y="387.16" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" stroke="white" stroke-width="4" paint-order="stroke">50</text>
+<text x="550.00" y="458.00" font-size="18" text-anchor="middle" fill="#687989" font-weight="400" >0</text>
+<text x="550.00" y="128.00" font-size="28" text-anchor="middle" fill="#213547" font-weight="600" >precision</text>
+<text x="550.00" y="159.00" font-size="21" text-anchor="middle" fill="#607080" font-weight="400" >0–50%</text>
+<text x="835.00" y="346.00" font-size="28" text-anchor="start" fill="#213547" font-weight="600" >recall</text>
+<text x="835.00" y="377.00" font-size="21" text-anchor="start" fill="#607080" font-weight="400" >0–60%</text>
+<text x="727.00" y="696.00" font-size="28" text-anchor="middle" fill="#213547" font-weight="600" >F1</text>
+<text x="727.00" y="727.00" font-size="21" text-anchor="middle" fill="#607080" font-weight="400" >0–50%</text>
+<text x="373.00" y="696.00" font-size="28" text-anchor="middle" fill="#213547" font-weight="600" >specificity</text>
+<text x="373.00" y="727.00" font-size="21" text-anchor="middle" fill="#607080" font-weight="400" >0–100%</text>
+<text x="263.00" y="323.00" font-size="28" text-anchor="end" fill="#213547" font-weight="600" >balanced</text>
+<text x="263.00" y="354.00" font-size="25" text-anchor="end" fill="#213547" font-weight="600" >accuracy</text>
+<text x="263.00" y="383.00" font-size="21" text-anchor="end" fill="#607080" font-weight="400" >0–100%</text>
+<line x1="195" y1="783" x2="243" y2="783" stroke="#c33760" stroke-width="3.8" stroke-dasharray="12 5"/>
+<text x="260.00" y="791.00" font-size="24" text-anchor="start" fill="#c33760" font-weight="400" >GPT-5.6 Luna</text>
+<line x1="610" y1="783" x2="658" y2="783" stroke="#007f78" stroke-width="3.8" stroke-dasharray=""/>
+<text x="675.00" y="791.00" font-size="24" text-anchor="start" fill="#007f78" font-weight="400" >Gemini 3.8 Flash</text>
+<line x1="195" y1="828" x2="243" y2="828" stroke="#5554a5" stroke-width="3.8" stroke-dasharray="3 6"/>
+<text x="260.00" y="836.00" font-size="24" text-anchor="start" fill="#5554a5" font-weight="400" >DeepSeek V4 Flash</text>
+<line x1="610" y1="828" x2="658" y2="828" stroke="#a95817" stroke-width="3.8" stroke-dasharray="9 6"/>
+<text x="675.00" y="836.00" font-size="24" text-anchor="start" fill="#a95817" font-weight="400" >GLM 5.3 Flash</text>
+</g>
+</svg>

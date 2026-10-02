@@ -11,6 +11,7 @@ $sourceNames = @(
     'Fig_Intro_Scenario.pdf', 'Fig_Intro_Scenario.tex',
     'Fig1_EPM_Architecture_body.tex', 'Fig1_EPM_Architecture.tex',
     'Fig2_Memory_Hierarchy_body.tex', 'Fig_Model_Sensitivity_Radar.png',
+    'Fig_Model_Sensitivity_Radar.svg',
     'README_ACL.md', 'build_paper.ps1', '.gitignore'
 )
 $pdfNames = @('0EPM.pdf', 'Proactive_Memory_for_Event_Driven_LLM_Agents.pdf')

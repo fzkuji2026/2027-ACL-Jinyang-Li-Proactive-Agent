@@ -1,5 +1,5 @@
 % Reference and behavior diagnostics; interpretations remain in the main paper.
-\section{Reference and Episode Diagnostics}
+\section{Reference and episode diagnostics}
 \label{app:label_review_450}
 
 \begin{table*}[!t]
@@ -38,7 +38,7 @@ Code & 14/31 (45.2) & 42 & 14 & 3 & 4 & 16 & 4 & 1 & 40.5 & 9.5 \\
 \end{tabular}
 \end{table*}
 
-\subsection{Reference Sensitivity}
+\subsection{Reference sensitivity}
 
 The diagnostic selects 150 consecutive targets from one stream per scope using a fixed SHA256 ranking of eligible streams and contiguous starts based only on public metadata, with at least seven days of preceding history.
 The streams are Sports participant\_35, Home home\_0004, and Code repository \texttt{callstack/react-native-pager-view}.
@@ -46,22 +46,22 @@ Their target periods are December 16, 2015--January 18, 2016; June 23--28, 2011;
 All 37, 203, and 152 preceding events are processed chronologically, respectively: 842 public events supply context for 450 scored targets.
 
 A separate three-reviewer team independently labels each target with its prior same-stream history while blinded to evaluated-system outputs, then discusses judgments to obtain consensus references.
-Relative to the earlier diagnostic references, Sports/Home have 13/13 changes from \textsc{Intervene} to \textsc{Abstain} and 4/0 changes in the reverse direction; Code has 6 removals and 16 additions.
+Relative to the earlier diagnostic references, Sports and Home each have 13 changes from \emph{intervene} to \emph{abstain}, with 4 and 0 changes in the reverse direction, respectively; Code has 6 removals and 16 additions.
 These counts describe differences between the earlier diagnostic references and the separate team's judgments on 450 targets across three selected streams.
 
 Table~\ref{tab:reference_sensitivity_450} scores identical recorded \system{} outputs against these two sets of references.
 The predictions come from separate diagnostic runs on the selected targets.
-The diagnostic uses Luna with temperature zero, thinking disabled, decision limits of 256 tokens for Sports/Home and 512 for Code, and the same 72-hour/100-event bound, daily validation, replay gating, and episode-control policy.
-Immediate and scheduled services both count as \textsc{Intervene}.
+The diagnostic uses Luna with temperature zero, thinking disabled, decision limits of 256 tokens for Sports and Home and 512 for Code, and the same context bound of 72 hours and at most 100 events, trajectory validation, replay gating, and intervention control policy.
+Immediate and scheduled services both count as \emph{intervene}.
 
-\subsection{Episode References and Matching}
+\subsection{Episode references and matching}
 \label{app:episode_review_450}
 
 Each reference specifies a service goal and object, causal evidence, onset, explicitly listed valid observations, and any deadline or closure evidence.
 Semantic matching uses these fields to associate interventions with reference episodes.
 
 \paragraph{Matching and follow-up.}
-Coverage follows \system{}'s own interventions, initialized from recorded prefix outputs; fixed event-label novelty instead follows the reference sequence (Equation~\ref{eq:or_semantics}).
+Episode coverage follows \system{}'s own interventions, initialized from recorded prefix outputs; fixed event-label novelty instead follows the reference sequence (Equation~\ref{eq:or_semantics}).
 Only target interventions are scored.
 An intervention must match the goal and object at a listed valid observation.
 Its proposed service time is the decision time plus its specified delay (zero for immediate service), and must meet any explicit episode deadline.
@@ -75,12 +75,12 @@ Valuable follow-ups do not create additional covered episodes.
 
 \paragraph{Metrics and boundaries.}
 Let $I$ count all target interventions, $F$ first valid interventions, $V$ valuable follow-ups, $R$ redundant follow-ups, and $U$ uncertain follow-ups.
-Episode Coverage divides covered new episodes by all new reference episodes; Supported Relevance is $\mathrm{SR}=(F+V)/I$, and Redundant Intervention Rate is $\mathrm{RIR}=R/I$.
+Episode coverage divides covered new episodes by all new reference episodes; supported relevance is $\mathrm{SR}=(F+V)/I$, and redundant intervention rate is $\mathrm{RIR}=R/I$.
 Uncertain, unmatched, late, and unresolved outputs remain in $I$ but receive no supported-assistance credit.
 Table~\ref{tab:episode_review_450} combines the rates and outcome counts.
 
-Coverage is conditional on the observed segment and onset convention.
-The main diagnostic treats the first Home opportunity as target-onset; treating it as a continuation from the prefix instead gives 9/9 new opportunities covered.
+Episode coverage is conditional on the observed segment and onset convention.
+The main diagnostic treats the first Home opportunity as target-onset; treating it as a continuation from the prefix instead covers all 9 new opportunities.
 These exploratory scores depend on the constructed references and semantic matches.
 
 \FloatBarrier

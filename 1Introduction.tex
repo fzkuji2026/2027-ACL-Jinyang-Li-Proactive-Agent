@@ -4,7 +4,7 @@
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{Fig_Intro_Scenario.pdf}
-    \caption{Illustrative Sports scenario. A conventional proactive agent sees only recent events and abstains. With \system{}, the agent matches the current event $e_t$ against layered memory built from earlier days and retrieves a source-checked, replay-supported pattern that applies now, supporting a timely suggestion.}
+    \caption{Illustrative Sports scenario. A conventional proactive agent sees only recent events and abstains. With \system{}, the current event $e_t$ is matched against hierarchical memory built from earlier days, retrieving a replay-supported behavioral regularity over source-checked temporal trajectories that applies now and supports a timely suggestion.}
     \label{fig:intro_scenario}
 \end{figure}
 
@@ -14,27 +14,25 @@ Across our Sports, Home, and Code scopes, this requires interpreting a continuin
 
 Historical context is central to this decision.
 Figure~\ref{fig:intro_scenario} illustrates how earlier evening walks can inform a service judgment when current activity is low and the user is available.
-Daily trajectories and temporal patterns retain this context beyond a recent-event window.
-The agent must connect that history to a concrete, timely service.
+The temporal trajectories and behavioral regularities retain this context beyond a recent-event window.
+The current event guides regularity matching, and retrieved memory informs the service decision.
 
 Agent memory systems retain observations, consolidate experience, and retrieve related information~\citep{park2023generative,packer2023memgpt,chhikara2025mem0,xu2025amem}.
-To turn this history into decision context, proactive agents must assess whether an abstraction reflects its source events, whether a proposed temporal pattern has recurring support, and whether that pattern applies now.
+To turn this history into decision context, proactive agents must assess whether an abstraction reflects its source events, whether a proposed behavioral regularity has recurring support, and whether that regularity applies now.
 Our central question is \emph{how to turn longitudinal history into reliable, currently applicable context for proactive service decisions}.
 
-We propose Proactive Memory (\system{}; Figure~\ref{fig:architecture}), a hierarchical memory framework that organizes event histories into source-checked daily trajectories and replay-assessed temporal patterns for proactive service decisions.
-Bounded Event Memory preserves recent observations, while Daily Trajectory Memory retains source-checked abstractions beyond the recent window.
-Temporal Pattern Memory consolidates recurring conditions from these daily trajectories and assesses their historical support through replay.
-At decision time, the agent combines recent events and daily trajectories with currently applicable patterns.
-The decision LLM assesses whether current observations or historical context support a concrete, timely, low-risk service; episode control tracks whether the proposed opportunity has already been covered.
+We propose Proactive Memory (\system{}; Figure~\ref{fig:architecture}), a hierarchical memory framework that organizes event histories into source-checked temporal trajectories and replay-assessed behavioral regularities for proactive service decisions.
+The bounded event memory preserves recent observations, while temporal trajectory memory retains source-checked abstractions beyond the recent window.
+The behavioral regularity memory consolidates recurring conditions from these temporal trajectories and assesses their historical support through replay.
+At decision time, the agent combines recent events and temporal trajectories with currently applicable regularities.
+The decision LLM assesses whether current observations or historical context support a concrete, timely, low-risk service; intervention control tracks whether the proposed opportunity has already been covered.
 
-We construct \emph{ProactiveStream} to study these decisions over 4,539 events from 17 isolated streams.
+We construct \emph{ProactiveStream} to study these decisions over isolated longitudinal event streams.
 Its three scopes preserve causal history and define episode-aware reference opportunities, allowing evaluation of memory formation and repeated service decisions within the same streams.
-\system{} improves Effectiveness by 4.3--15.7 percentage points over the strongest of five external baselines in each scope.
-Targeted ablations examine the roles of hierarchical memory organization and support checks.
 
 Our contributions are:
 \begin{itemize}
-    \item \textbf{Method.} \system{} combines source-checked daily abstraction, replay-based pattern assessment, and selection of currently applicable patterns to supply historical context for proactive service decisions.
+    \item \textbf{Method.} \system{} combines source-checked trajectory abstraction, replay-based regularity assessment, and selection of currently applicable regularities to supply historical context for proactive service decisions.
     \item \textbf{Benchmark.} ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions, preserving causal history, entity isolation, and episode-aware reference opportunities across three scopes.
-    \item \textbf{Empirical findings.} \system{} achieves higher event-level Effectiveness and Balance than the evaluated external baselines in all three scopes; targeted ablations support the contributions of hierarchical organization and validation.
+    \item \textbf{Empirical findings.} \system{} achieves higher event-level effectiveness and balance than the evaluated external baselines in all three scopes; targeted ablations support the contributions of hierarchical organization and validation.
 \end{itemize}

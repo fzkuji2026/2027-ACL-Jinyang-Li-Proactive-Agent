@@ -23,11 +23,11 @@
   grid=major,major grid style={draw=gray!22},
   axis line style={gray!70},tick style={draw=none},enlarge x limits=.19
 ]
-\nextgroupplot[title={(a) Effectiveness by scope},ylabel={Effectiveness (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Sports,Home,Code},ymax=72]
+\nextgroupplot[title={(a) effectiveness by scope},ylabel={effectiveness (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Sports,Home,Code},ymax=72]
 \addplot+[ybar,bar width=4.5pt,bar shift=-12pt,mark=none,fill=source,draw=black!45] coordinates {(activity,38.3) (ambient,40.0) (repository,28.7)};
-\addlegendentry{Event-only}
+\addlegendentry{event-only}
 \addplot+[ybar,bar width=4.5pt,bar shift=-6pt,mark=none,fill=working,draw=black!45] coordinates {(activity,38.9) (ambient,45.1) (repository,48.5)};
-\addlegendentry{Event+Daily}
+\addlegendentry{event and trajectory memory}
 \addplot+[ybar,bar width=4.5pt,bar shift=0pt,mark=none,fill=epm,draw=black!45,nodes near coords,every node near coord/.append style={font=\sffamily\tiny,yshift=1pt}] coordinates {(activity,48.8) (ambient,58.6) (repository,55.4)};
 \addlegendentry{ProactMem}
 \addplot+[ybar,bar width=4.5pt,bar shift=6pt,mark=none,fill=baseline,draw=black!45] coordinates {(activity,43.9) (ambient,30.1) (repository,28.7)};
@@ -35,7 +35,7 @@
 \addplot+[ybar,bar width=4.5pt,bar shift=12pt,mark=none,fill=memzero,draw=black!45] coordinates {(activity,44.5) (ambient,20.1) (repository,31.4)};
 \addlegendentry{Mem0}
 
-\nextgroupplot[title={(b) Intervention Rate by scope},ylabel={Intervention Rate (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Sports,Home,Code}]
+\nextgroupplot[title={(b) intervention rate by scope},ylabel={intervention rate (\%)},symbolic x coords={activity,ambient,repository},xticklabels={Sports,Home,Code}]
 \addplot+[ybar,bar width=4.5pt,bar shift=-12pt,mark=none,fill=source,draw=black!45] coordinates {(activity,53.5) (ambient,16.6) (repository,21.5)};
 \addplot+[ybar,bar width=4.5pt,bar shift=-6pt,mark=none,fill=working,draw=black!45] coordinates {(activity,53.8) (ambient,17.5) (repository,26.0)};
 \addplot+[ybar,bar width=4.5pt,bar shift=0pt,mark=none,fill=epm,draw=black!45] coordinates {(activity,53.8) (ambient,17.7) (repository,26.7)};

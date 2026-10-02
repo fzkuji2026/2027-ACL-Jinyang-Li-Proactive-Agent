@@ -1,4 +1,4 @@
-\section{Problem Formulation}
+\section{Problem formulation}
 \label{sec:problem}
 
 Let $u$ denote an independently evaluated entity, such as a participant, household, or repository, with a time-ordered public event stream
@@ -17,8 +17,8 @@ It produces
 \qquad \hat y_t\in\{0,1\},
 \label{eq:generic_decision}
 \end{equation}
-where $\hat y_t=1$ denotes \textsc{Intervene}, $\hat y_t=0$ denotes \textsc{Abstain}, and $\hat m_t$ is an optional evidence-grounded service message.
-Here $\pi$ denotes a general inference policy over the current event and causal state; $\hat m_t$ may be empty under \textsc{Abstain}.
+where $\hat y_t=1$ denotes \emph{intervene}, $\hat y_t=0$ denotes \emph{abstain}, and $\hat m_t$ is an optional evidence-grounded service message.
+Here $\pi$ denotes a general inference policy over the current event and causal state; $\hat m_t$ may be empty under \emph{abstain}.
 After finalizing the decision and optional message, the agent updates its state through an update function $U$:
 \begin{equation}
 Z^u_{t+1}=U(Z^u_t,e^u_t,\hat y_t,\hat m_t).

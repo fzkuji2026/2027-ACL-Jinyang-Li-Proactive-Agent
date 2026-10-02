@@ -1,38 +1,44 @@
-\section{Experimental Evaluation}
+\section{Experimental evaluation}
 \label{sec:experiments}
 
 We examine overall effectiveness (\textbf{RQ1}), memory organization (\textbf{RQ2}), and validation mechanisms (\textbf{RQ3}), with supplementary checks of reference sensitivity, episode behavior, and model choice.
 
-\subsection{Experimental Settings}
+\subsection{Experimental settings}
 \label{sec:experimental_settings}
 
 \paragraph{Baselines.}
 We evaluate five external methods:
 \begin{list}{\labelitemi}{%
+    \settowidth{\labelwidth}{\labelitemi}%
+    \setlength{\labelsep}{0.5em}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \addtolength{\leftmargin}{\labelsep}%
     \setlength{\topsep}{0pt}%
     \setlength{\partopsep}{0pt}%
     \setlength{\itemsep}{0pt}%
     \setlength{\parsep}{0pt}%
 }
-    \item \textbf{ProactiveAgent} uses its released prompt and proposal/null contract, with causal event--decision history capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
+    \item \textbf{ProactiveAgent} uses its released prompt and proposal-or-null output contract, with causal history of events and decisions capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
     \item \textbf{ContextAgent} adapts in-context proactive-service judgment to public events~\citep{yang2025contextagent}.
     \item \textbf{Mem0} extracts, consolidates, and retrieves same-entity memories~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
     \item \textbf{A-MEM} constructs linked notes, updates associations, and retrieves relevant notes~\citep{xu2025amem}.
     \item \textbf{Graphiti} stores event relations in a temporal graph and retrieves same-stream facts~\citep{zep2026graphiti}.
 \end{list}
 
-\paragraph{Implementation Details.}
+\paragraph{Metrics.}
+Scores use one post-controller decision per event; immediate and scheduled services count as \emph{intervene} at the decision event.
+We report \textbf{relevance} (precision) as the share of interventions matching reference opportunities; \textbf{coverage} (recall) is the share of opportunities recovered.
+Their harmonic mean, \textbf{effectiveness} (F1), balances relevant interventions against missed opportunities.
+The \textbf{intrusion} score (false positive rate) is the share of reference negatives receiving interventions.
+The \textbf{balance} score (balanced accuracy) averages coverage and the share of reference negatives correctly left without intervention.
+Higher relevance, coverage, effectiveness, and balance and lower intrusion are preferred.
+The \textbf{frequency} metric measures interventions per reference-positive event: $(\mathrm{TP}+\mathrm{FP})/(\mathrm{TP}+\mathrm{FN})$, with counts pooled across streams within each scope.
+A value of $1\times$ indicates equal counts; larger and smaller values indicate more and fewer interventions, respectively.
+This ratio describes relative intervention volume and is interpreted alongside relevance, coverage, and intrusion.
+
+\paragraph{Implementation details.}
 The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking disabled; \system{} uses the official OpenAI API.
-Methods share task semantics and Episode Controller, with interface-specific prompts and budgets.
-Event-only, Event+Daily, and \system{} share their decision prompt, schema, and 72-hour/100-event bound including the current event.
+Methods share task semantics and the intervention controller policy, with interface-specific prompts and budgets.
+The event-only, event and trajectory memory, and \system{} variants share their decision prompt, schema, and context bound of 72 hours and at most 100 events, including the current event.
 A-MEM and Graphiti augment that bound with their representations.
 Appendix~\ref{app:configuration} lists detailed configurations.
-
-\paragraph{Metrics.}
-Scores use post-controller decisions; immediate and scheduled services count as \textsc{Intervene}.
-\textbf{Relevance} (precision) is the share of interventions matching reference opportunities; \textbf{Coverage} (recall) is the share of opportunities recovered.
-\textbf{Effectiveness} (F1), their harmonic mean, balances relevant interventions against missed opportunities.
-\textbf{False Positive Rate (FPR)}, also called False Intervention Rate (FIR), is the share of reference negatives receiving interventions.
-\textbf{Balance} (balanced accuracy) averages Coverage and the share of reference negatives correctly left without intervention.
-Higher is preferred except for FPR.
-\textbf{Intervention Rate (IR)} is the share of all events receiving interventions, without a preferred direction.
