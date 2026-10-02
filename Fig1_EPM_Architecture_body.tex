@@ -1,7 +1,8 @@
 % Editable flat vector architecture, matching the visual language of Figure 1.
 % Rows align each memory layer with the module that builds it (left) and the
 % place that reads it (right): S_t and W_t enter the context directly, while
-% L_t is matched against the current event by retrieval.
+% L_t is matched against the current event by retrieval. Example values follow
+% the Figure 1 walking scenario and are illustrative.
 \definecolor{archInk}{HTML}{2B3A4A}
 \definecolor{archMuted}{HTML}{6E7C8A}
 \definecolor{archLaneA}{HTML}{F2F5F8}
@@ -15,17 +16,21 @@
 \definecolor{archBrown}{HTML}{A8692A}
 \definecolor{archPurple}{HTML}{7B6BB5}
 \definecolor{archPurpleLt}{HTML}{E6E1F4}
+\definecolor{archRose}{HTML}{C75B66}
 \definecolor{archGreyLt}{HTML}{E4E9EE}
+\definecolor{archPanel}{HTML}{F7F9FB}
 \begin{tikzpicture}[x=1cm,y=-1cm,line cap=round,line join=round,
   font=\sffamily\fontsize{8.5}{10}\selectfont,text=archInk,
   txt/.style={inner sep=0pt,align=left,text=archInk},
   sm/.style={txt,font=\sffamily\fontsize{7.2}{8.6}\selectfont},
+  ex/.style={txt,font=\sffamily\fontsize{6.6}{7.9}\selectfont},
   hd/.style={txt,font=\sffamily\bfseries\fontsize{9.5}{11}\selectfont},
   ttl/.style={txt,font=\sffamily\bfseries\fontsize{8.5}{10}\selectfont},
   card/.style={fill=white,rounded corners=4pt},
+  inset/.style={fill=archPanel,rounded corners=3pt},
   arr/.style={-{Stealth[length=1.9mm,width=1.4mm]},line width=1pt,rounded corners=3pt},
   lab/.style={sm,fill=white,inner sep=1.2pt,rounded corners=1pt}]
-\path[use as bounding box] (0,0) rectangle (16.80,7.30);
+\path[use as bounding box] (0,0) rectangle (16.80,9.30);
 
 % ---------------------------------------------------------------- icons
 \newcommand{\llmicon}[3]{% x, y, colour
@@ -52,119 +57,158 @@
 \newcommand{\magicon}[3]{% x, y, colour
   \draw[#3,line width=1.4pt,fill=white] (#1-.04,#2-.04) circle (.13);
   \draw[#3,line width=2pt] (#1+.06,#2+.06)--(#1+.18,#2+.18);}
-\newcommand{\checkchip}[4]{% x, y, colour, text
-  \node[sm,text=#3,anchor=west] at (#1+.20,#2) {#4};
-  \draw[#3,line width=1pt] (#1,#2)--(#1+.045,#2+.05)--(#1+.13,#2-.06);}
+\newcommand{\ok}[3]{\draw[#3,line width=.95pt] (#1-.06,#2)--(#1-.015,#2+.05)--(#1+.07,#2-.06);}
+\newcommand{\no}[3]{\draw[#3,line width=.95pt] (#1-.05,#2-.05)--(#1+.05,#2+.05) (#1-.05,#2+.05)--(#1+.05,#2-.05);}
 % memory-cylinder layer: y-top, y-bottom, colour
 \newcommand{\cyl}[3]{%
-  \fill[#3] (5.35,#1) rectangle (7.70,#2);
-  \fill[#3] (6.525,#2) ellipse (1.175 and .19);
-  \draw[white,line width=.9pt] (5.35,#1) arc[start angle=180,end angle=360,x radius=1.175,y radius=.19];}
+  \fill[#3] (6.20,#1) rectangle (8.30,#2);
+  \fill[#3] (7.25,#2) ellipse (1.05 and .18);
+  \draw[white,line width=.9pt] (6.20,#1) arc[start angle=180,end angle=360,x radius=1.05,y radius=.18];}
+% replay day: x, y, letter, state (1 fulfilled, 2 violated, 3 excluded)
+\newcommand{\rday}[4]{%
+  \ifcase#4\or
+    \fill[archTeal] (#1,#2) circle (.15);
+    \node[txt,font=\sffamily\bfseries\fontsize{6}{7}\selectfont,text=white] at (#1,#2) {#3};\or
+    \fill[archRose] (#1,#2) circle (.15);
+    \node[txt,font=\sffamily\bfseries\fontsize{6}{7}\selectfont,text=white] at (#1,#2) {#3};\or
+    \draw[archMuted!60,line width=.7pt,fill=white] (#1,#2) circle (.14);
+    \node[txt,font=\sffamily\fontsize{6}{7}\selectfont,text=archMuted] at (#1,#2) {#3};\fi}
 
 % ---------------------------------------------------------------- lanes
-\fill[archLaneA,rounded corners=6pt] (.15,.10) rectangle (4.95,6.75);
-\fill[archLaneM,rounded corners=6pt] (5.10,.10) rectangle (7.95,6.75);
-\fill[archLaneB,rounded corners=6pt] (8.10,.10) rectangle (16.65,6.75);
+\fill[archLaneA,rounded corners=6pt] (.15,.10) rectangle (5.85,8.65);
+\fill[archLaneM,rounded corners=6pt] (6.00,.10) rectangle (8.50,8.65);
+\fill[archLaneB,rounded corners=6pt] (8.65,.10) rectangle (16.65,8.65);
 \node[hd,text=archBlue,anchor=west] at (.35,.40) {A\enspace Memory construction};
-\node[hd,text=archTeal,anchor=center] at (6.525,.40) {ProactMem memory};
-\node[hd,text=archBrown,anchor=west] at (8.30,.40) {B\enspace Event-driven decision};
+\node[hd,text=archTeal,anchor=center] at (7.25,.40) {ProactMem};
+\node[hd,text=archBrown,anchor=west] at (8.85,.40) {B\enspace Event-driven decision};
 \node[sm,text=archMuted,anchor=east] at (16.50,.40) {online, per event};
 
-% ---------------------------------------------------------------- A: construction
-% row 1: committed events
-\fill[card] (.35,.95) rectangle (4.75,2.15);
-\eventsicon{.80}{1.55}
-\node[ttl,anchor=west] at (1.25,1.35) {Committed events};
-\node[sm,text=archMuted,anchor=west] at (1.25,1.75) {daily buffer of the open day};
-% row 2: trajectory extraction
-\fill[card] (.35,2.75) rectangle (4.75,3.95);
-\llmicon{.80}{3.35}{archTeal}
-\node[ttl,anchor=west] at (1.25,3.15) {Trajectory extraction};
-\checkchip{1.27}{3.56}{archTeal}{source check vs.\ cited events}
-% row 3: regularity proposal
-\fill[card] (.35,4.55) rectangle (4.75,5.75);
-\llmicon{.80}{5.15}{archPurple}
-\node[ttl,anchor=west] at (1.25,4.95) {Regularity proposal};
-\checkchip{1.27}{5.36}{archPurple}{historical replay gate}
-\draw[arr,draw=archMuted] (2.55,2.15)--(2.55,2.75);
-\node[sm,text=archMuted,anchor=west] at (2.68,2.45) {day ends};
-\draw[arr,draw=archMuted] (2.55,3.95)--(2.55,4.55);
-\node[sm,text=archMuted,anchor=west] at (2.68,4.25) {7 daily records};
+% ================================================================ A
+% ---- row 1: committed events
+\fill[card] (.35,.85) rectangle (5.65,2.85);
+\eventsicon{.78}{1.18}
+\node[ttl,anchor=west] at (1.20,1.12) {Committed events};
+\node[sm,text=archMuted,anchor=west] at (1.20,1.47) {daily buffer of the open local day};
+\fill[inset] (.55,1.78) rectangle (5.45,2.68);
+\draw[archMuted!50,line width=.8pt] (.80,2.08)--(5.20,2.08);
+\foreach \x/\t/\c in {.95/17:41/archBlue!45,1.75/17:55/archBlue!45,2.55/18:22/archTeal,
+                       3.35/18:48/archTeal,4.15/19:30/archBlue!45}{
+  \fill[\c,rounded corners=.8pt] (\x-.10,1.98) rectangle (\x+.10,2.18);
+  \node[ex,text=archMuted,anchor=center] at (\x,2.42) {\t};}
+\node[ex,text=archMuted,anchor=center] at (4.85,2.08) {$\cdots$};
+% ---- row 2: trajectory extraction
+\fill[card] (.35,3.35) rectangle (5.65,5.55);
+\llmicon{.78}{3.68}{archTeal}
+\node[ttl,anchor=west] at (1.20,3.62) {Trajectory extraction};
+\node[sm,text=archMuted,anchor=west] at (1.20,3.97) {segments with typed facts and citations};
+\fill[inset] (.55,4.25) rectangle (5.45,5.38);
+\node[ex,anchor=west] at (.70,4.43) {\textbf{18:22--18:48 walking}\enspace\textcolor{archMuted}{steps 2{,}310\enspace[$e_{17},e_{18}$]}};
+\ok{.78}{4.76}{archTeal}
+\node[ex,text=archTeal,anchor=west] at (.92,4.76) {facts $\subseteq$ cited events $\Rightarrow$ kept in $W_t$};
+\no{.78}{5.09}{archRose}
+\node[ex,text=archRose,anchor=west] at (.92,5.09) {``walked 5\,km'' has no source fact $\Rightarrow$ rejected};
+% ---- row 3: regularity proposal and replay
+\fill[card] (.35,6.05) rectangle (5.65,8.45);
+\llmicon{.78}{6.38}{archPurple}
+\node[ttl,anchor=west] at (1.20,6.32) {Regularity proposal};
+\node[sm,text=archMuted,anchor=west] at (1.20,6.67) {weekly, over 7 completed records};
+\fill[inset] (.55,6.93) rectangle (5.45,8.30);
+\node[ex,anchor=west] at (.70,7.14) {\textcolor{archPurple}{\textbf{trigger}} weekday, low activity after 17:30};
+\node[ex,anchor=west] at (.70,7.42) {\textcolor{archPurple}{\textbf{expect}}\ \ walk within 18:00--19:00};
+\node[ex,text=archMuted,anchor=west] at (.70,7.78) {replay};
+\foreach \x/\d/\s in {1.62/M/1,1.98/T/1,2.34/W/2,2.70/T/1,3.06/F/1,3.42/S/3,3.78/S/3}{\rday{\x}{7.78}{\d}{\s}}
+\node[ex,text=archMuted,anchor=west] at (4.02,7.78) {weekend excl.};
+\node[ex,anchor=west] at (.70,8.10) {$n_f{=}4,\ n_v{=}1$, conf $0.80$, lift $\ge1$\enspace$\Rightarrow$\enspace\textcolor{archPurple}{\textbf{active}}};
+% vertical flow
+\draw[arr,draw=archMuted] (3.00,2.85)--(3.00,3.35);
+\node[sm,text=archMuted,anchor=west] at (3.12,3.10) {day closes};
+\draw[arr,draw=archMuted] (3.00,5.55)--(3.00,6.05);
+\node[sm,text=archMuted,anchor=west] at (3.12,5.80) {7 daily records};
 % writes into the memory layers
-\draw[arr,draw=archBlue] (4.75,1.55)--(5.30,1.55);
-\draw[arr,draw=archTeal] (4.75,3.35)--(5.30,3.35);
-\draw[arr,draw=archPurple] (4.75,5.15)--(5.30,5.15);
+\draw[arr,draw=archBlue] (5.65,1.85)--(6.15,1.85);
+\draw[arr,draw=archTeal] (5.65,4.45)--(6.15,4.45);
+\draw[arr,draw=archPurple] (5.65,7.15)--(6.15,7.15);
 
-% ---------------------------------------------------------------- memory cylinder
-\cyl{4.25}{6.05}{archPurple}
-\cyl{2.45}{4.25}{archTeal}
-\cyl{.95}{2.45}{archBlue}
-\fill[archBlue!55] (6.525,.95) ellipse (1.175 and .19);
-\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
-  at (6.525,1.62) {Event memory\\[1pt]$S_t$};
-\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,2.18) {last 72\,h, $\le$99 events};
-\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
-  at (6.525,3.35) {Temporal\\trajectories $W_t$};
-\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,3.98) {source-checked};
-\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
-  at (6.525,5.15) {Behavioral\\regularities $L_t$};
-\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,5.78) {active vs.\ candidate};
+% ================================================================ memory
+\cyl{5.80}{8.25}{archPurple}
+\cyl{3.10}{5.80}{archTeal}
+\cyl{.95}{3.10}{archBlue}
+\fill[archBlue!55] (7.25,.95) ellipse (1.05 and .18);
+\newcommand{\cyltext}[4]{% y, title, symbol, note
+  \node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center] at (7.25,#1) {#2};
+  \node[txt,font=\fontsize{9}{10}\selectfont,text=white] at (7.25,#1+.42) {#3};
+  \node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white,align=center] at (7.25,#1+.82) {#4};}
+\cyltext{1.55}{Event\\memory}{$S_t$}{last 72\,h,\\[-1pt]$\le$99 events}
+\cyltext{4.05}{Temporal\\trajectories}{$W_t$}{source-checked\\[-1pt]segments}
+\cyltext{6.80}{Behavioral\\regularities}{$L_t$}{active: visible\\[-1pt]candidate: hidden}
 
-% ---------------------------------------------------------------- B: decision
-% retrieval of applicable regularities
-\fill[card] (8.35,4.60) rectangle (10.65,5.70);
-\magicon{8.70}{5.12}{archAmber}
-\node[ttl,anchor=west] at (9.02,4.93) {Retrieval};
-\node[sm,text=archMuted,anchor=west] at (9.02,5.33) {top 3 by $e_t$};
-% current event
-\fill[archAmber,rounded corners=4pt] (8.35,6.12) rectangle (10.65,6.55);
-\node[txt,font=\sffamily\bfseries\fontsize{7.4}{8.8}\selectfont,text=white] at (9.50,6.34) {current event $e_t$};
-\draw[arr,draw=archAmber] (9.50,6.12)--(9.50,5.70);
-% memory reads
-\draw[arr,draw=archBlue] (7.72,1.55)--(11.05,1.55);
-\node[lab,text=archBlue] at (9.40,1.55) {$S_t$};
-\draw[arr,draw=archTeal] (7.72,3.35)--(11.05,3.35);
-\node[lab,text=archTeal] at (9.40,3.35) {$W_t$};
-\draw[arr,draw=archPurple] (7.72,5.15)--(8.35,5.15);
-\draw[arr,draw=archPurple] (10.65,5.15)--(11.05,5.15);
-\node[sm,text=archPurple,anchor=south] at (10.85,5.02) {$R_t$};
+% ================================================================ B
+% ---- retrieval of applicable regularities (row 3)
+\fill[card] (8.85,6.05) rectangle (11.55,7.85);
+\magicon{9.20}{6.40}{archAmber}
+\node[ttl,anchor=west] at (9.50,6.32) {Retrieval};
+\node[sm,text=archMuted,anchor=east] at (11.42,6.34) {top 3};
+\foreach \y/\t in {6.78/{active regularity},7.12/{trigger + time match},7.46/{not yet fulfilled}}{
+  \ok{9.10}{\y}{archTeal}
+  \node[ex,anchor=west] at (9.25,\y) {\t};}
+% ---- current event
+\fill[archAmber,rounded corners=4pt] (8.85,8.02) rectangle (11.55,8.45);
+\node[txt,font=\sffamily\bfseries\fontsize{6.8}{8}\selectfont,text=white] at (10.20,8.235) {$e_t$\ \ 18:30, low activity};
+\draw[arr,draw=archAmber] (10.20,8.02)--(10.20,7.85);
+% ---- memory reads
+\draw[arr,draw=archBlue] (8.32,1.85)--(11.90,1.85);
+\node[lab,text=archBlue] at (10.10,1.85) {$S_t$};
+\draw[arr,draw=archTeal] (8.32,4.45)--(11.90,4.45);
+\node[lab,text=archTeal] at (10.10,4.45) {$W_t$};
+\draw[arr,draw=archPurple] (8.32,6.95)--(8.85,6.95);
+\draw[arr,draw=archPurple] (11.55,6.95)--(11.90,6.95);
+\node[sm,text=archPurple,anchor=south] at (11.72,6.82) {$R_t$};
 
-% context C_t
-\fill[card] (11.05,.95) rectangle (13.35,6.05);
-\node[ttl,anchor=center] at (12.20,1.18) {Context $C_t$};
+% ---- context C_t
+\fill[card] (11.90,.85) rectangle (13.90,8.45);
+\node[ttl,anchor=center] at (12.90,1.15) {Context $C_t$};
 \newcommand{\ctxchip}[4]{% y, fill, text colour, label
-  \fill[#2,rounded corners=2.5pt] (11.25,#1-.21) rectangle (13.15,#1+.21);
-  \node[sm,text=#3,anchor=center] at (12.20,#1) {#4};}
-\ctxchip{1.66}{archBlueLt}{archBlue}{$S_t$\, recent events}
-\ctxchip{3.35}{archTealLt}{archTeal}{$W_t$\, trajectories}
-\ctxchip{2.50}{archGreyLt}{archMuted}{$Q_t$\, episode state}
-\ctxchip{5.15}{archPurpleLt}{archPurple}{$R_t$\, regularities}
-\ctxchip{4.25}{archAmber!25}{archBrown}{$e_t$\, current event}
-\draw[arr,draw=archAmber] (10.65,6.34)--(12.20,6.34)--(12.20,6.05);
+  \fill[#2,rounded corners=2.5pt] (12.05,#1-.21) rectangle (13.75,#1+.21);
+  \node[sm,text=#3,anchor=center] at (12.90,#1) {#4};}
+\ctxchip{1.85}{archBlueLt}{archBlue}{$S_t$\, recent events}
+\ctxchip{3.10}{archGreyLt}{archMuted}{$Q_t$\, episode state}
+\ctxchip{4.45}{archTealLt}{archTeal}{$W_t$\, trajectories}
+\ctxchip{6.95}{archPurpleLt}{archPurple}{$R_t$\, regularities}
+\ctxchip{8.10}{archAmber!25}{archBrown}{$e_t$\, current event}
+\draw[arr,draw=archAmber] (11.55,8.235)--(11.90,8.235);
+\node[ex,text=archMuted,align=center,anchor=center] at (12.90,5.70) {$C_t=(e_t,S_t,$\\$W_t,R_t,Q_t)$};
 
-% decision LLM -> intervention control -> output
-\draw[arr,draw=archInk] (13.35,1.55)--(13.80,1.55);
-\fill[card] (13.80,.95) rectangle (16.45,2.15);
-\agenticon{14.22}{1.60}{archTeal}
-\node[ttl,anchor=west] at (14.65,1.35) {Decision LLM};
-\node[sm,text=archMuted,anchor=west] at (14.65,1.75) {service value?};
-\draw[arr,draw=archInk] (15.12,2.15)--(15.12,2.75);
-\fill[card] (13.80,2.75) rectangle (16.45,3.95);
-\filtericon{14.22}{3.35}{archBrown}
-\node[ttl,anchor=west] at (14.65,3.07) {Intervention};
-\node[ttl,anchor=west] at (14.65,3.40) {control};
-\node[sm,text=archMuted,anchor=west] at (14.65,3.72) {filters repeats};
-\draw[arr,draw=archInk] (15.12,3.95)--(15.12,4.55);
-% output
-\fill[archTeal,rounded corners=4pt] (13.80,4.60) rectangle (15.27,5.70);
-\node[txt,font=\sffamily\bfseries\fontsize{7.2}{8.6}\selectfont,text=white,align=center]
-  at (14.535,5.15) {\textsc{Intervene}\\[1pt]\fontsize{6.6}{8}\selectfont\mdseries + message};
-\fill[archGreyLt,rounded corners=4pt] (15.43,4.60) rectangle (16.45,5.70);
-\node[txt,font=\sffamily\bfseries\fontsize{7.2}{8.6}\selectfont,text=archMuted,align=center]
-  at (15.94,5.15) {\textsc{Abstain}};
+% ---- decision LLM (row 1)
+\draw[arr,draw=archInk] (13.90,1.85)--(14.25,1.85);
+\fill[card] (14.25,.85) rectangle (16.45,2.85);
+\agenticon{14.68}{1.22}{archTeal}
+\node[ttl,anchor=west] at (15.08,1.18) {Decision};
+\node[ttl,anchor=west] at (15.08,1.50) {LLM};
+\node[ex,anchor=west] at (14.42,1.98) {$(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$};
+\node[ex,text=archMuted,anchor=west] at (14.42,2.30) {timely, feasible,};
+\node[ex,text=archMuted,anchor=west] at (14.42,2.56) {low-risk service?};
+% ---- intervention control (row 2)
+\draw[arr,draw=archInk] (15.35,2.85)--(15.35,3.35);
+\fill[card] (14.25,3.35) rectangle (16.45,5.55);
+\filtericon{14.65}{3.72}{archBrown}
+\node[ttl,anchor=west] at (15.05,3.62) {Intervention};
+\node[ttl,anchor=west] at (15.05,3.94) {control};
+\node[ex,text=archMuted,anchor=west] at (14.42,4.42) {compare with allowed};
+\node[ex,text=archMuted,anchor=west] at (14.42,4.68) {interventions;};
+\no{14.50}{5.05}{archRose}
+\node[ex,anchor=west] at (14.62,5.05) {duplicate $\to$ abstain};
+% ---- output (row 3)
+\draw[arr,draw=archInk] (15.35,5.55)--(15.35,6.05);
+\fill[archTeal,rounded corners=4pt] (14.25,6.05) rectangle (16.45,7.55);
+\node[txt,font=\sffamily\bfseries\fontsize{7.4}{8.8}\selectfont,text=white,anchor=center] at (15.35,6.34) {\textsc{Intervene}};
+\node[txt,font=\sffamily\itshape\fontsize{7}{8.4}\selectfont,text=white,align=center,anchor=center]
+  at (15.35,6.98) {``Up for a short\\walk?''};
+\fill[archGreyLt,rounded corners=4pt] (14.25,7.68) rectangle (16.45,8.45);
+\node[txt,font=\sffamily\bfseries\fontsize{7.4}{8.8}\selectfont,text=archMuted,anchor=center] at (15.35,7.98) {\textsc{Abstain}};
+\node[ex,text=archMuted,anchor=center] at (15.35,8.25) {otherwise};
 
 % ---------------------------------------------------------------- feedback
 \draw[arr,draw=archTeal,dash pattern=on 2.4pt off 1.8pt]
-  (15.35,5.62)--(15.35,7.05)--(.05,7.05)--(.05,1.55)--(.35,1.55);
-\node[lab,text=archTeal,fill=white] at (6.50,7.05) {commit $e_t$ after the decision is finalized};
+  (16.45,7.615)--(16.72,7.615)--(16.72,8.95)--(.05,8.95)--(.05,1.85)--(.35,1.85);
+\node[lab,text=archTeal,fill=white] at (7.25,8.95) {commit $e_t$ after the decision is finalized; it affects only later decisions};
 \end{tikzpicture}
