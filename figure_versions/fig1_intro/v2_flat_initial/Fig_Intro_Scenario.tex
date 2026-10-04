@@ -1,0 +1,158 @@
+% Editable flat vector illustration (single column). Observations and
+% decisions are conceptual. A conventional proactive agent and the same agent
+% with ProactMem receive the same event stream; only the latter matches the
+% current event against a layered memory built from earlier days.
+\documentclass[tikz,border=1pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{arrows.meta}
+\definecolor{ink}{HTML}{2B3A4A}
+\definecolor{muted}{HTML}{7A8794}
+\definecolor{line}{HTML}{C9D3DC}
+\definecolor{laneA}{HTML}{F2F5F8}
+\definecolor{laneB}{HTML}{EAF5F1}
+\definecolor{blue}{HTML}{5B7FA3}
+\definecolor{bluelt}{HTML}{DCE6EF}
+\definecolor{teal}{HTML}{2A8C7E}
+\definecolor{teallt}{HTML}{CFE8E1}
+\definecolor{amber}{HTML}{E0913A}
+\definecolor{amberlt}{HTML}{FCEBD6}
+\definecolor{purple}{HTML}{7B6BB5}
+\definecolor{purplelt}{HTML}{E6E1F4}
+\definecolor{rose}{HTML}{C75B66}
+\tikzset{
+  txt/.style={text=ink,font=\fontsize{7}{8.4}\selectfont,inner sep=0pt,align=left},
+  sm/.style={txt,font=\fontsize{6.2}{7.4}\selectfont},
+  hd/.style={txt,font=\bfseries\fontsize{7.5}{9}\selectfont},
+  arr/.style={-{Stealth[length=1.6mm,width=1.2mm]},line width=.9pt,rounded corners=2pt},
+}
+% ---------------------------------------------------------------- icons
+% pedestrian pictogram in a filled disc
+\newcommand{\walkbadge}[3]{% x, y, colour
+  \fill[#3] (#1,#2) circle (.24);
+  \begin{scope}[shift={(#1,#2)},line cap=round,line join=round,white]
+    \fill (.035,-.145) circle (.045);
+    \draw[line width=1.5pt] (.015,-.075)--(-.015,.045);
+    \draw[line width=1.1pt] (.01,-.055)--(.075,.005) (.01,-.055)--(-.075,-.005);
+    \draw[line width=1.2pt] (-.015,.045)--(.06,.15) (-.015,.045)--(-.085,.15);
+  \end{scope}}
+% user avatar
+\newcommand{\avatar}[3]{% x, y, colour
+  \begin{scope}[shift={(#1,#2)}]
+    \fill[#3] (0,-.13) circle (.12);
+    \fill[#3] (-.23,.23) .. controls (-.23,-.02) and (.23,-.02) .. (.23,.23) -- cycle;
+  \end{scope}}
+% agent (robot) icon
+\newcommand{\agent}[3]{% x, y, colour
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[#3,line width=1pt,line cap=round] (0,-.30)--(0,-.39);
+    \fill[#3] (0,-.42) circle (.045);
+    \fill[#3] (-.37,-.17) rectangle (-.31,-.03);
+    \fill[#3] (.31,-.17) rectangle (.37,-.03);
+    \fill[#3,rounded corners=2.5pt] (-.31,-.30) rectangle (.31,.12);
+    \fill[white] (-.12,-.10) circle (.055) (.12,-.10) circle (.055);
+    \draw[white,line width=.9pt,line cap=round] (-.08,.02)--(.08,.02);
+    \fill[#3!70,rounded corners=2pt] (-.21,.17) rectangle (.21,.36);
+  \end{scope}}
+\newcommand{\magnifier}[3]{% x, y, colour
+  \draw[#3,line width=1.1pt,fill=white] (#1,#2) circle (.085);
+  \draw[#3,line width=1.4pt,line cap=round] (#1+.06,#2+.06)--(#1+.14,#2+.14);}
+\newcommand{\tick}[3]{\draw[#3,line width=1pt,line cap=round,line join=round]
+  (#1-.06,#2)--(#1-.015,#2+.045)--(#1+.065,#2-.055);}
+\newcommand{\cross}[3]{\draw[#3,line width=1pt,line cap=round]
+  (#1-.05,#2-.05)--(#1+.05,#2+.05) (#1-.05,#2+.05)--(#1+.05,#2-.05);}
+% flat speech bubble with a tail pointing left: x0, y0, x1, y1, colour
+\newcommand{\bubble}[5]{%
+  \fill[#5] (#1+.02,{(#2+#4)/2-.10})--(#1-.17,{(#2+#4)/2})--(#1+.02,{(#2+#4)/2+.10})--cycle;
+  \fill[#5,rounded corners=4pt] (#1,#2) rectangle (#3,#4);}
+% recent-event strip ending in the current event
+\newcommand{\recent}[1]{% y-centre
+  \fill[white,rounded corners=2.5pt] (.30,#1-.19) rectangle (3.35,#1+.19);
+  \node[sm,anchor=west] at (.42,#1) {Recent events (72\,h)};
+  \foreach \s in {0,...,3}{\fill[bluelt,rounded corners=.6pt] (2.36+\s*.19,#1-.07) rectangle ++(.14,.14);}
+  \fill[amber,rounded corners=.6pt] (3.10,#1-.09) rectangle ++(.18,.18);}
+% one layer of the memory cylinder: y-top, y-bottom, colour, label
+\newcommand{\layer}[4]{%
+  \fill[#3] (.42,#1) rectangle (1.62,#2);
+  \fill[#3] (1.02,#2) ellipse (.60 and .11);
+  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=white,anchor=center]
+    at (1.02,{(#1+#2)/2+.05}) {#4};}
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=-1cm]
+  \path[use as bounding box] (0,0) rectangle (7.70,6.55);
+
+  % ================================================== event stream
+  \node[hd,anchor=west] at (.10,.20) {User event stream};
+  \draw[arr,draw=line,line width=1pt] (.20,1.02)--(4.95,1.02);
+  \node[sm,text=muted,anchor=center] at (1.30,.52) {earlier weekdays};
+  \foreach \x/\d/\t in {.62/Mon/18:20,1.30/Tue/18:35,1.98/Thu/18:25}{
+    \walkbadge{\x}{1.02}{teal}
+    \node[txt,font=\fontsize{5.8}{6.6}\selectfont,text=muted,anchor=center,align=center] at (\x,1.50) {\d\\\t};}
+  \node[sm,text=muted] at (2.45,1.00) {$\cdots$};
+  \fill[bluelt,rounded corners=3pt] (2.78,.80) rectangle (4.20,1.24);
+  \node[sm,text=blue,anchor=center] at (3.49,.62) {recent 72\,h};
+  \foreach \x in {3.00,3.35,3.70,4.02}{\fill[blue!60] (\x,1.02) circle (.045);}
+  \fill[amber] (4.50,1.02) circle (.24);
+  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=white] at (4.50,1.03) {now};
+  % current event card
+  \fill[amberlt,rounded corners=4pt] (5.15,.30) rectangle (7.62,1.60);
+  \avatar{5.55}{1.00}{amber}
+  \node[txt,font=\bfseries\fontsize{7.5}{9}\selectfont,text=amber,anchor=west] at (5.92,.60) {18:30};
+  \node[sm,anchor=west] at (5.92,.93) {low activity};
+  \node[sm,anchor=west] at (5.92,1.24) {user available};
+  \draw[amber,line width=.9pt] (4.74,1.02)--(5.15,1.02);
+
+  % ================================================== conventional agent
+  \fill[laneA,rounded corners=5pt] (.20,1.78) rectangle (7.62,3.06);
+  \node[hd,text=blue,anchor=west] at (.32,2.00) {Conventional proactive agent};
+  \recent{2.44}
+  \draw[arr,draw=blue] (3.40,2.44)--(4.08,2.44);
+  \agent{4.50}{2.47}{blue}
+  \bubble{5.15}{2.14}{7.52}{2.80}{bluelt}
+  \node[txt,font=\bfseries\fontsize{7.5}{9}\selectfont,text=blue,anchor=center] at (6.33,2.33) {\textsc{Abstain}};
+  \cross{6.00}{2.60}{rose}
+  \node[sm,text=rose,anchor=west] at (6.12,2.60) {missed};
+
+  % ================================================== ProactMem agent
+  \fill[laneB,rounded corners=5pt] (.20,3.18) rectangle (7.62,6.50);
+  \node[hd,text=teal,anchor=west] at (.32,3.40) {Proactive agent + ProactMem};
+  \recent{3.82}
+  \draw[arr,draw=blue] (3.40,3.82)--(4.50,3.82)--(4.50,4.42);
+
+  % layered memory store built from earlier days
+  \fill[white,rounded corners=4pt] (.30,4.16) rectangle (3.35,6.38);
+  \node[txt,font=\bfseries\fontsize{7}{8.4}\selectfont,text=teal,anchor=west] at (.42,4.36) {ProactMem};
+  \layer{5.50}{5.96}{purple}{Pattern}
+  \layer{5.03}{5.50}{teal}{Daily}
+  \layer{4.56}{5.03}{blue}{Event}
+  \fill[bluelt] (1.02,4.56) ellipse (.60 and .11);
+  % checks on the stored layers
+  \tick{1.90}{5.27}{teal}
+  \node[sm,text=teal,anchor=west] at (2.01,5.26) {source-checked};
+  % the matched pattern
+  \draw[purple,line width=.8pt,dash pattern=on 1.5pt off 1pt] (1.62,5.78)--(1.78,5.78);
+  \fill[purplelt,rounded corners=3pt] (1.78,5.48) rectangle (3.30,6.26);
+  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=purple,anchor=west] at (1.88,5.68) {walk, 18--19\,h};
+  \tick{1.95}{6.02}{purple}
+  \node[sm,text=purple,anchor=west] at (2.05,6.01) {replay-supported};
+  \magnifier{3.20}{5.50}{amber}
+  % history is consolidated into memory
+  \draw[arr,draw=teal,dash pattern=on 2pt off 1.4pt] (.10,1.30)--(.10,5.35)--(.40,5.35);
+
+  % the agent matches the current event and retrieves applicable context
+  \agent{4.50}{4.95}{teal}
+  \draw[arr,draw=amber] (4.10,5.02)--(3.62,5.02)--(3.62,5.78)--(3.34,5.78);
+  \node[sm,text=amber,anchor=east] at (4.06,4.84) {match $e_t$};
+  \draw[arr,draw=purple] (3.34,6.10)--(4.50,6.10)--(4.50,5.38);
+  \node[sm,text=purple,anchor=west] at (3.66,6.29) {retrieve};
+
+  \bubble{5.15}{4.52}{7.52}{5.52}{teal}
+  \node[txt,font=\itshape\fontsize{7.2}{8.6}\selectfont,text=white,anchor=center,align=center]
+    at (6.33,4.85) {``Up for a short walk?''};
+  \node[txt,font=\bfseries\fontsize{6.6}{8}\selectfont,text=white,anchor=center]
+    at (6.33,5.24) {\textsc{Intervene} \,\checkmark};
+\end{tikzpicture}
+\end{document}

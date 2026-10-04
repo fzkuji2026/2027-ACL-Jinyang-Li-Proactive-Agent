@@ -1,0 +1,170 @@
+% Editable flat vector architecture, matching the visual language of Figure 1.
+% Rows align each memory layer with the module that builds it (left) and the
+% place that reads it (right): S_t and W_t enter the context directly, while
+% L_t is matched against the current event by retrieval.
+\definecolor{archInk}{HTML}{2B3A4A}
+\definecolor{archMuted}{HTML}{6E7C8A}
+\definecolor{archLaneA}{HTML}{F2F5F8}
+\definecolor{archLaneM}{HTML}{EAF5F1}
+\definecolor{archLaneB}{HTML}{FDF5EA}
+\definecolor{archBlue}{HTML}{5B7FA3}
+\definecolor{archBlueLt}{HTML}{DCE6EF}
+\definecolor{archTeal}{HTML}{2A8C7E}
+\definecolor{archTealLt}{HTML}{D3EBE4}
+\definecolor{archAmber}{HTML}{E0913A}
+\definecolor{archBrown}{HTML}{A8692A}
+\definecolor{archPurple}{HTML}{7B6BB5}
+\definecolor{archPurpleLt}{HTML}{E6E1F4}
+\definecolor{archGreyLt}{HTML}{E4E9EE}
+\begin{tikzpicture}[x=1cm,y=-1cm,line cap=round,line join=round,
+  font=\sffamily\fontsize{8.5}{10}\selectfont,text=archInk,
+  txt/.style={inner sep=0pt,align=left,text=archInk},
+  sm/.style={txt,font=\sffamily\fontsize{7.2}{8.6}\selectfont},
+  hd/.style={txt,font=\sffamily\bfseries\fontsize{9.5}{11}\selectfont},
+  ttl/.style={txt,font=\sffamily\bfseries\fontsize{8.5}{10}\selectfont},
+  card/.style={fill=white,rounded corners=4pt},
+  arr/.style={-{Stealth[length=1.9mm,width=1.4mm]},line width=1pt,rounded corners=3pt},
+  lab/.style={sm,fill=white,inner sep=1.2pt,rounded corners=1pt}]
+\path[use as bounding box] (0,0) rectangle (16.80,7.30);
+
+% ---------------------------------------------------------------- icons
+\newcommand{\llmicon}[3]{% x, y, colour
+  \fill[#3,rounded corners=2.5pt] (#1-.26,#2-.20) rectangle (#1+.26,#2+.20);
+  \node[txt,font=\sffamily\bfseries\fontsize{6}{7}\selectfont,text=white] at (#1,#2) {LLM};}
+\newcommand{\eventsicon}[2]{% x, y
+  \foreach \dx/\dy in {-.13/-.13,.13/-.13,-.13/.13}{
+    \fill[archBlue,rounded corners=.8pt] (#1+\dx-.10,#2+\dy-.10) rectangle ++(.20,.20);}
+  \fill[archAmber,rounded corners=.8pt] (#1+.03,#2+.03) rectangle ++(.20,.20);}
+\newcommand{\agenticon}[3]{% x, y, colour
+  \begin{scope}[shift={(#1,#2)},scale=.95]
+    \draw[#3,line width=1pt] (0,-.25)--(0,-.34);
+    \fill[#3] (0,-.37) circle (.045);
+    \fill[#3,rounded corners=1pt] (-.35,-.12) rectangle (-.28,.04);
+    \fill[#3,rounded corners=1pt] (.28,-.12) rectangle (.35,.04);
+    \fill[#3,rounded corners=3.5pt] (-.29,-.25) rectangle (.29,.17);
+    \fill[white,rounded corners=2.5pt] (-.20,-.15) rectangle (.20,.08);
+    \fill[#3] (-.085,-.055) circle (.042) (.085,-.055) circle (.042);
+    \draw[#3,line width=.8pt] (-.055,.01) .. controls (-.02,.045) and (.02,.045) .. (.055,.01);
+  \end{scope}}
+\newcommand{\filtericon}[3]{% funnel: x, y, colour
+  \fill[#3] (#1-.24,#2-.20)--(#1+.24,#2-.20)--(#1+.06,#2+.02)--(#1+.06,#2+.20)
+    --(#1-.06,#2+.13)--(#1-.06,#2+.02)--cycle;}
+\newcommand{\magicon}[3]{% x, y, colour
+  \draw[#3,line width=1.4pt,fill=white] (#1-.04,#2-.04) circle (.13);
+  \draw[#3,line width=2pt] (#1+.06,#2+.06)--(#1+.18,#2+.18);}
+\newcommand{\checkchip}[4]{% x, y, colour, text
+  \node[sm,text=#3,anchor=west] at (#1+.20,#2) {#4};
+  \draw[#3,line width=1pt] (#1,#2)--(#1+.045,#2+.05)--(#1+.13,#2-.06);}
+% memory-cylinder layer: y-top, y-bottom, colour
+\newcommand{\cyl}[3]{%
+  \fill[#3] (5.35,#1) rectangle (7.70,#2);
+  \fill[#3] (6.525,#2) ellipse (1.175 and .19);
+  \draw[white,line width=.9pt] (5.35,#1) arc[start angle=180,end angle=360,x radius=1.175,y radius=.19];}
+
+% ---------------------------------------------------------------- lanes
+\fill[archLaneA,rounded corners=6pt] (.15,.10) rectangle (4.95,6.75);
+\fill[archLaneM,rounded corners=6pt] (5.10,.10) rectangle (7.95,6.75);
+\fill[archLaneB,rounded corners=6pt] (8.10,.10) rectangle (16.65,6.75);
+\node[hd,text=archBlue,anchor=west] at (.35,.40) {A\enspace Memory construction};
+\node[hd,text=archTeal,anchor=center] at (6.525,.40) {ProactMem memory};
+\node[hd,text=archBrown,anchor=west] at (8.30,.40) {B\enspace Event-driven decision};
+\node[sm,text=archMuted,anchor=east] at (16.50,.40) {online, per event};
+
+% ---------------------------------------------------------------- A: construction
+% row 1: committed events
+\fill[card] (.35,.95) rectangle (4.75,2.15);
+\eventsicon{.80}{1.55}
+\node[ttl,anchor=west] at (1.25,1.35) {Committed events};
+\node[sm,text=archMuted,anchor=west] at (1.25,1.75) {daily buffer of the open day};
+% row 2: trajectory extraction
+\fill[card] (.35,2.75) rectangle (4.75,3.95);
+\llmicon{.80}{3.35}{archTeal}
+\node[ttl,anchor=west] at (1.25,3.15) {Trajectory extraction};
+\checkchip{1.27}{3.56}{archTeal}{source check vs.\ cited events}
+% row 3: regularity proposal
+\fill[card] (.35,4.55) rectangle (4.75,5.75);
+\llmicon{.80}{5.15}{archPurple}
+\node[ttl,anchor=west] at (1.25,4.95) {Regularity proposal};
+\checkchip{1.27}{5.36}{archPurple}{historical replay gate}
+\draw[arr,draw=archMuted] (2.55,2.15)--(2.55,2.75);
+\node[sm,text=archMuted,anchor=west] at (2.68,2.45) {day ends};
+\draw[arr,draw=archMuted] (2.55,3.95)--(2.55,4.55);
+\node[sm,text=archMuted,anchor=west] at (2.68,4.25) {7 daily records};
+% writes into the memory layers
+\draw[arr,draw=archBlue] (4.75,1.55)--(5.30,1.55);
+\draw[arr,draw=archTeal] (4.75,3.35)--(5.30,3.35);
+\draw[arr,draw=archPurple] (4.75,5.15)--(5.30,5.15);
+
+% ---------------------------------------------------------------- memory cylinder
+\cyl{4.25}{6.05}{archPurple}
+\cyl{2.45}{4.25}{archTeal}
+\cyl{.95}{2.45}{archBlue}
+\fill[archBlue!55] (6.525,.95) ellipse (1.175 and .19);
+\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
+  at (6.525,1.62) {Event memory\\[1pt]$S_t$};
+\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,2.18) {last 72\,h, $\le$99 events};
+\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
+  at (6.525,3.35) {Temporal\\trajectories $W_t$};
+\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,3.98) {source-checked};
+\node[txt,font=\sffamily\bfseries\fontsize{8}{9.6}\selectfont,text=white,align=center]
+  at (6.525,5.15) {Behavioral\\regularities $L_t$};
+\node[txt,font=\sffamily\fontsize{6.6}{8}\selectfont,text=white] at (6.525,5.78) {active vs.\ candidate};
+
+% ---------------------------------------------------------------- B: decision
+% retrieval of applicable regularities
+\fill[card] (8.35,4.60) rectangle (10.65,5.70);
+\magicon{8.70}{5.12}{archAmber}
+\node[ttl,anchor=west] at (9.02,4.93) {Retrieval};
+\node[sm,text=archMuted,anchor=west] at (9.02,5.33) {top 3 by $e_t$};
+% current event
+\fill[archAmber,rounded corners=4pt] (8.35,6.12) rectangle (10.65,6.55);
+\node[txt,font=\sffamily\bfseries\fontsize{7.4}{8.8}\selectfont,text=white] at (9.50,6.34) {current event $e_t$};
+\draw[arr,draw=archAmber] (9.50,6.12)--(9.50,5.70);
+% memory reads
+\draw[arr,draw=archBlue] (7.72,1.55)--(11.05,1.55);
+\node[lab,text=archBlue] at (9.40,1.55) {$S_t$};
+\draw[arr,draw=archTeal] (7.72,3.35)--(11.05,3.35);
+\node[lab,text=archTeal] at (9.40,3.35) {$W_t$};
+\draw[arr,draw=archPurple] (7.72,5.15)--(8.35,5.15);
+\draw[arr,draw=archPurple] (10.65,5.15)--(11.05,5.15);
+\node[sm,text=archPurple,anchor=south] at (10.85,5.02) {$R_t$};
+
+% context C_t
+\fill[card] (11.05,.95) rectangle (13.35,6.05);
+\node[ttl,anchor=center] at (12.20,1.18) {Context $C_t$};
+\newcommand{\ctxchip}[4]{% y, fill, text colour, label
+  \fill[#2,rounded corners=2.5pt] (11.25,#1-.21) rectangle (13.15,#1+.21);
+  \node[sm,text=#3,anchor=center] at (12.20,#1) {#4};}
+\ctxchip{1.66}{archBlueLt}{archBlue}{$S_t$\, recent events}
+\ctxchip{3.35}{archTealLt}{archTeal}{$W_t$\, trajectories}
+\ctxchip{2.50}{archGreyLt}{archMuted}{$Q_t$\, episode state}
+\ctxchip{5.15}{archPurpleLt}{archPurple}{$R_t$\, regularities}
+\ctxchip{4.25}{archAmber!25}{archBrown}{$e_t$\, current event}
+\draw[arr,draw=archAmber] (10.65,6.34)--(12.20,6.34)--(12.20,6.05);
+
+% decision LLM -> intervention control -> output
+\draw[arr,draw=archInk] (13.35,1.55)--(13.80,1.55);
+\fill[card] (13.80,.95) rectangle (16.45,2.15);
+\agenticon{14.22}{1.60}{archTeal}
+\node[ttl,anchor=west] at (14.65,1.35) {Decision LLM};
+\node[sm,text=archMuted,anchor=west] at (14.65,1.75) {service value?};
+\draw[arr,draw=archInk] (15.12,2.15)--(15.12,2.75);
+\fill[card] (13.80,2.75) rectangle (16.45,3.95);
+\filtericon{14.22}{3.35}{archBrown}
+\node[ttl,anchor=west] at (14.65,3.07) {Intervention};
+\node[ttl,anchor=west] at (14.65,3.40) {control};
+\node[sm,text=archMuted,anchor=west] at (14.65,3.72) {filters repeats};
+\draw[arr,draw=archInk] (15.12,3.95)--(15.12,4.55);
+% output
+\fill[archTeal,rounded corners=4pt] (13.80,4.60) rectangle (15.27,5.70);
+\node[txt,font=\sffamily\bfseries\fontsize{7.2}{8.6}\selectfont,text=white,align=center]
+  at (14.535,5.15) {\textsc{Intervene}\\[1pt]\fontsize{6.6}{8}\selectfont\mdseries + message};
+\fill[archGreyLt,rounded corners=4pt] (15.43,4.60) rectangle (16.45,5.70);
+\node[txt,font=\sffamily\bfseries\fontsize{7.2}{8.6}\selectfont,text=archMuted,align=center]
+  at (15.94,5.15) {\textsc{Abstain}};
+
+% ---------------------------------------------------------------- feedback
+\draw[arr,draw=archTeal,dash pattern=on 2.4pt off 1.8pt]
+  (15.35,5.62)--(15.35,7.05)--(.05,7.05)--(.05,1.55)--(.35,1.55);
+\node[lab,text=archTeal,fill=white] at (6.50,7.05) {commit $e_t$ after the decision is finalized};
+\end{tikzpicture}

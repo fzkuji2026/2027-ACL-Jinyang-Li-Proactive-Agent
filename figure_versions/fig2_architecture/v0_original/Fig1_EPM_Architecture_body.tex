@@ -1,0 +1,78 @@
+% Editable vector architecture with broad stages and single-level module boundaries.
+\definecolor{ink}{HTML}{223342}
+\definecolor{construct}{HTML}{286575}
+\definecolor{online}{HTML}{B37B35}
+\definecolor{eventtone}{HTML}{577EA2}
+\definecolor{store}{HTML}{76669E}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\fontsize{12}{13.5}\selectfont,
+  line cap=round,line join=round,text=ink,
+  arrow/.style={-{Latex[length=2mm,width=1.3mm]},line width=.8pt,draw=ink},
+  build/.style={arrow,draw=construct},
+  memoryflow/.style={line width=.8pt,draw=construct},
+  feedback/.style={arrow,dashed,draw=construct!75,line width=.7pt},
+  labeltext/.style={font=\fontsize{10.5}{12}\selectfont,inner sep=2pt},
+  module/.style={draw=ink!55,line width=.6pt,fill=white,rounded corners=1pt,
+    align=center,inner sep=5pt,minimum height=1.06cm},
+  memory/.style={draw=ink!55,line width=.6pt,dashed,align=center,
+    inner sep=5pt,minimum width=4.2cm,minimum height=.78cm},
+  heading/.style={anchor=west,font=\bfseries\fontsize{13}{14.5}\selectfont}]
+\path[use as bounding box] (0,0) rectangle (16.8,8.18);
+
+% Two stage-level backgrounds; each internal module has one thin boundary.
+\path[fill=construct!7,rounded corners=5pt] (.35,4.29) rectangle (16.55,8.05);
+\path[fill=online!8,rounded corners=5pt] (.35,.28) rectangle (16.55,4.13);
+\draw[ink!35,line width=.65pt] (.35,4.21)--(6.16,4.21);
+\draw[ink!35,line width=.65pt] (6.64,4.21)--(16.55,4.21);
+\node[heading,text=construct] at (.65,7.73) {A. memory construction};
+
+% Independent committed history supports both bounded events and daily buffering.
+\node[module,minimum width=3.9cm] (history) at (2.90,6.90)
+  {\textbf{committed events}\\[-1pt]\fontsize{10.5}{12}\selectfont daily buffer};
+\node[module,minimum width=3.9cm] (extract) at (8.50,6.90)
+  {\textbf{trajectory extraction}\\[-1pt]\fontsize{10.5}{12}\selectfont source check};
+\node[module,minimum width=3.9cm] (replay) at (14.05,6.90)
+  {\textbf{regularity proposal}\\[-1pt]\fontsize{10.5}{12}\selectfont historical replay};
+\draw[build] (history.east)--node[labeltext,above=2pt]{day ends}(extract.west);
+\draw[build] (extract.east)--node[labeltext,above=2pt]{7 records}(replay.west);
+
+% Colored memory modules retain names and notation; details are in the text.
+\node[memory,draw=eventtone,fill=eventtone!9,text=eventtone] (events) at (2.90,5.49)
+  {event memory $S_t$};
+\node[memory,draw=construct,fill=construct!9,text=construct] (daily) at (8.50,5.49)
+  {temporal trajectories $W_t$};
+\node[memory,draw=store,fill=store!10,text=store] (patterns) at (14.05,5.49)
+  {behavioral regularities $L_t$};
+\draw[build] (history.south)--(events.north);
+\draw[build] (extract.south)--(daily.north);
+\draw[build,draw=store] (replay.south)--(patterns.north);
+
+% All layers supply context; retrieval selects up to three matching patterns.
+\draw[memoryflow] (events.south)--(2.90,4.72)--(14.05,4.72)--(patterns.south);
+\draw[memoryflow] (daily.south)--(8.50,4.72);
+\fill[construct] (6.40,4.72) circle (.04);
+\node[heading,text=online] at (.65,3.90) {B. event-driven decision};
+
+\node[align=center] at (2.90,3.17) {current event};
+\path[fill=online,rounded corners=1pt] (2.69,2.41) rectangle (3.11,2.83);
+\node[anchor=east,text=online] at (2.48,2.62) {$e_t$};
+\node[module,minimum width=3.15cm] (retrieve) at (6.40,2.62)
+  {\textbf{retrieval}\\[-1pt]\fontsize{10.5}{12}\selectfont top 3 regularities};
+\node[module,minimum width=2.85cm] (decision) at (10.45,2.62)
+  {\textbf{decision LLM}};
+\node[module,minimum width=3.30cm] (control) at (14.05,2.62)
+  {\textbf{intervention control}\\[-1pt]\fontsize{10.5}{12}\selectfont filter repeats};
+\draw[build] (6.40,4.72)--(retrieve.north);
+\draw[arrow,draw=online] (3.22,2.62)--(retrieve.west);
+\draw[arrow] (retrieve.east)--node[labeltext,above=2pt]{$C_t$}(decision.west);
+\draw[arrow] (decision.east)--(control.west);
+
+\node[align=center,font=\fontsize{10.5}{12}\selectfont] (state) at (6.40,1.46)
+  {episode state $Q_t$};
+\draw[arrow,draw=ink!60] (state.north)--(retrieve.south);
+\node[align=center] (output) at (14.05,.80) {intervene or abstain};
+\draw[arrow] (control.south)--(output.north);
+
+% Only the finalized current event is committed to history.
+\draw[feedback] (output.west)--(.18,.80)--(.18,6.90)--(history.west);
+\node[labeltext,text=construct,fill=online!8] at (6.40,.80) {commit after decision};
+\end{tikzpicture}

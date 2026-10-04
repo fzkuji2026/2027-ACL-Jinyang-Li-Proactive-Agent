@@ -1,0 +1,252 @@
+% Editable vector illustration. Observations and decisions are conceptual.
+\documentclass[tikz,border=3pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,calc}
+\definecolor{ink}{HTML}{22364A}
+\definecolor{muted}{HTML}{617182}
+\definecolor{edge}{HTML}{D9E3EB}
+\definecolor{blue}{HTML}{527696}
+\definecolor{bluepale}{HTML}{F3F7FB}
+\definecolor{teal}{HTML}{287E75}
+\definecolor{tealpale}{HTML}{EEF8F4}
+\definecolor{amber}{HTML}{BC803B}
+\definecolor{amberpale}{HTML}{FFF5E7}
+\definecolor{purple}{HTML}{776AA4}
+\definecolor{purplepale}{HTML}{F4F1FA}
+\definecolor{skin}{HTML}{F1CFB5}
+\tikzset{
+  txt/.style={text=ink,font=\fontsize{12}{14}\selectfont,inner sep=0pt,align=left},
+  secondary/.style={txt,font=\fontsize{11}{13}\selectfont,text=muted},
+  heading/.style={txt,font=\bfseries\fontsize{13}{15}\selectfont},
+  box/.style={rounded corners=5pt,line width=.7pt,draw=edge,fill=white},
+  arrow/.style={-{Stealth[length=2.0mm,width=1.4mm]},draw=muted,line width=1pt},
+  flow/.style={line width=1.15pt,rounded corners=3pt}
+}
+\newcommand{\walker}[2]{%
+  \begin{scope}[shift={(#1,#2)},line cap=round,line join=round]
+    \fill[skin] (0,-.48) circle (.105);
+    \draw[ink,line width=1.2pt] (-.07,-.54) to[bend left=32] (.075,-.54);
+    \draw[teal,line width=3.6pt] (-.025,-.32)--(-.09,.04);
+    \draw[teal,line width=1.55pt] (-.03,-.28)--(.15,-.08)--(.32,-.10);
+    \draw[teal,line width=1.55pt] (-.055,-.24)--(-.23,-.07)--(-.31,.06);
+    \draw[ink,line width=1.9pt] (-.09,.04)--(.07,.25)--(.25,.39);
+    \draw[ink,line width=1.9pt] (-.09,.04)--(-.23,.27)--(-.32,.41);
+    \draw[ink,line width=1.5pt] (.23,.4)--(.34,.4);
+    \draw[ink,line width=1.5pt] (-.32,.42)--(-.22,.42);
+  \end{scope}}
+\newcommand{\calendarwalk}[4]{%
+  \path[box] (#1,.97) rectangle ++(2.72,1.53);
+  \path[fill=tealpale,rounded corners=5pt] (#1,.97) rectangle ++(2.72,.40);
+  \fill[tealpale] (#1,1.20) rectangle ++(2.72,.17);
+  \node[txt,text=teal,font=\bfseries\fontsize{11}{13}\selectfont,anchor=west]
+    at (#1+.18,1.16) {#2};
+  \draw[teal,line width=1.5pt,line cap=round] (#1+.37,.90)--(#1+.37,1.07);
+  \draw[teal,line width=1.5pt,line cap=round] (#1+2.34,.90)--(#1+2.34,1.07);
+  \walker{#1+.52}{1.99}
+  \ifnum#4=1
+    \node[txt,anchor=west] at (#1+1.02,1.68) {walking};
+    \node[secondary,anchor=west] at (#1+1.02,2.16) {#3};
+  \else
+    \node[txt,anchor=west] at (#1+1.02,1.93) {#3};
+  \fi
+}
+% The two outputs share an alarm-clock silhouette; facial cues convey state.
+\newcommand{\alarmclock}[4]{%
+  \begin{scope}[shift={(#1,#2)},line cap=round,line join=round]
+    \draw[#3,line width=1.2pt] (-.19,.23)--(-.27,.38);
+    \draw[#3,line width=1.2pt] (.19,.23)--(.27,.38);
+    \draw[#3,line width=1pt] (0,-.30)--(0,-.41);
+    \draw[#3,line width=1.3pt] (-.06,-.41)--(.06,-.41);
+    \path[draw=#3,fill=#3!18,line width=1pt]
+      (-.43,-.29) .. controls (-.42,-.48) and (-.19,-.52) .. (-.10,-.38)--cycle;
+    \path[draw=#3,fill=#3!18,line width=1pt]
+      (.43,-.29) .. controls (.42,-.48) and (.19,-.52) .. (.10,-.38)--cycle;
+    \draw[draw=#3,fill=#3!7,line width=1.3pt] (0,0) circle (.32);
+    \draw[#3!30,line width=.5pt] (0,0) circle (.275);
+    \ifnum#4=0
+      \draw[#3,line width=1.05pt]
+        (-.21,-.065) .. controls (-.18,-.005) and (-.10,-.005) .. (-.07,-.065);
+      \draw[#3,line width=1.05pt]
+        (.07,-.065) .. controls (.10,-.005) and (.18,-.005) .. (.21,-.065);
+      \node[txt,text=#3,font=\itshape\fontsize{9}{9}\selectfont,anchor=center]
+        at (.52,-.20) {z};
+      \node[txt,text=#3,font=\itshape\fontsize{11}{11}\selectfont,anchor=center]
+        at (.69,-.40) {z};
+    \else
+      \fill[#3] (-.135,-.055) ellipse (.038 and .058);
+      \fill[#3] (.135,-.055) ellipse (.038 and .058);
+      \fill[#3] (0,.22) ellipse (.045 and .033);
+      \draw[#3,line width=1.05pt] (-.54,-.29)--(-.65,-.34);
+      \draw[#3,line width=1.05pt] (-.48,-.44)--(-.53,-.53);
+      \draw[#3,line width=1.05pt] (.54,-.29)--(.65,-.34);
+      \draw[#3,line width=1.05pt] (.48,-.44)--(.53,-.53);
+    \fi
+    \draw[#3,line width=.85pt] (0,.115)--(0,-.11);
+    \draw[#3,line width=.85pt] (0,.115)--(.13,.115);
+    \fill[#3] (0,.115) circle (.025);
+  \end{scope}}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=-1cm]
+  \path[use as bounding box] (0,0) rectangle (18.8,10.53);
+  \fill[white] (0,0) rectangle (18.8,10.53);
+
+  % Historical observations are outside the bounded recent-event view.
+  \path[box,fill=bluepale] (.30,.25) rectangle (10.0,2.75);
+  \node[heading,text=muted,anchor=west] at (.65,.62) {earlier evenings};
+  \node[secondary,anchor=east] at (9.65,.62) {$>72$ h ago};
+  \calendarwalk{.65}{Monday}{18:20}{1}
+  \calendarwalk{3.69}{Tuesday}{18:35}{0}
+  \calendarwalk{6.73}{Thursday}{18:25}{0}
+
+  \path[box,draw=amber!40,fill=amberpale] (10.5,.25) rectangle (18.5,2.75);
+  \node[heading,text=amber,anchor=west] at (10.86,.64) {today, 18:30};
+
+  % Awake reclining user: cushion, extended legs, open eye, and raised phone.
+  \begin{scope}[line cap=round,line join=round]
+    \path[fill=blue!12,draw=blue!25,rounded corners=5pt,line width=.7pt]
+      (11.02,1.62) rectangle (15.28,2.26);
+    \path[fill=blue!20,draw=blue!25,rounded corners=3pt,line width=.7pt]
+      (10.91,1.53) rectangle (11.28,2.39);
+    \path[fill=blue!20,draw=blue!25,rounded corners=3pt,line width=.7pt]
+      (15.11,1.94) rectangle (15.42,2.39);
+    \draw[blue!55,line width=2pt] (11.24,2.39)--(11.19,2.53);
+    \draw[blue!55,line width=2pt] (15.13,2.39)--(15.18,2.53);
+    \path[fill=white,draw=blue!23,rounded corners=3pt,line width=.6pt]
+      (11.19,1.73)--(11.38,1.39)--(11.94,1.73)--(11.70,2.04)--cycle;
+    \draw[ink,line width=5.7pt] (12.55,2.01)--(13.56,1.95)--(14.60,2.13);
+    \draw[ink!75,line width=5.2pt] (12.54,2.09)--(13.55,2.16)--(14.43,2.22);
+    \draw[ink,line width=2.5pt] (14.59,2.14)--(14.78,2.12);
+    \draw[ink,line width=2.5pt] (14.42,2.23)--(14.60,2.23);
+    \draw[blue,line width=8pt] (11.84,1.64)--(12.60,2.02);
+    \draw[blue,line width=3.8pt] (11.88,1.69)--(11.83,1.95)--(12.26,2.07);
+    \draw[skin,line width=3pt] (12.25,2.07)--(12.39,2.06);
+    \draw[blue,line width=3.8pt] (11.98,1.70)--(12.35,1.59)--(12.62,1.32);
+    \draw[skin,line width=3pt] (12.61,1.33)--(12.68,1.27);
+    \draw[skin,line width=4pt] (11.83,1.64)--(11.69,1.50);
+    \fill[skin] (11.61,1.37) circle (.19);
+    \path[fill=ink] (11.42,1.38) to[bend left=30] (11.74,1.22)
+      to[bend left=20] (11.58,1.16) to[bend left=28] (11.42,1.25)--cycle;
+    \fill[ink] (11.72,1.36) circle (.016);
+    \draw[ink!60,line width=.45pt] (11.71,1.47) to[bend right=20] (11.77,1.45);
+    \path[fill=ink,rounded corners=1.2pt] (12.61,.99) rectangle (12.82,1.32);
+    \path[fill=white,rounded corners=.6pt] (12.64,1.025) rectangle (12.79,1.255);
+  \end{scope}
+  \path[fill=tealpale,draw=teal!25,rounded corners=6pt,line width=.6pt]
+    (15.80,1.12) rectangle (18.04,1.66);
+  \fill[teal] (16.07,1.39) circle (.055);
+  \node[txt,text=teal,font=\fontsize{11}{13}\selectfont,anchor=west]
+    at (16.25,1.39) {available};
+  \path[fill=amber,rounded corners=1.2pt] (17.23,2.03) rectangle ++(.44,.44);
+
+  % Two agents share the current event; the right panel emphasizes memory use.
+  \path[fill=bluepale,rounded corners=5pt] (.30,3.60) rectangle (6.50,10.33);
+  \path[fill=tealpale,rounded corners=5pt] (7.00,3.60) rectangle (18.50,10.33);
+  \node[heading,anchor=west] at (.75,3.98) {event-only agent};
+  \node[heading,anchor=west] at (7.45,3.98) {agent with ProactMem};
+
+  % Orange denotes the same current event on both sides.
+  \node[secondary,text=amber,anchor=east] at (16.90,3.02) {current event};
+  \draw[flow,draw=amber] (17.45,2.47)--(17.45,3.27)--(5.40,3.27);
+  \draw[arrow,draw=amber] (5.40,3.27)--(5.40,4.41);
+  \draw[arrow,draw=amber] (16.90,3.27)--(16.90,4.41);
+  \foreach \x in {5.40,16.90} {
+    \path[fill=amber,rounded corners=1.5pt] (\x-.20,4.45) rectangle ++(.40,.40);
+    \node[txt,text=amber,anchor=east] at (\x-.34,4.65) {$e_t$};
+  }
+
+  % The comparator consults only bounded event memory.
+  \path[box,draw=blue!25] (.80,5.05) rectangle (6.00,6.55);
+  \node[txt,font=\bfseries\fontsize{12}{14}\selectfont,anchor=west]
+    at (1.05,5.39) {event memory};
+  \draw[edge,line width=1pt] (1.10,6.03)--(5.65,6.03);
+  \foreach \i in {0,...,6} {
+    \path[fill=blue!40,rounded corners=1pt] (1.13+\i*.60,5.88) rectangle ++(.30,.30);
+  }
+  \draw[arrow,draw=amber] (5.40,4.88)--(5.40,5.82);
+  \draw[arrow,draw=blue] (3.38,6.57)--(3.38,7.08);
+  \draw[draw=blue!65,line width=1.15pt,fill=white] (3.38,7.60) circle (.44);
+  \node[txt,text=blue,font=\bfseries\fontsize{19}{20}\selectfont,anchor=center]
+    at (3.38,7.61) {?};
+  \node[secondary,anchor=center] at (3.38,8.29) {decision};
+  \draw[arrow,draw=blue] (3.38,8.52)--(3.38,9.03);
+  \path[box,draw=blue!25] (.80,9.08) rectangle (6.00,10.18);
+  \alarmclock{3.38}{9.70}{blue}{0}
+
+  % One explicit memory store contains all three representations.
+  \node[txt,text=teal,font=\bfseries\fontsize{12}{14}\selectfont,anchor=west]
+    at (7.55,4.56) {proactive memory};
+  \path[box,draw=teal!40,line width=1pt] (7.50,4.95) rectangle (12.65,8.76);
+  \fill[blue!6] (7.55,5.00) rectangle (12.60,6.05);
+  \fill[teal!5] (7.55,6.08) rectangle (12.60,7.14);
+  \fill[purple!8] (7.55,7.17) rectangle (12.60,8.70);
+  \node[txt,font=\bfseries\fontsize{11}{13}\selectfont,anchor=west]
+    at (7.80,5.27) {event memory};
+  \draw[edge,line width=1pt] (7.80,5.72)--(12.35,5.72);
+  \foreach \i in {0,...,6} {
+    \path[fill=blue!40,rounded corners=1pt] (7.83+\i*.60,5.57) rectangle ++(.30,.30);
+  }
+  \node[txt,text=teal,font=\bfseries\fontsize{11}{13}\selectfont,anchor=west]
+    at (7.80,6.34) {temporal trajectories};
+  \foreach \x/\day in {7.90/Mon,9.40/Tue,10.90/Thu} {
+    \path[fill=white,draw=teal!30,rounded corners=1.5pt,line width=.55pt]
+      (\x,6.61) rectangle ++(1.02,.40);
+    \node[txt,text=teal,font=\fontsize{9}{10}\selectfont,anchor=center]
+      at (\x+.51,6.78) {\day};
+    \draw[teal,line width=1.5pt,line cap=round] (\x+.25,6.93)--(\x+.75,6.93);
+  }
+  \node[txt,text=purple,font=\bfseries\fontsize{11}{13}\selectfont,anchor=west]
+    at (7.80,7.44) {behavioral regularities};
+  \begin{scope}[shift={(8.24,8.08)},scale=.60]
+    \walker{0}{0}
+  \end{scope}
+  \draw[draw=purple!25,line width=1.2pt] (8.98,7.99)--(12.32,7.99);
+  \draw[draw=purple,line width=3pt,line cap=round] (9.25,7.99)--(12.00,7.99);
+  \fill[amber] (10.62,7.99) circle (.067);
+  \draw[amber,line width=1.05pt] (10.62,7.99) circle (.17);
+  \draw[amber,line width=1.05pt] (10.74,8.11)--(10.90,8.27);
+  \node[txt,text=purple,font=\fontsize{10.5}{12}\selectfont,anchor=center]
+    at (10.62,8.49) {18:00--19:00};
+
+  % Historical observations persist in memory, independently of this query.
+  \draw[arrow,flow,draw=teal,preaction={draw=white,line width=4pt}]
+    (9.30,2.75)--(9.30,2.97)--(6.77,2.97)--(6.77,6.77)--(7.45,6.77);
+
+  % 1. The current event queries the stored behavioral regularities.
+  \draw[arrow,flow,draw=amber]
+    (16.90,4.88)--(16.90,5.86)--(13.35,5.86)--(13.35,7.99)--(12.68,7.99);
+  \node[txt,text=amber,font=\bfseries\fontsize{12}{14}\selectfont,anchor=center]
+    at (14.74,5.49) {1. query};
+  \draw[draw=amber,line width=1pt,dashed] (12.57,7.99)--(10.82,7.99);
+
+  % 2. Memory evidence flows into the decision, alongside the current event.
+  \draw[arrow,flow,draw=teal]
+    (12.68,8.46)--(15.14,8.46)--(15.14,8.04)--(15.42,8.04);
+  \node[txt,text=teal,font=\bfseries\fontsize{12}{14}\selectfont,anchor=center]
+    at (14.05,8.79) {2. retrieve};
+  \draw[arrow,flow,draw=amber]
+    (17.13,4.65)--(18.13,4.65)--(18.13,8.04)--(17.64,8.04);
+
+  % 3. The LLM integrates present context and retrieved memory.
+  \node[txt,font=\bfseries\fontsize{12}{14}\selectfont,anchor=center]
+    at (16.53,7.17) {3. decide};
+  \path[box,draw=teal!55,line width=1pt] (15.46,7.54) rectangle (17.60,8.55);
+  \node[txt,align=center,font=\bfseries\fontsize{11.5}{13}\selectfont,anchor=center]
+    at (16.53,8.04) {decision\\LLM};
+  \draw[arrow,draw=teal] (16.53,8.58)--(16.53,9.03);
+  \alarmclock{8.55}{9.70}{teal}{1}
+  % A speech-bubble tail attributes the suggestion to the awake alarm clock.
+  \path[draw=teal!45,fill=white,line width=.8pt,line join=round]
+    (9.83,9.10)--(17.92,9.10)
+    .. controls (18.02,9.10) and (18.10,9.18) .. (18.10,9.28)
+    --(18.10,10.00)
+    .. controls (18.10,10.10) and (18.02,10.18) .. (17.92,10.18)
+    --(9.83,10.18)
+    .. controls (9.73,10.18) and (9.65,10.10) .. (9.65,10.00)
+    --(9.65,9.85)--(9.04,9.79)--(9.65,9.55)--(9.65,9.28)
+    .. controls (9.65,9.18) and (9.73,9.10) .. (9.83,9.10)--cycle;
+  \node[txt,font=\fontsize{11.5}{13}\selectfont,anchor=center]
+    at (13.85,9.64) {Up for a short walk?};
+\end{tikzpicture}
+\end{document}
