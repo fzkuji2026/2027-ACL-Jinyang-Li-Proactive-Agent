@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="480" viewBox="0 0 500 480">
+<desc>Sports event-only comparison. All five axes span 0 to 100 percent. GPT-5.6 Luna: relevance 28.6%, coverage 53.1%, effectiveness 37.1%, specificity 51.9%, balance 52.5%; Gemini 3.8 Flash: relevance 30.6%, coverage 53.1%, effectiveness 38.8%, specificity 56.3%, balance 54.7%; DeepSeek V4 Flash: relevance 19.4%, coverage 40.8%, effectiveness 26.3%, specificity 38.5%, balance 39.7%; GLM 5.3 Flash: relevance 25.9%, coverage 44.9%, effectiveness 32.8%, specificity 53.3%, balance 49.1%</desc>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, sans-serif" font-weight="400">
+<polygon points="250.00,212.00 286.14,238.26 272.34,280.74 227.66,280.74 213.86,238.26" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,174.00 322.28,226.51 294.67,311.49 205.33,311.49 177.72,226.51" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,136.00 358.42,214.77 317.01,342.23 182.99,342.23 141.58,214.77" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,98.00 394.56,203.03 339.34,372.97 160.66,372.97 105.44,203.03" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="250.00" y2="98.00" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="394.56" y2="203.03" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="339.34" y2="372.97" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="160.66" y2="372.97" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="105.44" y2="203.03" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,210.63 314.91,228.91 279.30,290.33 202.38,315.54 179.02,226.94" fill="none" stroke="#a95817" stroke-width="2.7" stroke-dasharray="8 5" stroke-linejoin="round"/>
+<polygon points="250.00,206.13 254.50,214.13 245.50,214.13" fill="#a95817"/>
+<polygon points="314.91,224.41 319.41,232.41 310.41,232.41" fill="#a95817"/>
+<polygon points="279.30,285.83 283.80,293.83 274.80,293.83" fill="#a95817"/>
+<polygon points="202.38,311.04 206.88,319.04 197.88,319.04" fill="#a95817"/>
+<polygon points="179.02,222.44 183.52,230.44 174.52,230.44" fill="#a95817"/>
+<polygon points="250.00,220.51 308.98,230.84 273.50,282.34 215.60,297.34 192.61,231.35" fill="none" stroke="#5554a5" stroke-width="2.7" stroke-dasharray="3 5" stroke-linejoin="round"/>
+<polygon points="250.00,216.01 254.50,220.51 250.00,225.01 245.50,220.51" fill="#5554a5"/>
+<polygon points="308.98,226.34 313.48,230.84 308.98,235.34 304.48,230.84" fill="#5554a5"/>
+<polygon points="273.50,277.84 278.00,282.34 273.50,286.84 269.00,282.34" fill="#5554a5"/>
+<polygon points="215.60,292.84 220.10,297.34 215.60,301.84 211.10,297.34" fill="#5554a5"/>
+<polygon points="192.61,226.85 197.11,231.35 192.61,235.85 188.11,231.35" fill="#5554a5"/>
+<polygon points="250.00,203.49 326.76,225.06 284.67,297.71 199.70,319.23 170.93,224.31" fill="none" stroke="#007f78" stroke-width="2.7" stroke-dasharray="" stroke-linejoin="round"/>
+<circle cx="250.00" cy="203.49" r="3.5" fill="#007f78"/>
+<circle cx="326.76" cy="225.06" r="3.5" fill="#007f78"/>
+<circle cx="284.67" cy="297.71" r="3.5" fill="#007f78"/>
+<circle cx="199.70" cy="319.23" r="3.5" fill="#007f78"/>
+<circle cx="170.93" cy="224.31" r="3.5" fill="#007f78"/>
+<polygon points="250.00,206.53 326.76,225.06 283.15,295.62 203.63,313.82 174.11,225.34" fill="none" stroke="#c33760" stroke-width="2.7" stroke-dasharray="10 5" stroke-linejoin="round"/>
+<rect x="246.50" y="203.03" width="7" height="7" fill="#c33760"/>
+<rect x="323.26" y="221.56" width="7" height="7" fill="#c33760"/>
+<rect x="279.65" y="292.12" width="7" height="7" fill="#c33760"/>
+<rect x="200.13" y="310.32" width="7" height="7" fill="#c33760"/>
+<rect x="170.61" y="221.84" width="7" height="7" fill="#c33760"/>
+<text x="262.00" y="180.00" font-size="18" text-anchor="start" fill="#687989" stroke="white" stroke-width="4" paint-order="stroke">50</text>
+<text x="262.00" y="104.00" font-size="18" text-anchor="start" fill="#687989" stroke="white" stroke-width="4" paint-order="stroke">100</text>
+<text x="250.00" y="65.00" font-size="23" text-anchor="middle" fill="#213547" >relevance</text>
+<text x="480.00" y="180.00" font-size="23" text-anchor="end" fill="#213547" >coverage</text>
+<text x="347.00" y="415.00" font-size="23" text-anchor="middle" fill="#213547" >effectiveness</text>
+<text x="153.00" y="415.00" font-size="23" text-anchor="middle" fill="#213547" >specificity</text>
+<text x="95.00" y="180.00" font-size="23" text-anchor="end" fill="#213547" >balance</text>
+<text x="250.00" y="461.00" font-size="25" text-anchor="middle" fill="#213547" >(a) sports</text>
+</g>
+</svg>

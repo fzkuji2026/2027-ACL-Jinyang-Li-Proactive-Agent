@@ -29,6 +29,7 @@ We evaluate five external methods:
 Scores use one post-controller decision per event; immediate and scheduled services count as \emph{intervene} at the decision event.
 We report \textbf{relevance} (precision) as the share of interventions matching reference opportunities; \textbf{coverage} (recall) is the share of opportunities recovered.
 Their harmonic mean, \textbf{effectiveness} (F1), balances relevant interventions against missed opportunities.
+Overall effectiveness pools event-level confusion counts across all streams and scopes.
 The \textbf{intrusion} score (false positive rate) is the share of reference negatives receiving interventions.
 The \textbf{balance} score (balanced accuracy) averages coverage and the share of reference negatives correctly left without intervention.
 Higher relevance, coverage, effectiveness, and balance and lower intrusion are preferred.

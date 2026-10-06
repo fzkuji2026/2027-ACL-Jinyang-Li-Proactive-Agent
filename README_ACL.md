@@ -40,7 +40,7 @@ The main results table compares ProactMem with five external baselines. "Ablatio
 - `Fig_Intro_Scenario.tex`: editable TikZ source for the motivation scene; compile separately with pdfLaTeX to regenerate its PDF.
 - `Fig1_EPM_Architecture_body.tex`: editable TikZ architecture figure, included directly by the manuscript.
 - `Fig1_EPM_Architecture.tex`: standalone wrapper for exporting the architecture as a vector PDF.
-- `Fig_Model_Sensitivity_Radar.svg`: editable vector source for the radar chart; the manuscript uses its PNG export.
+- `Fig_Model_Sensitivity_Sports.svg`, `Fig_Model_Sensitivity_Home.svg`, and `Fig_Model_Sensitivity_Code.svg`: scope-specific radar sources; the manuscript uses their PNG exports with `Fig_Model_Sensitivity_Legend.png`. `Fig_Model_Sensitivity_Radar.svg` provides a combined preview.
 - `Fig2_Memory_Hierarchy_body.tex`: editable vector proactive agent ablation, included directly in the main paper.
 - `Fig3_Memory_Behavior_body.tex`: optional editable visualization of a recorded historical-event-to-decision trace; not included in the current manuscript.
 

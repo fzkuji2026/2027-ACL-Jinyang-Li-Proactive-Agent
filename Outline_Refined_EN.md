@@ -3,10 +3,11 @@
 ## Abstract
 
 - Proactive LLM agents use ongoing observations and accumulated history to identify timely service opportunities.
+- Existing approaches emphasize recent context or retrieval of related memories, providing limited support for validating recurring behavioral regularities and assessing their applicability to the current event.
 - Proactive Memory (ProactMem) combines bounded recent events, source-checked temporal trajectories, and replay-assessed behavioral regularities.
 - trajectory validation checks extracted facts against source events; historical replay assesses recurring support; retrieval selects regularities applicable to the current event.
 - ProactiveStream evaluates chronological decisions across three service scopes with isolated streams and episode-aware opportunity labels.
-- ProactMem achieves higher effectiveness than the evaluated external baselines in every scope. Ablations support the contributions of hierarchical memory organization and validation.
+- On ProactiveStream, ProactMem achieves an overall effectiveness (F1) of 52.6%, a 21.4% relative improvement over the strongest of five external baselines. Overall effectiveness pools event-level confusion counts across all streams and scopes.
 
 ---
 
@@ -30,9 +31,9 @@
    - Intervention control tracks prior interventions and filters repeated proposals.
 
 4. **Contributions**
-   - **Method:** a hierarchical framework combining trajectory source checking, replay-based regularity assessment, and current-applicability selection for proactive decisions.
-   - **Benchmark:** ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions across three scopes, preserving causal history, entity isolation, and episode-aware reference opportunities.
-   - **Empirical findings:** ProactMem achieves higher event-level effectiveness and balance than the evaluated external baselines in all three scopes; targeted ablations support hierarchical organization and validation.
+   - A hierarchical framework combining trajectory source checking, replay-based regularity assessment, and current-applicability selection for proactive decisions.
+   - ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions across three scopes, preserving causal history, entity isolation, and episode-aware reference opportunities.
+   - ProactMem uses long-term behavioral context to identify service opportunities missed by recent events alone and support more selective intervention decisions.
 
 ---
 

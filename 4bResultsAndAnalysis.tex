@@ -108,10 +108,14 @@ Appendix~\ref{app:extended_ablations} reports expanded ablation and intervention
 \subsection{Model scaling}
 \label{sec:model_sensitivity}
 
-\begin{figure*}[!t]
+\begin{figure*}[tp]
 \centering
-\includegraphics[width=0.90\textwidth]{Fig_Model_Sensitivity_Radar.png}
-\caption{Single-run event-only model comparison on three selected streams. Scores pool event-level confusion counts across domains; specificity equals $1-\mathrm{intrusion}$. All axes start at zero, with metric-specific ranges.}
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Sports.png}\hfill
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Home.png}\hfill
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Code.png}
+\par\vspace{2pt}
+\includegraphics[width=0.98\textwidth]{Fig_Model_Sensitivity_Legend.png}
+\caption{Event-only model comparison in Sports, Home, and Code. All axes span 0--100\%; specificity equals $1-\mathrm{intrusion}$.}
 \label{fig:event_only_model_radar}
 \end{figure*}
 
@@ -146,5 +150,6 @@ GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \te
 \paragraph{Cross-family event-only comparison.}
 We compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash.
 Task instructions, the context bound of 72 hours and at most 100 events, and the intervention controller policy are shared.
-Figure~\ref{fig:event_only_model_radar} pools confusion counts across domains.
-Luna leads in F1 and recall; Gemini leads in precision.
+Figure~\ref{fig:event_only_model_radar} reports each scope separately.
+Gemini attains higher effectiveness across all three scopes.
+Luna achieves higher coverage and balance in Home and Code.

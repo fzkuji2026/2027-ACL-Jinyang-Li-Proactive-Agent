@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="480" viewBox="0 0 500 480">
+<desc>Code event-only comparison. All five axes span 0 to 100 percent. GPT-5.6 Luna: relevance 29.0%, coverage 64.4%, effectiveness 40.0%, specificity 76.7%, balance 70.5%; Gemini 3.8 Flash: relevance 35.6%, coverage 53.5%, effectiveness 42.7%, specificity 85.7%, balance 69.6%; DeepSeek V4 Flash: relevance 20.0%, coverage 28.7%, effectiveness 23.6%, specificity 83.0%, balance 55.9%; GLM 5.3 Flash: relevance 23.7%, coverage 28.7%, effectiveness 25.9%, specificity 86.3%, balance 57.5%</desc>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, sans-serif" font-weight="400">
+<polygon points="250.00,212.00 286.14,238.26 272.34,280.74 227.66,280.74 213.86,238.26" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,174.00 322.28,226.51 294.67,311.49 205.33,311.49 177.72,226.51" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,136.00 358.42,214.77 317.01,342.23 182.99,342.23 141.58,214.77" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,98.00 394.56,203.03 339.34,372.97 160.66,372.97 105.44,203.03" fill="none" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="250.00" y2="98.00" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="394.56" y2="203.03" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="339.34" y2="372.97" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="160.66" y2="372.97" stroke="#d9e1e7" stroke-width="1"/>
+<line x1="250" y1="250" x2="105.44" y2="203.03" stroke="#d9e1e7" stroke-width="1"/>
+<polygon points="250.00,213.98 291.49,236.52 273.14,281.85 172.90,356.12 166.88,222.99" fill="none" stroke="#a95817" stroke-width="2.7" stroke-dasharray="8 5" stroke-linejoin="round"/>
+<polygon points="250.00,209.48 254.50,217.48 245.50,217.48" fill="#a95817"/>
+<polygon points="291.49,232.02 295.99,240.02 286.99,240.02" fill="#a95817"/>
+<polygon points="273.14,277.35 277.64,285.35 268.64,285.35" fill="#a95817"/>
+<polygon points="172.90,351.62 177.40,359.62 168.40,359.62" fill="#a95817"/>
+<polygon points="166.88,218.49 171.38,226.49 162.38,226.49" fill="#a95817"/>
+<polygon points="250.00,219.60 291.49,236.52 271.09,279.02 175.85,352.07 169.19,223.74" fill="none" stroke="#5554a5" stroke-width="2.7" stroke-dasharray="3 5" stroke-linejoin="round"/>
+<polygon points="250.00,215.10 254.50,219.60 250.00,224.10 245.50,219.60" fill="#5554a5"/>
+<polygon points="291.49,232.02 295.99,236.52 291.49,241.02 286.99,236.52" fill="#5554a5"/>
+<polygon points="271.09,274.52 275.59,279.02 271.09,283.52 266.59,279.02" fill="#5554a5"/>
+<polygon points="175.85,347.57 180.35,352.07 175.85,356.57 171.35,352.07" fill="#5554a5"/>
+<polygon points="169.19,219.24 173.69,223.74 169.19,228.24 164.69,223.74" fill="#5554a5"/>
+<polygon points="250.00,195.89 327.34,224.87 288.15,302.51 173.43,355.39 149.39,217.31" fill="none" stroke="#007f78" stroke-width="2.7" stroke-dasharray="" stroke-linejoin="round"/>
+<circle cx="250.00" cy="195.89" r="3.5" fill="#007f78"/>
+<circle cx="327.34" cy="224.87" r="3.5" fill="#007f78"/>
+<circle cx="288.15" cy="302.51" r="3.5" fill="#007f78"/>
+<circle cx="173.43" cy="355.39" r="3.5" fill="#007f78"/>
+<circle cx="149.39" cy="217.31" r="3.5" fill="#007f78"/>
+<polygon points="250.00,205.92 343.10,219.75 285.74,299.19 181.47,344.32 148.08,216.89" fill="none" stroke="#c33760" stroke-width="2.7" stroke-dasharray="10 5" stroke-linejoin="round"/>
+<rect x="246.50" y="202.42" width="7" height="7" fill="#c33760"/>
+<rect x="339.60" y="216.25" width="7" height="7" fill="#c33760"/>
+<rect x="282.24" y="295.69" width="7" height="7" fill="#c33760"/>
+<rect x="177.97" y="340.82" width="7" height="7" fill="#c33760"/>
+<rect x="144.58" y="213.39" width="7" height="7" fill="#c33760"/>
+<text x="262.00" y="180.00" font-size="18" text-anchor="start" fill="#687989" stroke="white" stroke-width="4" paint-order="stroke">50</text>
+<text x="262.00" y="104.00" font-size="18" text-anchor="start" fill="#687989" stroke="white" stroke-width="4" paint-order="stroke">100</text>
+<text x="250.00" y="65.00" font-size="23" text-anchor="middle" fill="#213547" >relevance</text>
+<text x="480.00" y="180.00" font-size="23" text-anchor="end" fill="#213547" >coverage</text>
+<text x="347.00" y="415.00" font-size="23" text-anchor="middle" fill="#213547" >effectiveness</text>
+<text x="153.00" y="415.00" font-size="23" text-anchor="middle" fill="#213547" >specificity</text>
+<text x="95.00" y="180.00" font-size="23" text-anchor="end" fill="#213547" >balance</text>
+<text x="250.00" y="461.00" font-size="25" text-anchor="middle" fill="#213547" >(c) code</text>
+</g>
+</svg>
