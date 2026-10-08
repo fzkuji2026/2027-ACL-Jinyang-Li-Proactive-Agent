@@ -918,9 +918,10 @@ FUNCTION {format.pages}
           bbl.page swap$
         }
       if$
-      tie.or.space.prefix
+      "~" swap$
       "pages" bibinfo.check
       * *
+      "\unskip\nobreakspace{}" swap$ *
     }
   if$
 }
@@ -1351,7 +1352,11 @@ FUNCTION {article}
       "journal" bibinfo.check
       emphasize
       "journal" output.check
-      possibly.setup.inlinelink format.vol.num.pages output% urlbst
+      possibly.setup.inlinelink format.vol.num.pages
+      duplicate$ empty$ 'skip$
+        { "\unskip\nobreakspace{}" swap$ * }
+      if$
+      output% urlbst
     }
     { format.article.crossref output.nonnull
       format.pages output

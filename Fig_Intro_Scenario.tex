@@ -23,9 +23,9 @@
 \definecolor{purplelt}{HTML}{E6E1F4}
 \definecolor{rose}{HTML}{C75B66}
 \tikzset{
-  txt/.style={text=ink,font=\fontsize{7}{8.4}\selectfont,inner sep=0pt,align=left},
-  sm/.style={txt,font=\fontsize{6.2}{7.4}\selectfont},
-  hd/.style={txt,font=\bfseries\fontsize{7.5}{9}\selectfont},
+  txt/.style={text=ink,font=\fontsize{8.5}{10.2}\selectfont,inner sep=0pt,align=left},
+  sm/.style={txt,font=\fontsize{8}{9.6}\selectfont},
+  hd/.style={txt,font=\bfseries\fontsize{9}{10.8}\selectfont},
   arr/.style={-{Stealth[length=1.6mm,width=1.2mm]},line width=.9pt,rounded corners=2pt},
 }
 % ---------------------------------------------------------------- icons
@@ -70,90 +70,79 @@
 % recent-event strip ending in the current event
 \newcommand{\recent}[1]{% y-centre
   \fill[white,rounded corners=2.5pt] (.30,#1-.19) rectangle (3.35,#1+.19);
-  \node[sm,anchor=west] at (.42,#1) {Recent events (72\,h)};
+  \node[sm,anchor=west] at (.42,#1) {recent events};
   \foreach \s in {0,...,3}{\fill[blue!30,rounded corners=.7pt] (2.33+\s*.19,#1-.065) rectangle ++(.13,.13);}
   \fill[amber,rounded corners=.8pt] (3.09,#1-.085) rectangle ++(.17,.17);}
 % one layer of the memory cylinder: y-top, y-bottom, colour, label
 \newcommand{\layer}[4]{%
-  \fill[#3] (.42,#1) rectangle (1.62,#2);
-  \fill[#3] (1.02,#2) ellipse (.60 and .11);
-  \draw[white,line width=.7pt] (.42,#1) arc[start angle=180,end angle=360,x radius=.60,y radius=.11];
-  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=white,anchor=center]
-    at (1.02,{(#1+#2)/2+.05}) {#4};}
+  \fill[#3] (.42,#1) rectangle (1.82,#2);
+  \fill[#3] (1.12,#2) ellipse (.70 and .09);
+  \draw[white,line width=.7pt] (.42,#1) arc[start angle=180,end angle=360,x radius=.70,y radius=.09];
+  \node[txt,font=\bfseries\fontsize{7.8}{9.4}\selectfont,text=white,anchor=center]
+    at (1.12,{(#1+#2)/2+.035}) {#4};}
 
 \begin{document}
 \begin{tikzpicture}[x=1cm,y=-1cm]
-  \path[use as bounding box] (0,0) rectangle (7.70,6.55);
+  \path[use as bounding box] (0,0) rectangle (7.70,4.90);
 
   % ================================================== event stream
-  \node[hd,anchor=west] at (.32,.20) {User event stream};
-  \draw[line,line width=1.2pt,line cap=round] (.32,1.02)--(4.30,1.02);
-  \node[sm,text=muted,anchor=center] at (1.30,.52) {earlier weekdays};
-  \foreach \x/\d/\t in {.62/Mon/18:20,1.30/Tue/18:35,1.98/Thu/18:25}{
-    \walkbadge{\x}{1.02}{teal}
-    \node[txt,font=\fontsize{6.2}{7}\selectfont,text=muted,anchor=center,align=center] at (\x,1.52) {\d\\\t};}
-  \node[sm,text=muted] at (2.45,1.00) {$\cdots$};
-  \fill[bluelt,rounded corners=3pt] (2.78,.80) rectangle (4.20,1.24);
-  \node[sm,text=blue,anchor=center] at (3.49,.62) {recent 72\,h};
-  \foreach \x in {3.00,3.35,3.70,4.02}{\fill[blue!60] (\x,1.02) circle (.045);}
-  \fill[amber] (4.50,1.02) circle (.24);
-  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=white] at (4.50,1.03) {now};
-  % current event card
-  \fill[amberlt,rounded corners=4pt] (5.15,.30) rectangle (7.62,1.60);
-  \avatar{5.55}{1.00}{amber}
-  \node[txt,font=\bfseries\fontsize{7.5}{9}\selectfont,text=amber,anchor=west] at (5.92,.60) {18:30};
-  \node[sm,anchor=west] at (5.92,.93) {low activity};
-  \node[sm,anchor=west] at (5.92,1.24) {user available};
-  \draw[amber,line width=.9pt,dash pattern=on 1.6pt off 1.2pt] (4.76,1.02)--(5.15,1.02);
+  \node[hd,anchor=west] at (.32,.18) {event stream};
+  \node[sm,text=muted,anchor=center] at (1.54,.48) {earlier days};
+  \draw[line,line width=1.2pt,line cap=round] (.32,.90)--(4.30,.90);
+  \foreach \x/\t in {.68/18:20,1.54/18:35,2.40/18:25}{
+    \walkbadge{\x}{.90}{teal}
+    \node[sm,text=muted,anchor=center] at (\x,1.30) {\t};}
+  \fill[bluelt,rounded corners=3pt] (2.94,.68) rectangle (4.20,1.12);
+  \node[sm,text=blue,anchor=center] at (3.57,.48) {72\,h};
+  \foreach \x in {3.12,3.42,3.72,4.02}{\fill[blue!60] (\x,.90) circle (.045);}
+  \fill[amber] (4.50,.90) circle (.24);
+  \node[txt,font=\bfseries\fontsize{8}{9.6}\selectfont,text=white] at (4.50,.91) {$e_t$};
+  \fill[amberlt,rounded corners=4pt] (5.15,.30) rectangle (7.62,1.45);
+  \avatar{5.55}{.93}{amber}
+  \node[hd,text=amber,anchor=west] at (5.92,.56) {18:30};
+  \node[sm,anchor=west] at (5.92,.88) {low activity};
+  \node[sm,anchor=west] at (5.92,1.20) {available};
+  \draw[amber,line width=.9pt,dash pattern=on 1.6pt off 1.2pt] (4.76,.90)--(5.15,.90);
 
-  % ================================================== conventional agent
-  \fill[laneA,rounded corners=5pt] (.20,1.78) rectangle (7.62,3.06);
-  \node[hd,text=blue,anchor=west] at (.32,2.00) {Conventional proactive agent};
-  \recent{2.44}
-  \draw[arr,draw=blue] (3.40,2.44)--(4.08,2.44);
-  \agent{4.50}{2.47}{blue}
-  \bubble{5.15}{2.14}{7.52}{2.80}{bluelt}
-  \node[txt,font=\bfseries\fontsize{7.5}{9}\selectfont,text=blue,anchor=center] at (6.33,2.33) {\textsc{Abstain}};
-  \cross{6.00}{2.60}{rose}
-  \node[sm,text=rose,anchor=west] at (6.12,2.60) {missed};
+  % ================================================== recent-context agent
+  \fill[laneA,rounded corners=5pt] (.20,1.60) rectangle (7.62,2.43);
+  \node[hd,text=blue,anchor=west] at (.32,1.79) {recent-context agent};
+  \recent{2.15}
+  \draw[arr,draw=blue] (3.40,2.15)--(4.08,2.15);
+  \agent{4.50}{2.14}{blue}
+  \bubble{5.15}{1.90}{7.52}{2.32}{bluelt}
+  \node[hd,text=blue,anchor=center] at (6.33,2.11) {abstain};
 
-  % ================================================== ProactMem agent
-  \fill[laneB,rounded corners=5pt] (.20,3.18) rectangle (7.62,6.50);
-  \node[hd,text=teal,anchor=west] at (.32,3.40) {Proactive agent + ProactMem};
-  \recent{3.82}
-  \draw[arr,draw=blue] (3.40,3.82)--(4.50,3.82)--(4.50,4.50);
+  % ================================================== ProactMem
+  \fill[laneB,rounded corners=5pt] (.20,2.55) rectangle (7.62,4.85);
+  \node[hd,text=teal,anchor=west] at (.32,2.76) {ProactMem};
+  \recent{3.08}
+  \draw[arr,draw=blue] (3.40,3.08)--(4.50,3.08)--(4.50,3.54);
 
-  % layered memory store built from earlier days
-  \fill[white,rounded corners=4pt] (.30,4.16) rectangle (3.35,6.38);
-  \node[txt,font=\bfseries\fontsize{7}{8.4}\selectfont,text=teal,anchor=west] at (.42,4.36) {Hierarchical memory};
-  \layer{5.50}{5.96}{purple}{Regularity}
-  \layer{5.03}{5.50}{teal}{Trajectory}
-  \layer{4.56}{5.03}{blue}{Event}
-  \fill[blue!45] (1.02,4.56) ellipse (.60 and .11);
-  % checks on the stored layers
-  \tick{1.90}{5.27}{teal}
-  \node[sm,text=teal,anchor=west] at (2.01,5.26) {source-checked};
-  % the matched regularity
-  \draw[purple,line width=.8pt,dash pattern=on 1.5pt off 1pt] (1.62,5.78)--(1.78,5.78);
-  \fill[purplelt,rounded corners=3pt] (1.78,5.48) rectangle (3.30,6.26);
-  \node[txt,font=\bfseries\fontsize{6.4}{7.6}\selectfont,text=purple,anchor=west] at (1.88,5.68) {walk, 18--19\,h};
-  \tick{1.95}{6.02}{purple}
-  \node[sm,text=purple,anchor=west] at (2.05,6.01) {replay-supported};
-  \magnifier{3.20}{5.50}{amber}
-  % history is consolidated into memory
-  \draw[arr,draw=teal,dash pattern=on 2pt off 1.4pt] (.36,1.02)--(.10,1.02)--(.10,5.27)--(.40,5.27);
+  \fill[white,rounded corners=4pt] (.30,3.38) rectangle (3.50,4.81);
+  \node[txt,font=\bfseries\fontsize{8.5}{10.2}\selectfont,text=teal,anchor=west] at (.42,3.58) {hierarchical memory};
+  \layer{4.40}{4.69}{purple}{regularity}
+  \layer{4.11}{4.40}{teal}{trajectory}
+  \layer{3.82}{4.11}{blue}{event}
+  \fill[blue!45] (1.12,3.82) ellipse (.70 and .09);
+  \tick{1.98}{3.88}{teal}
+  \node[sm,text=teal,anchor=west] at (2.10,3.88) {checked};
+  \draw[purple,line width=.8pt,dash pattern=on 1.5pt off 1pt] (1.82,4.54)--(1.94,4.54);
+  \fill[purplelt,rounded corners=3pt] (1.94,4.07) rectangle (3.40,4.51);
+  \node[txt,font=\bfseries\fontsize{8}{9.6}\selectfont,text=purple,anchor=center] at (2.67,4.29) {18--19\,h};
+  \tick{1.98}{4.67}{purple}
+  \node[sm,text=purple,anchor=west] at (2.10,4.67) {replayed};
+  \magnifier{3.30}{4.08}{amber}
+  \draw[arr,draw=teal,dash pattern=on 2pt off 1.4pt] (.36,.90)--(.10,.90)--(.10,4.16)--(.40,4.16);
 
-  % the agent matches the current event and retrieves applicable context
-  \agent{4.50}{4.95}{teal}
-  \draw[arr,draw=amber] (4.13,4.93)--(3.62,4.93)--(3.62,5.78)--(3.34,5.78);
-  \node[sm,text=amber,anchor=east] at (4.08,4.76) {match $e_t$};
-  \draw[arr,draw=purple] (3.34,6.10)--(4.50,6.10)--(4.50,5.20);
-  \node[sm,text=purple,anchor=west] at (3.66,6.29) {retrieve};
-
-  \bubble{5.15}{4.52}{7.52}{5.52}{teal}
-  \node[txt,font=\itshape\fontsize{7.2}{8.6}\selectfont,text=white,anchor=center,align=center]
-    at (6.33,4.85) {``Up for a short walk?''};
-  \node[txt,font=\bfseries\fontsize{6.6}{8}\selectfont,text=white,anchor=center]
-    at (6.33,5.24) {\textsc{Intervene} \,\checkmark};
+  \agent{4.50}{3.92}{teal}
+  \draw[arr,draw=amber] (4.13,3.90)--(3.69,3.90)--(3.69,4.30)--(3.52,4.30);
+  \node[sm,text=amber,anchor=center,align=center] at (3.86,3.61) {match\\$e_t$};
+  \draw[arr,draw=purple] (3.52,4.60)--(4.50,4.60)--(4.50,4.17);
+  \node[sm,text=purple,anchor=center] at (4.02,4.76) {retrieve};
+  \bubble{5.15}{3.46}{7.52}{4.42}{teal}
+  \node[txt,font=\itshape\fontsize{9}{10.8}\selectfont,text=white,anchor=center]
+    at (6.33,3.76) {``Short walk?''};
+  \node[hd,text=white,anchor=center] at (6.33,4.14) {intervene};
 \end{tikzpicture}
 \end{document}

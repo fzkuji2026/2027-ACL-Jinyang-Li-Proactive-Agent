@@ -1,10 +1,10 @@
-% Reference and behavior diagnostics; interpretations remain in the main paper.
+% Supplementary reference and behavior analyses.
 \section{Reference and episode diagnostics}
 \label{app:label_review_450}
 
 \begin{table*}[!t]
 \centering
-\caption{Reference sensitivity on 150 targets per scope. $I$ is the number of final interventions; positives and confusion counts use the separate team's references. Effectiveness is F1 (\%). Earlier diagnostic references use original Sports/Home labels and 122 original plus 28 additional Code annotations. Both columns score the same diagnostic outputs.}
+\caption{Reference sensitivity on 150 targets per scope. Effectiveness (\%) scores identical outputs under earlier and separate-team references. Positives and confusion counts use the latter; $I$ counts final interventions.}
 \label{tab:reference_sensitivity_450}
 \small
 \setlength{\tabcolsep}{6pt}
@@ -22,7 +22,7 @@ Code & 34 & 42 & 18 & 24 & 16 & 92 & 57.6 & 47.4 \\
 
 \begin{table*}[!t]
 \centering
-\caption{\system{} episode diagnostic on 150 targets per scope. The covered/new column includes episode coverage (\%) in parentheses; SR and RIR are percentages. $I$ is the sum of first valid ($F$), valuable follow-up ($V$), redundant ($R$), uncertain ($U$), unmatched, late, and unresolved outcomes. $U=0$ in all three scopes; unresolved semantic or condition matches remain separate from supported or redundant assistance.}
+\caption{\system{} episode diagnostic on 150 targets per scope. Coverage, SR, and RIR use percentages. Unresolved denotes ambiguous semantic or condition matches; $U=0$ in all scopes.}
 \label{tab:episode_review_450}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -32,7 +32,7 @@ Code & 34 & 42 & 18 & 24 & 16 & 92 & 57.6 & 47.4 \\
 scope & \shortstack{covered/new\\(coverage)} & $I$ & $F$ & $V$ & $R$ & unmatched & late & unresolved & SR & RIR \\
 \midrule
 Sports & 23/26 (88.5) & 86 & 23 & 1 & 1 & 60 & 0 & 1 & 27.9 & 1.2 \\
-Home & 10/10 (100.0) & 39 & 10 & 6 & 17 & 6 & 0 & 0 & 41.0 & 43.6 \\
+Home & 9/9 (100.0) & 39 & 10 & 6 & 17 & 6 & 0 & 0 & 41.0 & 43.6 \\
 Code & 14/31 (45.2) & 42 & 14 & 3 & 4 & 16 & 4 & 1 & 40.5 & 9.5 \\
 \bottomrule
 \end{tabular}
@@ -46,22 +46,27 @@ Their target periods are December 16, 2015--January 18, 2016; June 23--28, 2011;
 All 37, 203, and 152 preceding events are processed chronologically, respectively: 842 public events supply context for 450 scored targets.
 
 A separate three-reviewer team independently labels each target with its prior same-stream history while blinded to evaluated-system outputs, then discusses judgments to obtain consensus references.
-Relative to the earlier diagnostic references, Sports and Home each have 13 changes from \emph{intervene} to \emph{abstain}, with 4 and 0 changes in the reverse direction, respectively; Code has 6 removals and 16 additions.
-These counts describe differences between the earlier diagnostic references and the separate team's judgments on 450 targets across three selected streams.
+Earlier references use original Sports and Home labels and 122 original plus 28 additional Code annotations.
+Relative to these references, Sports and Home each have 13 changes from \emph{intervene} to \emph{abstain}, with 4 and 0 changes in the reverse direction, respectively; Code has 6 removals and 16 additions to positive labels.
+
 
 Table~\ref{tab:reference_sensitivity_450} scores identical recorded \system{} outputs against these two sets of references.
 The predictions come from separate diagnostic runs on the selected targets.
 The diagnostic uses Luna with temperature zero, thinking disabled, decision limits of 256 tokens for Sports and Home and 512 for Code, and the same context bound of 72 hours and at most 100 events, trajectory validation, replay gating, and intervention control policy.
 Immediate and scheduled services both count as \emph{intervene}.
 
+Rescoring against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references.
+Absolute scores are label-sensitive, especially on Home and Code.
+
 \subsection{Episode references and matching}
 \label{app:episode_review_450}
 
+A model-assisted post-hoc analysis on these targets reconstructs goal-and-object episodes from positive event anchors.
 Each reference specifies a service goal and object, causal evidence, onset, explicitly listed valid observations, and any deadline or closure evidence.
 Semantic matching uses these fields to associate interventions with reference episodes.
 
 \paragraph{Matching and follow-up.}
-Episode coverage follows \system{}'s own interventions, initialized from recorded prefix outputs; fixed event-label novelty instead follows the reference sequence (Equation~\ref{eq:or_semantics}).
+Episode coverage follows \system{}'s own interventions, initialized from recorded prefix outputs.
 Only target interventions are scored.
 An intervention must match the goal and object at a listed valid observation.
 Its proposed service time is the decision time plus its specified delay (zero for immediate service), and must meet any explicit episode deadline.
@@ -71,16 +76,17 @@ Each output receives at most one credit: the first uncovered compatible episode 
 Subsequent matches are compared with the method's preceding assistance for that episode.
 A valuable follow-up requires new causal evidence that changes the actionable service or next step, and a message addressing that change.
 Rephrasing or continued status alone is redundant; value requiring unobserved delivery, recipient response, or completion remains uncertain.
-Valuable follow-ups do not create additional covered episodes.
+Each reference episode receives coverage credit once.
 
 \paragraph{Metrics and boundaries.}
-Let $I$ count all target interventions, $F$ first valid interventions, $V$ valuable follow-ups, $R$ redundant follow-ups, and $U$ uncertain follow-ups.
+Let $I$ count all target interventions, $F$ first valid interventions across all reference episodes, $V$ valuable follow-ups, $R$ redundant follow-ups, and $U$ uncertain follow-ups.
+New reference episodes have onsets within the target interval.
 Episode coverage divides covered new episodes by all new reference episodes; supported relevance is $\mathrm{SR}=(F+V)/I$, and redundant intervention rate is $\mathrm{RIR}=R/I$.
-Uncertain, unmatched, late, and unresolved outputs remain in $I$ but receive no supported-assistance credit.
+Uncertain, unmatched, late, and unresolved outcomes contribute only to the intervention count $I$.
 Table~\ref{tab:episode_review_450} combines the rates and outcome counts.
 
-Episode coverage is conditional on the observed segment and onset convention.
-The main diagnostic treats the first Home opportunity as target-onset; treating it as a continuation from the prefix instead covers all 9 new opportunities.
-These exploratory scores depend on the constructed references and semantic matches.
+Episode coverage is highest on Home and lowest on Code; the redundant-intervention share is highest on Home and lowest on Sports.
+
+The exploratory scores depend on reference construction and semantic matching.
 
 \FloatBarrier

@@ -1,32 +1,26 @@
 \section{Problem formulation}
 \label{sec:problem}
 
-Let $u$ denote an independently evaluated entity, such as a participant, household, or repository, with a time-ordered public event stream
+Each participant, household, or repository $u$ has an isolated public event stream
 \begin{equation}
 E^u=(e^u_1,\ldots,e^u_{T_u}), \qquad
 e^u_t=(\tau^u_t,x^u_t),
 \label{eq:event_stream}
 \end{equation}
-where $T_u$ is the number of events for entity $u$, $\tau^u_t$ is the event time, and $x^u_t$ contains the scope-specific public fields observable at that time.
-We omit the entity superscript $u$ when it is unambiguous.
-Events follow a fixed chronological order with deterministic tie-breaking.
-Before processing $e^u_t$, an agent has a causal state $Z^u_t$ constructed only from events and finalized outputs preceding $e^u_t$ in this order.
-It produces
+where $T_u$ is the stream length and $x^u_t$ contains public fields available at time $\tau^u_t$.
+Events follow chronological order with deterministic tie-breaking; we omit $u$ when clear.
+State $Z^u_t$ comprises prior same-entity observations, finalized outputs, and the memory and intervention-control states derived from them.
+The policy produces
 \begin{equation}
 (\hat y_t,\hat m_t)=\pi(e^u_t,Z^u_t),
 \qquad \hat y_t\in\{0,1\},
 \label{eq:generic_decision}
 \end{equation}
 where $\hat y_t=1$ denotes \emph{intervene}, $\hat y_t=0$ denotes \emph{abstain}, and $\hat m_t$ is an optional evidence-grounded service message.
-Here $\pi$ denotes a general inference policy over the current event and causal state; $\hat m_t$ may be empty under \emph{abstain}.
-After finalizing the decision and optional message, the agent updates its state through an update function $U$:
+After finalization, update function $U$ commits the event and output:
 \begin{equation}
 Z^u_{t+1}=U(Z^u_t,e^u_t,\hat y_t,\hat m_t).
 \label{eq:causal_update}
 \end{equation}
-Each entity maintains isolated state, and $\pi$ accesses only the current public event and causally available same-entity information.
-
-The objective is to identify a timely, actionable \emph{service opportunity} supported by the current event or prior same-entity observations.
-Let $y_t\in\{0,1\}$ denote the frozen reference decision for $e_t$ under the annotation protocol in Section~\ref{sec:reference_labels}; all evaluated policies share these fixed references.
-Labels and annotation metadata remain evaluator-private.
-Events with either reference label share the same scope-specific public input schema.
+The objective is to detect timely, actionable \emph{service opportunities} supported by current or prior same-entity observations.
+Evaluation uses fixed reference decisions $y_t\in\{0,1\}$ under Section~\ref{sec:reference_labels}; labels and annotation metadata remain evaluator-private.

@@ -1,17 +1,15 @@
 \begin{table*}[t]
 \centering
-\caption{Composition and provenance of ProactiveStream across Sports, Home, and Code. Each stream is an independent memory and replay unit. Reference interventions denote service opportunities under the annotation protocol.}
+\caption{Composition and provenance of ProactiveStream. Reference interventions mark service opportunities.}
 \label{tab:benchmark_stats}
-% \footnotesize
-% \setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
-Scope  & Primary source & Entity          & Streams & \begin{tabular}[c]{@{}l@{}}Input\\ events\end{tabular} & Temporal coverage                 & \begin{tabular}[c]{@{}l@{}}Reference\\ interventions\end{tabular} \\ \midrule
+scope  & primary source & entity          & streams & \begin{tabular}[c]{@{}l@{}}input\\ events\end{tabular} & temporal coverage                 & \begin{tabular}[c]{@{}l@{}}reference\\ interventions\end{tabular} \\ \midrule
 Sports & HeartSteps     & participant     & 9       & 1,456                                                  & 367 observed participant-days     & 365                                                               \\
 Home   & CASAS          & home            & 4       & 1,624                                                  & 14 consecutive days/home          & 190                                                               \\
 Code   & GH Archive     & repository      & 4       & 1,459                                                  & longitudinal repository histories & 174                                                               \\\midrule
-Total  & three scopes   & isolated stream & 17      & 4,539                                                  & three longitudinal settings       & 729                                                               \\ \bottomrule
+total  & three scopes   & isolated stream & 17      & 4,539                                                  & three longitudinal settings       & 729                                                               \\ \bottomrule
 \end{tabular}
 }
 \end{table*}
@@ -19,8 +17,8 @@ Total  & three scopes   & isolated stream & 17      & 4,539                     
 \section{ProactiveStream benchmark}
 \label{sec:benchmark}
 
-ProactiveStream evaluates service-opportunity detection in longitudinal event streams, where agents assess incoming observations using their own accumulated history.
-Table~\ref{tab:benchmark_stats} summarizes its composition and provenance across Sports, Home, and Code.
+ProactiveStream evaluates service-opportunity detection in longitudinal streams as agents accumulate history.
+Table~\ref{tab:benchmark_stats} gives its composition.
 
 \subsection{Scopes and public events}
 
@@ -40,7 +38,7 @@ Appendix~\ref{app:benchmark_protocol} details source datasets, fields, and prepr
 \label{sec:reference_labels}
 
 Annotators assess $e_t$ and its complete prior same-stream history $\mathcal{H}_{<t}$.
-Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ reference-episode novelty:
+Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ reference-episode novelty shared across methods:
 \begin{equation}
 \begin{aligned}
 y_t=1 \quad \Longleftrightarrow \quad &
@@ -50,14 +48,11 @@ y_t=1 \quad \Longleftrightarrow \quad &
 \label{eq:or_semantics}
 \end{equation}
 The reference protocol labels the first reliable actionable window \emph{intervene} and covered windows \emph{abstain}, allowing renewed opportunities when support strengthens, the service changes, or an episode reopens.
-Reference novelty follows the reference opportunity sequence independently of model outputs and is shared across methods.
-The event-level labels therefore assess timely identification of service windows defined by the annotation protocol.
+Event-level labels assess timely detection of these service windows.
 
-LLM-assisted screening prioritizes candidate opportunities; three team members then independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
-For a separate-team review, a fixed SHA256 rule selects one stream and 150 contiguous targets per scope from public metadata, requiring at least seven days of prior history and retaining each complete causal prefix.
-Three reviewers label these 450 targets with model outputs hidden and form consensus references.
-Section~\ref{sec:reviewed_diagnostics} reports reference-sensitivity scoring of fixed diagnostic outputs.
-Main comparisons use protocol-fixed evaluation on the jointly developed benchmark, with labels, prompts, memory bounds, and validation settings frozen before the corresponding runs.
+LLM-assisted triage prioritizes candidate opportunities; three team members then independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
+Appendix~\ref{app:label_review_450} details a separate-team diagnostic of reference sensitivity and episode behavior.
+Main comparisons fix labels, prompts, memory bounds, and validation settings before evaluation.
 
 Each stream is replayed chronologically from empty method state, with access to the current event and strictly prior same-stream context.
 Each decision is finalized before the current event is committed to memory; reference labels are joined after inference for scoring.

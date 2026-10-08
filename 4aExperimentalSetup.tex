@@ -1,7 +1,43 @@
+% Declare the wide main-results table early so it can share a page with its discussion.
+\begin{table*}[t]
+\centering
+\caption{Full-scope comparison (GPT-5.6 Luna). Frequency is in multiples ($\times$); other metrics are percentages. Bold and underline mark the best and second-best scores per scope, including ties.}
+\label{tab:main_results}
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{@{}clcccccc@{}}
+\toprule
+scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & balance $\uparrow$ \\
+\midrule
+\multirow{6}{*}{Sports} & ProactiveAgent & 2.75 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
+  & ContextAgent & 2.16 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
+  & Mem0 & 3.40 & 28.8 & \textbf{97.8} & \underline{44.5} & 81.0 & 58.4 \\
+  & A-MEM & 2.41 & 30.6 & 74.0 & 43.3 & 56.0 & \underline{59.0} \\
+  & Graphiti & 2.20 & 29.3 & 64.4 & 40.3 & 52.0 & 56.2 \\
+  & \system{} & 2.15 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
+\midrule
+\multirow{6}{*}{Home} & ProactiveAgent & 0.78 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
+  & ContextAgent & 1.38 & \underline{35.9} & 49.5 & 41.6 & 11.7 & 68.9 \\
+  & Mem0 & 0.73 & 23.9 & 17.4 & 20.1 & \underline{7.3} & 55.0 \\
+  & A-MEM & 1.63 & 34.6 & \underline{56.3} & \underline{42.9} & 14.1 & \underline{71.1} \\
+  & Graphiti & 1.53 & 33.4 & 51.1 & 40.4 & 13.5 & 68.8 \\
+  & \system{} & 1.52 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
+\midrule
+\multirow{6}{*}{Code} & ProactiveAgent & 4.45 & 17.5 & \underline{78.2} & 28.7 & 49.7 & 64.2 \\
+  & ContextAgent & 2.68 & 22.5 & 60.3 & 32.8 & 28.2 & 66.1 \\
+  & Mem0 & 0.65 & \underline{39.8} & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
+  & A-MEM & 2.55 & 30.4 & 77.6 & \underline{43.7} & 24.0 & \underline{76.8} \\
+  & Graphiti & 2.36 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
+  & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \section{Experimental evaluation}
 \label{sec:experiments}
 
-We examine overall effectiveness (\textbf{RQ1}), memory organization (\textbf{RQ2}), and validation mechanisms (\textbf{RQ3}), with supplementary checks of reference sensitivity, episode behavior, and model choice.
+We examine overall effectiveness (\textbf{RQ1}), model choice (\textbf{RQ2}), and memory organization and validation (\textbf{RQ3}), with supplementary checks of reference sensitivity and episode behavior.
 
 \subsection{Experimental settings}
 \label{sec:experimental_settings}
@@ -19,27 +55,25 @@ We evaluate five external methods:
     \setlength{\parsep}{0pt}%
 }
     \item \textbf{ProactiveAgent} uses its released prompt and proposal-or-null output contract, with causal history of events and decisions capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
-    \item \textbf{ContextAgent} adapts in-context proactive-service judgment to public events~\citep{yang2025contextagent}.
-    \item \textbf{Mem0} extracts, consolidates, and retrieves same-entity memories~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
-    \item \textbf{A-MEM} constructs linked notes, updates associations, and retrieves relevant notes~\citep{xu2025amem}.
-    \item \textbf{Graphiti} stores event relations in a temporal graph and retrieves same-stream facts~\citep{zep2026graphiti}.
+    \item \textbf{ContextAgent} adapts proactive-service judgment to public events~\citep{yang2025contextagent}.
+    \item \textbf{Mem0} extracts and consolidates memory~\citep{chhikara2025mem0,mem0ai2026mem0v2012} for~same-entity~retrieval.
+    \item \textbf{A-MEM} updates linked notes and associations for relevant-note retrieval~\citep{xu2025amem}.
+    \item \textbf{Graphiti} stores temporal event relations and retrieves same-stream facts~\citep{zep2026graphiti}.
 \end{list}
 
 \paragraph{Metrics.}
-Scores use one post-controller decision per event; immediate and scheduled services count as \emph{intervene} at the decision event.
-We report \textbf{relevance} (precision) as the share of interventions matching reference opportunities; \textbf{coverage} (recall) is the share of opportunities recovered.
-Their harmonic mean, \textbf{effectiveness} (F1), balances relevant interventions against missed opportunities.
-Overall effectiveness pools event-level confusion counts across all streams and scopes.
-The \textbf{intrusion} score (false positive rate) is the share of reference negatives receiving interventions.
-The \textbf{balance} score (balanced accuracy) averages coverage and the share of reference negatives correctly left without intervention.
+Each event receives one post-controller decision; immediate and scheduled services count as \emph{intervene} at the decision event.
+We report \textbf{relevance} (precision), the share of interventions matching reference opportunities; \textbf{coverage} (recall), the share of opportunities recovered; and \textbf{effectiveness} (F1), their harmonic mean.
+Overall effectiveness pools confusion counts across all streams and scopes.
+The \textbf{intrusion} score (false positive rate) measures the share of reference negatives receiving interventions; \textbf{balance} (balanced accuracy) averages coverage and the correct-abstention rate on reference negatives.
 Higher relevance, coverage, effectiveness, and balance and lower intrusion are preferred.
 The \textbf{frequency} metric measures interventions per reference-positive event: $(\mathrm{TP}+\mathrm{FP})/(\mathrm{TP}+\mathrm{FN})$, with counts pooled across streams within each scope.
-A value of $1\times$ indicates equal counts; larger and smaller values indicate more and fewer interventions, respectively.
-This ratio describes relative intervention volume and is interpreted alongside relevance, coverage, and intrusion.
+Appendix~\ref{app:configuration} gives metric formulas and frequency interpretation.
 
 \paragraph{Implementation details.}
 The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking disabled; \system{} uses the official OpenAI API.
 Methods share task semantics and the intervention controller policy, with interface-specific prompts and budgets.
 The event-only, event and trajectory memory, and \system{} variants share their decision prompt, schema, and context bound of 72 hours and at most 100 events, including the current event.
 A-MEM and Graphiti augment that bound with their representations.
+For \system{}, memory preparation and current-condition matching precede semantic screening: accepted \texttt{skip} results yield \emph{abstain}, while \texttt{escalate} results proceed to full contextual assessment followed by intervention control.
 Appendix~\ref{app:configuration} lists detailed configurations.

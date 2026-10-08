@@ -2,13 +2,13 @@
 \label{sec:framework}
 
 \system{} uses three complementary memory layers (Figure~\ref{fig:architecture}): event memory for recent public events, temporal trajectory memory for source-checked activity summaries, and behavioral regularity memory for replay-assessed conditional regularities.
-Construction checks source fidelity and historical support, retrieval selects currently applicable regularities, and the decision LLM assesses present service value.
+Construction checks source fidelity and historical support.
+The decision stage prepares memory and matches current conditions before semantic screening; contextual assessment combines current and historical evidence.
 
 \begin{figure*}[t]
     \centering
-    % \resizebox{\textwidth}{!}{}
-    \input{Fig1_EPM_Architecture_body}
-    \caption{\system{} architecture. (A) Completed history supplies bounded events; construction LLMs produce source-checked temporal trajectories and replay-assessed behavioral regularities. (B) The current event guides retrieval of up to three applicable regularities. Context $C_t$ combines these regularities with recent events, temporal trajectories, the current event, and episode state $Q_t$. The decision LLM proposes assistance, intervention control filters repetition, and dashed feedback commits the event after finalization. Insets trace the walking example of Figure~\ref{fig:intro_scenario}; values are illustrative.}
+    \makebox[\textwidth][c]{\resizebox{0.98\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}}
+    \caption{\system{} architecture. (A) Source validation and replay build hierarchical memory. (B) Memory preparation and matching precede screening, which routes events to abstention or contextual assessment with intervention control. Both routes commit the event after finalization (dashed arrows).}
     \label{fig:architecture}
 \end{figure*}
 
@@ -26,7 +26,7 @@ S_t=\operatorname{Tail}_{K-1}
 \end{equation}
 Here $\operatorname{Tail}_{K-1}$ selects the most recent $K-1$ events in the filtered sequence.
 We use $\Delta=72$ hours and $K=100$: at most 99 prior events accompany the separately supplied current event.
-An independent daily buffer retains all committed events of the open local day, preserving complete input for trajectory construction.
+A separate buffer retains all committed events from the open local day for trajectory construction.
 
 \paragraph{fact-validated temporal trajectory memory.}
 To retain activity context beyond the recent window while keeping abstractions traceable, we construct temporal trajectories with source-level fact validation.
@@ -59,14 +59,13 @@ Let $n_f$ count fulfilled (supporting) days and $n_v$ count violated days:
 \label{eq:replay_gate}
 \end{equation}
 The base rate is the frequency of $p$ over observable days under the same time-window and weekday restrictions across both triggered and other observable days.
-Zero denominators yield zero confidence or lift, respectively.
+A zero denominator gives a zero score.
 
 A well-formed proposal becomes \emph{active} when $n_f\geq3$, confidence $\geq0.5$, and lift $\geq1.0$; otherwise it remains a decision-invisible \emph{candidate}.
 Malformed proposals are rejected.
 Consolidation resets the online trajectory view, retaining records for audit.
 Later observations update regularity confidence and lifecycle: repeated violations can lower retrieval priority or suspend eligibility.
 Appendix~\ref{app:lifecycle} specifies these transitions.
-Historical support characterizes observed recurrence; future applicability and present service value require separate assessment.
 
 \subsection{Memory retrieval and selection}
 
@@ -86,20 +85,40 @@ R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
 \label{eq:long_term_retrieval}
 \end{equation}
 The top-three selection ranks eligible regularities by occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
-All matching uses causally available observations to assess present applicability.
+Retrieval precedes screening and supplies applicable regularities and occurrence states.
 
 \subsection{Proactive decision}
 \label{sec:decision_control}
 
-Timely assistance requires judging current needs alongside historical context~\citep{yang2025contextagent}, so our decision stage assesses service value and tracks prior coverage of the opportunity.
-The decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
+Timely assistance requires combining current needs with historical context~\citep{yang2025contextagent}.
+The decision stage screens observations, assesses service value, and tracks prior opportunity coverage.
+
+\paragraph{Semantic screening.}
+\label{sec:semantic_screening}
+Screening uses prepared memory and current-condition matches to assess relevance and event-local abstention evidence.
+Let $\mathcal{M}_t^{(k)}$ contain prior same-entity event records, validated trajectory segments, and active or weakening regularities for $k=1,2,3$, respectively.
+For a nonempty layer, semantic encoder $\phi$ gives the maximum cosine similarity:
+\begin{equation}
+\rho_t^{(k)}=\max_{m\in\mathcal{M}_t^{(k)}}
+\cos\!\left(\phi(e_t),\phi(m)\right).
+\label{eq:semantic_screening}
+\end{equation}
+Each layer has a relevance threshold $\lambda_k$.
+Pending services, timer observations, and matched upcoming or unresolved regularity occurrences take the \emph{escalate} route, as do incomplete memory and any $\rho_t^{(k)}\geq\lambda_k$.
+When all three populated layers satisfy $\rho_t^{(k)}<\lambda_k$, a single-event LLM assesses the public current event.
+A valid \emph{skip} requires explicit abstention evidence quoted from the event and reported confidence at least $\eta$.
+All other outcomes, including new needs, risks, ambiguity, and history-dependent judgments, escalate.
+An accepted skip yields \emph{abstain}; escalated events receive contextual assessment.
+Appendix~\ref{app:semantic_screening} specifies the screening contract and execution settings.
+
+\paragraph{Contextual assessment and intervention control.}
+For escalated events, the decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
 \begin{equation}
 C_t=(e_t,S_t,W_t,R_t,Q_t),
 \label{eq:decision_context}
 \end{equation}
 where $Q_t$ describes the service opportunity's observable state; the controller separately records previously allowed interventions to track service coverage.
 The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} historical context supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
-The LLM combines matched regularities with current context and can select either intervention or abstention.
 
 Within each scope, all methods apply the same intervention controller policy to their own context and intervention history.
 The controller compares proposed services with previously allowed interventions and converts duplicates to \emph{abstain}.
@@ -107,6 +126,7 @@ Scope-specific changes in opportunity state, service identity, contextual regula
 The controller finalizes the proposal as $(\hat y_t,\hat m_t)$, the output defined in Section~\ref{sec:problem}.
 Appendix~\ref{app:intervention_control} specifies matching fields, phase transitions, and re-entry rules.
 
-Inference prepares prior memory, stages $e_t$, selects relevant context, obtains and finalizes the decision, and then commits $e_t$.
+Inference stages $e_t$, retrieves prior memory and matches current conditions, screens the event, assembles full context for escalated events, finalizes the output, and commits $e_t$.
+Both routes retain the complete public event in the event buffer and open-day buffer, advancing trajectory construction, regularity replay, and lifecycle updates.
 Maintenance incorporating $e_t$ can affect only later decisions.
-Reference labels remain evaluator-private throughout construction and retrieval.
+Reference labels remain private during construction and retrieval.

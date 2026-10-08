@@ -1,37 +1,37 @@
 \section{Introduction}
 \label{sec:introduction}
 
-\begin{figure}[t]
+LLM agents are extending task execution toward proactive assistance that identifies service opportunities from ongoing observations and accumulated history.
+In activity support, smart homes, and software collaboration, useful assistance depends on recognizing new needs, selecting relevant historical evidence, and tracking prior assistance.
+
+Existing work develops proactive decisions and agent memory.
+ProactiveAgent learns task proposals from activity contexts~\citep{lu2025proactiveagent}; ContextAgent combines sensed context with historical personas~\citep{yang2025contextagent}.
+Mem0 consolidates and retrieves information~\citep{chhikara2025mem0}, while A-MEM links historical notes~\citep{xu2025amem}.
+ProactiveBench and ContextAgentBench evaluate task proposals and contextual service; LoCoMo and LongMemEval assess long-term conversational memory~\citep{maharana2024locomo,wu2025longmemeval}.
+Continuous assistance also requires assessing memory accumulation, current applicability, and changing opportunities within one event stream.
+This raises a central question: \emph{how can history become source-grounded, historically supported, and currently applicable memory for timely, selective assistance?}
+
+To study this question, we construct \emph{ProactiveStream}, a longitudinal event-stream benchmark spanning Sports, Home, and Code.
+Agents build memory chronologically within isolated participant, home, and repository streams, assessing each opportunity's first actionable window and subsequent changes.
+With a shared backbone and intervention control policy, existing methods show different trade-offs between opportunity recovery and false interventions (Table~\ref{tab:main_results}).
+Figure~\ref{fig:intro_scenario} links earlier evening walks to current assistance.
+
+\begin{figure}[!b]
     \centering
-    \includegraphics[width=\columnwidth]{Fig_Intro_Scenario.pdf}
-    \caption{Illustrative Sports scenario. A conventional proactive agent sees only recent events and abstains. With \system{}, the current event $e_t$ is matched against hierarchical memory built from earlier days, retrieving a replay-supported behavioral regularity over source-checked temporal trajectories that applies now and supports a timely suggestion.}
+    \includegraphics[width=0.96\columnwidth]{Fig_Intro_Scenario.pdf}
+    \caption{Illustrative Sports scenario. \system{} retrieves a supported evening-walk regularity to guide assistance beyond recent events.}
     \label{fig:intro_scenario}
 \end{figure}
 
-LLM agents are evolving from executing user-specified tasks toward proactive assistance that identifies service opportunities from ongoing observations and historical experience before an explicit request.
+We propose Proactive Memory (\system{}; Figure~\ref{fig:architecture}), linking recent observations, temporal activities, and recurring behavior.
+Event memory preserves recent evidence; temporal trajectory memory abstracts source-grounded activities; behavioral regularity memory captures supported conditional behavior.
+Together, these layers connect immediate changes with long-term context.
 
-Existing work advances this goal through proactive decision-making and memory organization.
-ProactiveAgent learns proactive task proposals from activity contexts~\citep{lu2025proactiveagent}, while ContextAgent combines sensed context with historical personas to assess service needs~\citep{yang2025contextagent}.
-Mem0 extracts, consolidates, and retrieves important information~\citep{chhikara2025mem0}; A-MEM organizes historical knowledge through dynamically linked notes~\citep{xu2025amem}.
-For evaluation, ProactiveBench and ContextAgentBench focus on proactive task proposals and context-aware service, respectively, while LoCoMo and LongMemEval study memory and reasoning over long-term conversations~\citep{maharana2024locomo,wu2025longmemeval}.
-Continuous proactive assistance calls for joint evaluation of memory accumulation, present applicability, and changes in service-opportunity state within the same event stream.
-This raises a central question: \emph{how can accumulated history be organized into source-grounded, recurrently supported, and currently applicable memory to support timely and selective proactive assistance?}
-
-To study this question, we construct \emph{ProactiveStream}, a longitudinal event-stream benchmark spanning Sports, Home, and Code.
-The benchmark preserves chronological order and isolated histories for each participant, home, and repository.
-Agents build their own memory as events arrive and make sequential decisions around the first actionable window of a service opportunity and its subsequent state changes.
-Under a shared backbone and intervention control policy, existing proactive-service and memory-enhanced methods exhibit different trade-offs between opportunity recovery and false-intervention control (Table~\ref{tab:main_results}), highlighting the need to connect historical information with current service judgments.
-Figure~\ref{fig:intro_scenario} illustrates how earlier evening walks can complement the current event in assessing a service opportunity.
-
-To establish this connection, we propose Proactive Memory (\system{}; Figure~\ref{fig:architecture}), a hierarchical memory framework linking recent observations, temporal activities, and recurring behavior.
-Event memory preserves fine-grained recent evidence, temporal trajectory memory organizes historical events into source-grounded activity representations, and behavioral regularity memory captures historically supported conditional behavior.
-These complementary representations connect immediate changes with long-term behavioral context, allowing proactive service decisions to draw on evidence at different temporal scales.
-
-During memory construction, LLMs organize completed historical events into temporal trajectories with source citations, and a validator checks the extracted typed facts against their source events.
-Conditional behavioral regularities are then inferred from these trajectories and assessed for recurring support through historical replay.
-At decision time, the current event guides matching and retrieval of applicable regularities, and the decision LLM combines recent events, temporal trajectories, and retrieved regularities to assess present service value.
-Intervention control tracks previously covered service opportunities and filters repeated proposals.
-The current event is committed to memory after the decision is finalized, providing context for subsequent events.
+LLMs construct cited trajectories from completed events, followed by source validation of typed facts.
+Historical replay assesses regularities inferred from these trajectories.
+At decision time, semantic screening uses memory relevance and event-local abstention evidence to route the event.
+Full assessment combines recent events, trajectories, and applicable regularities to judge service value.
+Intervention control filters repeated proposals; the finalized decision precedes event commitment and memory updates.
 
 Our contributions are:
 \begin{itemize}[leftmargin=*, itemsep=0pt]

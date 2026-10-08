@@ -19,6 +19,9 @@
 \pgfplotsset{compat=1.18}
 \usepgfplotslibrary{groupplots}
 \usetikzlibrary{arrows.meta,calc,positioning}
+% Permit three wide experimental floats to avoid an empty column at the section barrier.
+\setcounter{dbltopnumber}{3}
+\renewcommand{\dbltopfraction}{0.85}
 
 \newcommand{\system}{ProactMem}
 \title{Proactive Memory for Event-Driven LLM Agents}
@@ -44,6 +47,7 @@ On ProactiveStream, \system{} achieves an overall effectiveness (F1) of 52.6\%, 
 \input{4BenchmarkConstruction}
 \input{4aExperimentalSetup}
 \input{4bResultsAndAnalysis}
+\FloatBarrier
 \input{5RelatedWork}
 \FloatBarrier
 \input{7Conclusion}

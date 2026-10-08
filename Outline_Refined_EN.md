@@ -130,8 +130,8 @@
 ## 5. Experimental evaluation
 
 - **RQ1:** How does ProactMem compare with external methods on event-level opportunity detection?
-- **RQ2:** How do temporal trajectories and behavioral regularities contribute within the memory hierarchy?
-- **RQ3:** How do trajectory fact validation and replay gating affect decision quality?
+- **RQ2:** How does model choice affect proactive decision quality within and across model families?
+- **RQ3:** How do memory organization, trajectory fact validation, and replay gating affect decision quality?
 
 ### 5.1 Experimental settings
 
@@ -160,6 +160,7 @@
 - Methods share task semantics, scope-specific references, and the intervention controller policy, with method-specific prompts, retrieval interfaces, and computational budgets.
 - event-only, event and trajectory memory, and ProactMem share the decision prompt, output schema, and context bound of 72 hours and at most 100 events.
 - A-MEM and Graphiti augment the bounded event context with their memory representations.
+- ProactMem first applies semantic screening to each current event: accepted `skip` results yield `abstain`, while `escalate` results proceed to full contextual assessment followed by intervention control.
 - Decision and memory-construction calls have separate roles and output budgets.
 
 ### 5.2 Main results
@@ -169,28 +170,36 @@
 1. **Comparisons with external methods.**
    - ProactMem achieves higher effectiveness and balance than all evaluated external methods in every scope.
 
-2. **Reference sensitivity**
-   - A separate three-reviewer team reviews 450 targets: 150 consecutive events from one stream per scope, selected by a fixed SHA256 rule using public metadata.
-   - Each target segment has at least seven days of preceding history, and its complete causal prefix is processed.
-   - Reviewers independently label the targets with evaluated-system outputs hidden and discuss judgments to form consensus references.
-   - Fixed outputs from separate diagnostic runs are scored against earlier and reviewed references for these targets.
-   - Rescoring against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references.
-   - The analysis characterizes label sensitivity within the selected streams.
+2. **Supplementary diagnostics**
+   - Reference-sensitivity and episode-level analyses examine label variation, opportunity coverage, and repeated interventions on a separate 450-target sample; detailed results appear in Appendix D.
 
-3. **Episode-level behavior**
-   - A post-hoc, model-assisted diagnostic on the same targets reconstructs goal-and-object episodes from positive event anchors.
-   - Episode coverage is highest on Home and lowest on Code; the share of redundant interventions is highest on Home and lowest on Sports.
-   - These exploratory results characterize coverage and repetition under the constructed episode references and semantic matching rules.
+### 5.3 Model comparison
 
-### 5.3 Ablation study and memory analysis
+1. **Within-series model scaling**
+   - Construction and decision LLMs change together across GPT-5.6 Luna, GPT-5.6 Terra, and GPT-5.6 Sol, with the benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy fixed.
+   - The comparison shows that effectiveness increases and intrusion decreases from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol in every scope.
+   - These gains are consistent with stronger abilities to extract task-relevant details, induce conditional behavioral regularities, and perform compositional reasoning over temporal evidence, supporting more accurate memory construction and more selective intervention.
+   - The hierarchical memory architecture engages these abilities in both historical representation and current decision-making.
+   - Controlled component ablations use GPT-5.6 Luna.
+
+2. **Cross-family event-only comparison**
+   - Compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash on two selected complete event streams per scope under shared task instructions, bounded event context, and intervention control policy.
+   - The figure caption marks selected streams; Appendix B provides stream identities, event counts, the selection rule, and shared settings.
+   - Main-text radar panels report relevance, coverage, effectiveness, specificity, and balance for each scope.
+   - On Sports, Gemini and Luna share the highest coverage; Gemini leads the remaining metrics.
+   - On Home and Code, Gemini leads in effectiveness, while Luna recovers more opportunities and achieves higher balance.
+   - DeepSeek and GLM have higher specificity and lower coverage than Luna in Home and Code.
+   - The scope-specific profiles reveal different trade-offs between opportunity recovery and correct silence.
+
+### 5.4 Ablation study and memory analysis
 
 1. **Proactive agent ablation**
-   - event-only supplies current and bounded recent events.
-   - the event and trajectory memory variant adds source-checked temporal trajectories.
-   - ProactMem further adds behavioral regularities.
-   - The comparison measures memory-layer contributions within the implemented pipeline, including representation-dependent controller keys.
-   - temporal trajectories recover additional opportunities, with the largest increase on Code.
-   - behavioral regularities further improve effectiveness in every scope, recovering more opportunities with fewer false interventions.
+   - event-only supplies current and bounded recent events; the event and trajectory memory variant adds source-checked temporal trajectories; ProactMem further adds behavioral regularities.
+   - The main-text memory-hierarchy figure compares variants sharing Luna, decision prompt, schema, event bound, and controller policy.
+   - Representation-dependent controller keys make this a memory-layer comparison within the implemented pipeline.
+   - Temporal trajectories recover more opportunities, most on Code, with unchanged false-positive counts on Sports and Home and more false positives on Code.
+   - Behavioral regularities further improve effectiveness in every scope, recovering more opportunities with fewer false interventions.
+   - Trajectory abstraction expands context; supported, currently applicable regularities improve selectivity.
 
 2. **Validation mechanisms**
    - **w/o replay gate:** bypasses activation thresholds for well-formed, source-linked, online-reconstructable candidates while retaining current-applicability matching.
@@ -203,14 +212,6 @@
    - The Code diagnostic scores recorded proposals before suppression while holding subsequent states and decisions fixed.
    - Suppression removes more false-positive than true-positive proposals.
    - Suppression yields higher relevance and effectiveness alongside lower coverage.
-
-### 5.4 Model scaling
-
-- Construction and decision LLMs change together across GPT-5.6 Luna, GPT-5.6 Terra, and GPT-5.6 Sol, with the benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy fixed.
-- The comparison shows that effectiveness increases and intrusion decreases from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol in every scope.
-- These gains are consistent with stronger abilities to extract task-relevant details, induce conditional behavioral regularities, and perform compositional reasoning over temporal evidence, supporting more accurate memory construction and more selective intervention.
-- The hierarchical memory architecture engages these abilities in both historical representation and current decision-making.
-- Controlled component ablations use GPT-5.6 Luna.
 
 ---
 
@@ -274,6 +275,8 @@
 - Regularity lifecycle transitions, current matching, and top-three selection.
 - Intervention control: scope-specific opportunity identity, duplicate suppression, and re-entry conditions.
 - External-method interfaces, model settings, role-specific budgets, and metric definitions.
+- Cross-family event-only selection: two complete streams per scope, ranked by SHA256 of the fixed seed, domain, and public stream identifier. Sports uses HeartSteps participants 05 and 35 (184 and 191 events); Home uses CASAS homes 0004 and 0003 (406 events each); Code uses Unitech/pm2 and thephpleague/commonmark (365 and 347 events).
+- Shared cross-family settings: chronological replay from empty state, scope-specific task prompts, the intersection of a 72-hour window and at most 100 events including the current event, intervention control, temperature zero, requested disabled thinking, and output limits of 256 tokens for Sports and Home and 512 for Code.
 
 ### C. Additional ablation and intervention control results
 
@@ -282,6 +285,12 @@
 
 ### D. Reference and episode diagnostics
 
-- Sample selection, causal prefixes, local reference versions, and reference-sensitivity scoring.
+- A separate three-reviewer team reviews 450 targets: 150 consecutive events from one stream per scope, selected by a fixed SHA256 rule using public metadata.
+- Each target segment has at least seven days of preceding history, and its complete causal prefix is processed.
+- Reviewers independently label the targets with evaluated-system outputs hidden and discuss judgments to form consensus references.
+- Fixed outputs from separate diagnostic runs are scored against earlier and reviewed references for these targets.
+- Rescoring against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references.
+- A post-hoc, model-assisted diagnostic on the same targets reconstructs goal-and-object episodes from positive event anchors.
+- Episode coverage is highest on Home and lowest on Code; the share of redundant interventions is highest on Home and lowest on Sports.
 - Episode construction, matching order, follow-up classification, and intended service-time assessment.
 - Episode coverage, supported relevance, redundant intervention rate, and counts of unmatched, late, and unresolved outputs.

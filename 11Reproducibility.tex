@@ -6,7 +6,7 @@
 \paragraph{Sports.}
 HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps} supply 1,456 meta-events from nine complete participant streams over 367 observed participant-days.
 Public fields include decision-time availability, recognized activity, recent steps, location category, weather, and local decision slot.
-Randomized treatment assignments and future behavioral outcomes are excluded; services concern optional activity support.
+Services concern optional activity support; inputs exclude randomized treatments and future outcomes.
 
 \paragraph{Home.}
 CASAS ambient-sensor traces~\citep{cook2013casas} supply four homes with 14 consecutive days each.
@@ -19,7 +19,7 @@ Public repository activity, including GH Archive records~\citep{gharchive}, supp
 Pushes, issue updates, pull-request actions, and reviews retain GitHub's native event granularity, with one decision per event.
 Records are ordered by timestamp and then event ID.
 Each repository owns isolated memory and intervention state even when contributors overlap.
-Services concern low-risk triage, review, and maintenance; a native \texttt{PushEvent} is an observation, not an agent intervention.
+Services cover low-risk triage, review, and maintenance; native \texttt{PushEvent} records enter the stream.
 
 \paragraph{Public-input contract.}
 Both label classes share the same scope-specific schema: event and stream identifiers, timestamps, and contemporaneously observable fields.
@@ -30,15 +30,14 @@ Evaluation includes early events before temporal trajectories or behavioral regu
 \label{app:reference_protocol}
 
 Annotators apply the opportunity and novelty semantics in Section~\ref{sec:reference_labels} to each current event and its complete prior same-stream history, independently of a tested method's memory.
-LLM-assisted screening prioritizes the review queue; three team members independently assign labels while blinded to evaluated-system decisions, followed by cross-review and adjudication of every public event.
+LLM-assisted triage prioritizes the review queue; three team members independently assign labels while blinded to evaluated-system decisions, followed by cross-review and adjudication of every public event.
 
 The Home aggregation rule precedes event construction.
-Each evaluation version records the event inventory, labels, intervention prompt, event memory bound, and validation settings; these are frozen before the corresponding main runs.
-Evaluation follows a fixed protocol on the jointly developed benchmark.
+Each evaluation version fixes the event inventory, labels, intervention prompt, event memory bound, and validation settings before main runs on the jointly developed benchmark.
 
 Every stream starts from empty method state and is replayed chronologically under the causal execution order in Section~\ref{sec:decision_control}.
 Current events are committed only after the output is finalized; maintenance incorporating an event affects later decisions.
-Labels are joined offline, and reference episode states and scoring metadata remain organizer-private.
+Labels are joined offline; reference episode states and scoring metadata stay private.
 
 \section{Implementation and experimental configuration}
 \label{app:implementation}
@@ -51,21 +50,18 @@ The checks in Equation~\ref{eq:daily_validation} canonicalize scalar values, acc
 Validation and replay operate on typed evidence.
 Accepted trajectories remain in the current construction cycle after their events leave event memory.
 
-A cycle contains seven completed daily records, each assigned to one cycle, and may span more than seven calendar days.
-Empty or unobservable records also advance the cycle.
-Consolidation resets the online trajectory view while preserving records for audit.
+Empty or unobservable records also advance the seven-record construction cycle.
 Replay follows Equation~\ref{eq:replay_gate}: a triggered, observable day is fulfilled when the expected behavior occurs at or after the trigger within the window; otherwise it is violated.
 Missing observations are censored, each date counts at most once, and the base rate includes triggered and other observable days under the same time and weekday restrictions.
-Confidence is zero with no eligible days; lift is zero with zero base rate.
+Confidence and lift have zero-denominator scores of zero.
 
 \subsection{Lifecycle and current matching}
 \label{app:lifecycle}
 
-Lifecycle eligibility is separate from occurrence state and service-episode state.
-After admission, confidence combines replay counts and subsequent outcomes in a support ratio smoothed with one initial success and one initial failure; censored observations preserve both counts.
-Two consecutive violations move an active regularity to \emph{weakening} with lower retrieval priority; four consecutive violations move it to \emph{dormant}.
-A fulfilled observation restores a weakening regularity to active when confidence is at least $0.5$.
-Dormant regularities must return to the candidate state and pass replay readmission.
+Post-admission confidence combines replay and online counts in a support ratio smoothed with one initial success and failure; censored observations preserve both counts.
+Two consecutive violations move an active regularity to \emph{weakening}, lowering retrieval priority; four move it to \emph{dormant}.
+A fulfilled observation restores a weakening regularity to active at confidence $\geq0.5$.
+Dormant regularities return to candidate for replay readmission.
 
 \paragraph{Current matching.}
 \label{app:matching}
@@ -80,7 +76,7 @@ In Sports and Home, the intervention key combines scope-specific episode state, 
 Plain summaries or graph facts supply an empty regularity-identifier list.
 Sports state includes availability and activity; Home state includes activity and room and onset, confirmed, and sustained phases at one, two, and three or more consecutive matching observations.
 Without an explicit episode key, scope-specific time or target fields identify the opportunity, with unchanged evidence additionally required for duplicate suppression.
-State changes, sequence restarts, service or regularity identifier changes, and local-day transitions can yield new keys.
+State changes, sequence restarts, changed service or regularity identifiers, and local-day transitions can generate new keys.
 
 Code uses repository-object identity and the most recent allowed intervention's mode, recipient, content, and firing condition.
 An exact match converts a repeated \texttt{create} proposal to \emph{abstain}; changed signatures and other episode operations pass this check.
@@ -92,7 +88,7 @@ Representation-dependent key evidence can yield different suppression decisions 
 Decision and memory-construction calls use the model, API, and decoding settings in Section~\ref{sec:experimental_settings}, with separate output budgets.
 Decision limits are interface-specific (256 or 512 tokens); construction limits are configured by call role.
 Table~\ref{tab:baseline_interfaces} consolidates the external-method interfaces.
-Methods retain their own prompts, retrieval, and computational budgets.
+Each method retains its prompts, retrieval, and budgets.
 
 \begin{table*}[t]
 \centering
@@ -105,29 +101,90 @@ Methods retain their own prompts, retrieval, and computational budgets.
 \toprule
 method & interface and settings \\
 \midrule
-ProactiveAgent & Released evaluation prompt and proposal/null contract, adapted to the study backbone; causal event--decision history capped at 1,000 events including the current event per request~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}. \\
+ProactiveAgent & Released prompt and proposal/null contract on the study backbone; causal event--decision history capped at 1,000 events per request including the current event~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}. \\
 \addlinespace[3pt]
-ContextAgent & In-context proactive-service formulation adapted to public event representations and the study backbone~\citep{yang2025contextagent}. \\
+ContextAgent & In-context proactive-service judgment on public events~\citep{yang2025contextagent}. \\
 \addlinespace[3pt]
 Mem0 & Open-source \texttt{mem0ai==2.0.12} extraction, consolidation, and retrieval; local \texttt{all-MiniLM-L6-v2} embeddings; top-8 same-entity retrieval with search threshold $0.1$~\citep{chhikara2025mem0,mem0ai2026mem0v2012}. \\
 \addlinespace[3pt]
-A-MEM & Linked notes with association updates; retrieved notes augment the bounded event context~\citep{xu2025amem}. \\
+A-MEM & Linked notes with association updates augment bounded context~\citep{xu2025amem}. \\
 \addlinespace[3pt]
-Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings; committed events enter a stream-isolated graph. The current event queries native hybrid edge search with reciprocal-rank fusion, returning at most ten relation facts with validity fields and source-record identifiers~\citep{zep2026graphiti}. \\
+Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings; committed events populate stream-isolated graphs. Current-event queries use native hybrid edge search with reciprocal-rank fusion, retrieving up to ten relation facts with validity fields and source IDs~\citep{zep2026graphiti}. \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 Graphiti supplies relation facts directly, using the task policy and output contract with memory-specific guidance; its ingestion episodes correspond to source records.
-The cross-family event-only comparison uses backend-specific output-format and recovery settings.
 
 \paragraph{Scoring.}
 Using final-decision confusion counts, relevance is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, coverage is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, effectiveness is $2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$, intrusion is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, and balance is $\tfrac{1}{2}[\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})+\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})]$.
+For frequency, $1\times$ indicates equal counts of interventions and reference-positive events; larger and smaller values indicate more and fewer interventions, respectively.
+Frequency is interpreted jointly with relevance, coverage, and intrusion.
+
+\subsection{Semantic screening contract}
+\label{app:semantic_screening}
+
+\paragraph{Causal inputs.}
+Before screening, retrieval prepares strictly prior same-stream records and completed-day trajectories; current-condition matching supplies applicable regularities and occurrence states.
+Trajectory segments are embedded individually; regularity inputs retain trigger conditions, expected behavior, time windows, and weekday restrictions.
+Embedding text preserves task-bearing public fields after removing artifact identifiers, bookkeeping counters, and private annotations.
+Normalized embeddings are cached.
+Configuration specifies the embedding and screening models, layer thresholds $\lambda_k$, and confidence threshold $\eta$; the implementation initializes $\eta$ to $0.95$.
+
+\paragraph{Single-event assessment.}
+The screener assesses the complete public current event under a fixed instruction and returns \texttt{route}, \texttt{confidence}, \texttt{evidence}, \texttt{has\_new\_need\_or\_risk}, and \texttt{needs\_history}.
+Skip validation requires a valid schema, both flags set to false, and an exact nonempty event quotation.
+Across scopes, an explicitly resolved fix, completed walk with comfortable rest, or received delivery supplies a screening candidate.
+New failures, seated activity, and quiet sensor intervals require full assessment.
+
+\paragraph{Execution and measurement.}
+Unavailable or invalid inputs, uncertain timing, malformed assessments, and recoverable failures escalate; authorization and access failures halt processing.
+The runtime supports full-decision, shadow, and screening configurations.
+Shadow records proposed routes and retains full assessment; screening applies accepted skips before full-context prompt assembly.
+Versioned routing records identify the entity, stream, event, configuration, layer scores, confidence, and route.
+Screening evaluation requires threshold selection on independent development streams and fresh causal replay.
+Its measurements include screening rate, positive-event retention, and the metrics in Section~\ref{sec:experimental_settings}, with intervention control updated from each finalized output.
+
+\subsection{Cross-family event-only configuration}
+\label{app:cross_family_streams}
+
+Table~\ref{tab:cross_family_streams} lists the two complete streams selected within each scope.
+Streams are ranked by SHA256 of \texttt{seed|domain|public\_stream\_id}, using the fixed seed \texttt{proactivestream-event-only-}\allowbreak\texttt{nine-streams-20260925-v1}; the two lowest hashes in each scope determine selection.
+The selection uses public stream identifiers.
+
+\begin{table}[t]
+\centering
+\caption{Selected complete streams for the cross-family event-only comparison.}
+\label{tab:cross_family_streams}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llr@{}}
+\toprule
+scope & source stream & events \\
+\midrule
+Sports & HeartSteps participant 05 & 184 \\
+ & HeartSteps participant 35 & 191 \\
+Home & CASAS home 0004 & 406 \\
+ & CASAS home 0003 & 406 \\
+Code & \texttt{Unitech/pm2} & 365 \\
+ & \texttt{thephpleague/commonmark} & 347 \\
+\midrule
+total & six complete streams & 1,899 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Each stream is replayed chronologically from empty state.
+Models share the scope-specific task prompt, intervention control policy, and a causal context containing the current event and up to 99 prior same-stream events within 72 hours.
+Requests use temperature zero and request disabled thinking, with decision output limits of 256 tokens for Sports and Home and 512 for Code.
+Output-format and transport-recovery settings follow each backend's interface.
+Final decisions are scored offline against the common reference labels.
 
 \FloatBarrier
 \section{Additional ablation and intervention control results}
 \label{app:extended_ablations}
 
+\looseness=-1
 Table~\ref{tab:validation_ablations_full} supplements the relevance and effectiveness scores in Table~\ref{tab:validation_ablations} with frequency and coverage.
 On Code, suppression removes 66 false-positive and 17 true-positive proposals; coverage falls from 99.4\% to 89.7\%.
 The diagnostic scores recorded proposals while holding later states fixed.
@@ -135,7 +192,7 @@ For the variants in Figure~\ref{fig:memory_hierarchy}, temporal trajectories yie
 
 \begin{table}[t]
 \centering
-\caption{Additional evidence-check ablation and Code intervention control metrics. The frequency metric is reported in multiples ($\times$) and coverage in percentages. Bold and underlined values indicate the best and second-best coverage per scope, including ties. Scores for relevance and effectiveness appear in Table~\ref{tab:validation_ablations}.}
+\caption{Additional validation and Code intervention control scores. Frequency uses multiples ($\times$); coverage uses percentages. Bold and underline mark the best and second-best coverage per scope, including ties.}
 \label{tab:validation_ablations_full}
 \small
 \setlength{\tabcolsep}{2.8pt}

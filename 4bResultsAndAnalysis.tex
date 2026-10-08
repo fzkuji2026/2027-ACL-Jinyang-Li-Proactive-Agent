@@ -1,135 +1,7 @@
-\subsection{Main results (RQ1)}
-\label{sec:main_results}
-
-We compare proactive-service and memory-based agents on ProactiveStream using the same Luna backbone and intervention controller policy.
-
-\paragraph{Comparisons with external methods.}
-\system{} achieves higher effectiveness and balance than all evaluated external methods in every scope (Table~\ref{tab:main_results}, RQ1).
-
+% Declare experimental floats early so each wide result stays near its discussion.
 \begin{table*}[t]
 \centering
-\caption{Full-scope results (Luna). The frequency metric is reported in multiples ($\times$); all other scores are percentages. Metric definitions are relevance: share of interventions matching opportunities; coverage: share of opportunities recovered; effectiveness: harmonic mean of relevance and coverage (F1); intrusion: share of reference negatives receiving interventions; balance: average of coverage and correct-silence rate. Bold and underlined values indicate the best and second-best directional scores per scope, including ties.}
-\label{tab:main_results}
-\small
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.06}
-\begin{tabular}{@{}clcccccc@{}}
-\toprule
-scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & balance $\uparrow$ \\
-\midrule
-\multirow{6}{*}{Sports} & ProactiveAgent & 2.75 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
-  & ContextAgent & 2.16 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
-  & Mem0 & 3.40 & 28.8 & \textbf{97.8} & \underline{44.5} & 81.0 & 58.4 \\
-  & A-MEM & 2.41 & 30.6 & 74.0 & 43.3 & 56.0 & \underline{59.0} \\
-  & Graphiti & 2.20 & 29.3 & 64.4 & 40.3 & 52.0 & 56.2 \\
-  & \system{} & 2.15 & \textbf{35.8} & 76.7 & \textbf{48.8} & \textbf{46.1} & \textbf{65.3} \\
-\midrule
-\multirow{6}{*}{Home} & ProactiveAgent & 0.78 & 34.2 & 26.8 & 30.1 & \textbf{6.8} & 60.0 \\
-  & ContextAgent & 1.38 & \underline{35.9} & 49.5 & 41.6 & 11.7 & 68.9 \\
-  & Mem0 & 0.73 & 23.9 & 17.4 & 20.1 & \underline{7.3} & 55.0 \\
-  & A-MEM & 1.63 & 34.6 & \underline{56.3} & \underline{42.9} & 14.1 & \underline{71.1} \\
-  & Graphiti & 1.53 & 33.4 & 51.1 & 40.4 & 13.5 & 68.8 \\
-  & \system{} & 1.52 & \textbf{48.6} & \textbf{73.7} & \textbf{58.6} & 10.3 & \textbf{81.7} \\
-\midrule
-\multirow{6}{*}{Code} & ProactiveAgent & 4.45 & 17.5 & \underline{78.2} & 28.7 & 49.7 & 64.2 \\
-  & ContextAgent & 2.68 & 22.5 & 60.3 & 32.8 & 28.2 & 66.1 \\
-  & Mem0 & 0.65 & \underline{39.8} & 25.9 & 31.4 & \textbf{5.3} & 60.3 \\
-  & A-MEM & 2.55 & 30.4 & 77.6 & \underline{43.7} & 24.0 & \underline{76.8} \\
-  & Graphiti & 2.36 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
-  & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\paragraph{Reference sensitivity.}
-\label{sec:reviewed_diagnostics}
-Rescoring fixed \system{} outputs from a separate 450-target diagnostic against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references (Section~\ref{sec:reference_labels}).
-Absolute scores are label-sensitive, especially on Home and Code.
-
-\paragraph{Episode-level analysis.}
-A model-assisted post-hoc analysis on those targets reconstructs goal-and-object episodes from positive event anchors.
-First timely matching assistance covers an episode; repetition without actionable new evidence is redundant.
-Episode coverage is highest on Home and lowest on Code; the share of redundant interventions is highest on Home and lowest on Sports.
-Episode-level analysis complements event-level evaluation by measuring opportunity coverage and repeated interventions.
-Appendix~\ref{app:label_review_450} retains reference-sensitivity scores and episode-matching records.
-
-\subsection{Ablation study and memory analysis (RQ2)}
-\label{sec:hierarchy}
-\label{sec:validation_ablations}
-
-\paragraph{Proactive agent ablation.}
-The event-only variant supplies current and bounded recent events; the event and trajectory memory variant adds source-checked temporal trajectories; \system{} adds behavioral regularities.
-These three variants in Figure~\ref{fig:memory_hierarchy} share Luna, decision prompt, schema, event bound, and controller.
-The controller uses representation-dependent keys, so the comparison measures memory-layer contributions within the implemented pipeline.
-The temporal trajectories recover more opportunities, most on Code, with unchanged false-positive counts on Sports and Home and more false positives on Code.
-The behavioral regularities further improve effectiveness in every scope, recovering more opportunities with fewer false interventions (RQ2).
-Trajectory abstraction expands context; supported, currently applicable regularities improve selectivity.
-
-\begin{figure*}[t]
-\centering
-\input{Fig2_Memory_Hierarchy_body}
-\caption{Proactive agent ablation (GPT-5.6 Luna). The event-only, event and trajectory memory, and \system{} variants share the decision prompt, schema, event bound, and controller policy, applied to each variant's memory context. The panels report effectiveness and intrusion.}
-\label{fig:memory_hierarchy}
-\end{figure*}
-
-\paragraph{Validation mechanisms.}
-Table~\ref{tab:validation_ablations} fixes model, prompt, event bound, context capacity, and controller.
-\emph{w/o replay gate} bypasses activation thresholds for well-formed, source-linked, online-reconstructable candidates, retaining current-applicability matching.
-\emph{w/o trajectory validation} stores schema-valid, same-entity trajectory extractions without fact checking, retaining weekly construction and replay.
-Both removals lower relevance and effectiveness (RQ3).
-Replay gating contributes more effectiveness and improves coverage in every scope.
-On Code, trajectory validation yields fewer false interventions while retaining the same true-positive count, supporting improved selectivity.
-
-\begin{table*}[t]
-\centering
-\caption{Validation ablations and Code intervention control diagnostic (\%, Luna). Higher is better. The before suppression diagnostic scores recorded proposals with later states fixed. Bold and underlined values indicate the best and second-best scores per column.}
-\label{tab:validation_ablations}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccc}
-\toprule
-& \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
-\midrule
-w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
-w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
-before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
-\system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\paragraph{Intervention control.}
-The before suppression diagnostic scores recorded Code proposals while holding later states and decisions fixed.
-Filtering removes more false-positive than true-positive proposals, yielding higher relevance and effectiveness alongside lower coverage.
-Appendix~\ref{app:extended_ablations} reports expanded ablation and intervention control scores.
-
-\subsection{Model scaling (RQ3)}
-\label{sec:model_sensitivity}
-
-\begin{figure*}[tp]
-\centering
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Sports.png}\hfill
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Home.png}\hfill
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Code.png}
-\par\vspace{2pt}
-\includegraphics[width=0.98\textwidth]{Fig_Model_Sensitivity_Legend.png}
-\caption{Event-only model comparison in Sports, Home, and Code. All axes span 0--100\%; specificity equals $1-\mathrm{intrusion}$.}
-\label{fig:event_only_model_radar}
-\end{figure*}
-
-\paragraph{Within-series model scaling.}
-Construction and decision LLMs change together.
-Table~\ref{tab:backbone_sensitivity} keeps the benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy fixed.
-The comparison shows increasing effectiveness and decreasing intrusion from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol in every scope.
-These gains are consistent with stronger abilities to extract task-relevant details, induce conditional behavioral regularities, and perform compositional reasoning over temporal evidence, supporting more accurate memory construction and more selective intervention.
-Our hierarchical memory architecture engages these abilities in both historical representation and current decision-making.
-Controlled ablations retain GPT-5.6 Luna.
-
-\begin{table*}[t]
-\centering
-\caption{Model scaling (\%). Bold and underlined values indicate the best and second-best scores in each column.}
+\caption{Within-series model scaling (\%). Bold and underline mark the best and second-best scores per column.}
 \label{tab:backbone_sensitivity}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -147,9 +19,95 @@ GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \te
 \end{tabular}
 \end{table*}
 
+\begin{figure*}[tp]
+\centering
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Sports.png}\hfill
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Home.png}\hfill
+\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Code.png}
+\par\vspace{2pt}
+\includegraphics[width=0.98\textwidth]{Fig_Model_Sensitivity_Legend.png}
+\caption{Event-only comparison on selected streams in Sports, Home, and Code (0--100\%; specificity $=1-\mathrm{intrusion}$).}
+\label{fig:event_only_model_radar}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\input{Fig2_Memory_Hierarchy_body}
+\caption{Proactive agent ablation (GPT-5.6 Luna). Effectiveness and intrusion across three memory configurations under the shared decision and intervention control settings.}
+\label{fig:memory_hierarchy}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\caption{Validation and Code intervention control (GPT-5.6 Luna, \%). Before suppression scores recorded proposals with later states fixed. Bold and underline mark the best and second-best scores.}
+\label{tab:validation_ablations}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
+\midrule
+w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
+w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
+before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
+\system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Main results (RQ1)}
+\label{sec:main_results}
+
+We compare proactive-service and memory-based agents on ProactiveStream using the same Luna backbone and intervention controller policy.
+
+\paragraph{Comparisons with external methods.}
+\system{} outperforms external methods in effectiveness and balance across scopes (Table~\ref{tab:main_results}, RQ1).
+
+\paragraph{Supplementary diagnostics.}
+\label{sec:reviewed_diagnostics}
+Appendix~\ref{app:label_review_450} analyzes reference sensitivity and episode behavior on a separate 450-target sample.
+
+\subsection{Model comparison (RQ2)}
+\label{sec:model_sensitivity}
+
+\paragraph{Within-series model scaling.}
+Construction and decision LLMs change together.
+Table~\ref{tab:backbone_sensitivity} keeps the benchmark, architecture, role-specific prompts, decoding, validation thresholds, and controller policy fixed.
+The comparison shows increasing effectiveness and decreasing intrusion from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol in every scope.
+These gains are consistent with stronger abilities to extract task-relevant details, induce conditional behavioral regularities, and perform compositional reasoning over temporal evidence, supporting more accurate memory construction and more selective intervention.
+Our hierarchical memory architecture engages these abilities in both historical representation and current decision-making.
+Controlled ablations retain GPT-5.6 Luna.
+
 \paragraph{Cross-family event-only comparison.}
-We compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash.
-Task instructions, the context bound of 72 hours and at most 100 events, and the intervention controller policy are shared.
-Figure~\ref{fig:event_only_model_radar} reports each scope separately.
-Gemini attains higher effectiveness across all three scopes.
-Luna achieves higher coverage and balance in Home and Code.
+We compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash on two selected complete event streams per scope, using shared task instructions, bounded event context, and intervention control (Figure~\ref{fig:event_only_model_radar}; settings in Appendix~\ref{app:cross_family_streams}).
+On Sports, Gemini and Luna share the highest coverage, while Gemini leads the remaining metrics.
+On Home and Code, Gemini leads in effectiveness; Luna recovers more opportunities and achieves higher balance.
+DeepSeek and GLM have higher specificity and lower coverage than Luna in these two scopes.
+The scope-specific profiles reveal different trade-offs between opportunity recovery and correct silence.
+
+\subsection{Ablation study and memory analysis (RQ3)}
+\label{sec:hierarchy}
+\label{sec:validation_ablations}
+
+\paragraph{Proactive agent ablation.}
+The event-only variant supplies current and bounded recent events; the event and trajectory memory variant adds source-checked temporal trajectories; \system{} adds behavioral regularities.
+These three variants in Figure~\ref{fig:memory_hierarchy} share Luna, decision prompt, schema, event bound, and controller.
+The controller uses representation-dependent keys, so the comparison measures memory-layer contributions within the implemented pipeline.
+The temporal trajectories recover more opportunities, most on Code, with unchanged false-positive counts on Sports and Home and more false positives on Code.
+The behavioral regularities further improve effectiveness in every scope, recovering more opportunities with fewer false interventions (RQ3).
+Trajectory abstraction expands context; supported, currently applicable regularities improve selectivity.
+
+\paragraph{Validation mechanisms.}
+Table~\ref{tab:validation_ablations} fixes model, prompt, event bound, context capacity, and controller.
+\emph{w/o replay gate} bypasses activation thresholds for well-formed, source-linked, online-reconstructable candidates, retaining current-applicability matching.
+\emph{w/o trajectory validation} stores schema-valid, same-entity trajectory extractions without fact checking, retaining weekly construction and replay.
+Both removals lower relevance and effectiveness (RQ3).
+Replay gating contributes more effectiveness and improves coverage in every scope.
+On Code, trajectory validation improves selectivity with fewer false interventions and unchanged true-positive counts.
+
+\paragraph{Intervention control.}
+The before suppression diagnostic scores recorded Code proposals while holding later states and decisions fixed.
+Filtering removes more false-positive than true-positive proposals, yielding higher relevance and effectiveness alongside lower coverage.
+Appendix~\ref{app:extended_ablations} reports expanded ablation and intervention control scores.
