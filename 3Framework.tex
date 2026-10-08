@@ -1,4 +1,4 @@
-\section{Proactive Memory (\system{})}
+\section{Proactive Memory}
 \label{sec:framework}
 
 \system{} uses three complementary memory layers (Figure~\ref{fig:architecture}): event memory for recent public events, temporal trajectory memory for source-checked activity summaries, and behavioral regularity memory for replay-assessed conditional regularities.
@@ -6,7 +6,8 @@ Construction checks source fidelity and historical support, retrieval selects cu
 
 \begin{figure*}[t]
     \centering
-    \resizebox{\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}
+    % \resizebox{\textwidth}{!}{}
+    \input{Fig1_EPM_Architecture_body}
     \caption{\system{} architecture. (A) Completed history supplies bounded events; construction LLMs produce source-checked temporal trajectories and replay-assessed behavioral regularities. (B) The current event guides retrieval of up to three applicable regularities. Context $C_t$ combines these regularities with recent events, temporal trajectories, the current event, and episode state $Q_t$. The decision LLM proposes assistance, intervention control filters repetition, and dashed feedback commits the event after finalization. Insets trace the walking example of Figure~\ref{fig:intro_scenario}; values are illustrative.}
     \label{fig:architecture}
 \end{figure*}

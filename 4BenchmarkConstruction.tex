@@ -1,27 +1,26 @@
+\begin{table*}[t]
+\centering
+\caption{Composition and provenance of ProactiveStream across Sports, Home, and Code. Each stream is an independent memory and replay unit. Reference interventions denote service opportunities under the annotation protocol.}
+\label{tab:benchmark_stats}
+% \footnotesize
+% \setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Scope  & Primary source & Entity          & Streams & \begin{tabular}[c]{@{}l@{}}Input\\ events\end{tabular} & Temporal coverage                 & \begin{tabular}[c]{@{}l@{}}Reference\\ interventions\end{tabular} \\ \midrule
+Sports & HeartSteps     & participant     & 9       & 1,456                                                  & 367 observed participant-days     & 365                                                               \\
+Home   & CASAS          & home            & 4       & 1,624                                                  & 14 consecutive days/home          & 190                                                               \\
+Code   & GH Archive     & repository      & 4       & 1,459                                                  & longitudinal repository histories & 174                                                               \\\midrule
+Total  & three scopes   & isolated stream & 17      & 4,539                                                  & three longitudinal settings       & 729                                                               \\ \bottomrule
+\end{tabular}
+}
+\end{table*}
+
 \section{ProactiveStream benchmark}
 \label{sec:benchmark}
 
 ProactiveStream evaluates service-opportunity detection in longitudinal event streams, where agents assess incoming observations using their own accumulated history.
 Table~\ref{tab:benchmark_stats} summarizes its composition and provenance across Sports, Home, and Code.
-
-\begin{table*}[t]
-\centering
-\caption{Composition and provenance of ProactiveStream across Sports, Home, and Code. Each stream is an independent memory and replay unit. Reference interventions denote service opportunities under the annotation protocol.}
-\label{tab:benchmark_stats}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}cp{0.22\textwidth}p{0.11\textwidth}ccp{0.23\textwidth}c@{}}
-\toprule
-Scope & Primary source & Entity & Streams & \shortstack{Input\\events} & Temporal coverage & \shortstack{Reference\\interventions} \\
-\midrule
-Sports & HeartSteps & participant & 9 & 1,456 & 367 observed participant-days & 365 \\
-Home & CASAS & home & 4 & 1,624 & 14 consecutive days/home & 190 \\
-Code & GH Archive & repository & 4 & 1,459 & longitudinal repository histories & 174 \\
-\midrule
-Total & three scopes & isolated stream & 17 & 4,539 & three longitudinal settings & 729 \\
-\bottomrule
-\end{tabular}
-\end{table*}
 
 \subsection{Scopes and public events}
 
