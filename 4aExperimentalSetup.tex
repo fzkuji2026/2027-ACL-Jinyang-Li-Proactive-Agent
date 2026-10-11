@@ -1,8 +1,6 @@
 % Declare the wide main-results table early so it can share a page with its discussion.
 \begin{table*}[t]
 \centering
-\caption{Full-scope comparison (GPT-5.6 Luna). Frequency is in multiples ($\times$); other metrics are percentages. Bold and underline mark the best and second-best scores per scope, including ties.}
-\label{tab:main_results}
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.06}
@@ -32,6 +30,8 @@ scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparro
   & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
 \bottomrule
 \end{tabular}
+\caption{Full-scope comparison (GPT-5.6 Luna). Frequency is in multiples ($\times$); other metrics are percentages. Bold and underline mark the best and second-best scores per scope, including ties.}
+\label{tab:main_results}
 \end{table*}
 
 \section{Experimental evaluation}
@@ -56,7 +56,7 @@ We evaluate five external methods:
 }
     \item \textbf{ProactiveAgent} uses its released prompt and proposal-or-null output contract, with causal history of events and decisions capped at 1,000 events~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}.
     \item \textbf{ContextAgent} adapts proactive-service judgment to public events~\citep{yang2025contextagent}.
-    \item \textbf{Mem0} extracts and consolidates memory~\citep{chhikara2025mem0,mem0ai2026mem0v2012} for~same-entity~retrieval.
+    \item \textbf{Mem0} consolidates and retrieves same-entity memories~\citep{chhikara2025mem0,mem0ai2026mem0v2012}.
     \item \textbf{A-MEM} updates linked notes and associations for relevant-note retrieval~\citep{xu2025amem}.
     \item \textbf{Graphiti} stores temporal event relations and retrieves same-stream facts~\citep{zep2026graphiti}.
 \end{list}
@@ -75,5 +75,5 @@ The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking d
 Methods share task semantics and the intervention controller policy, with interface-specific prompts and budgets.
 The event-only, event and trajectory memory, and \system{} variants share their decision prompt, schema, and context bound of 72 hours and at most 100 events, including the current event.
 A-MEM and Graphiti augment that bound with their representations.
-For \system{}, memory preparation and current-condition matching precede semantic screening: accepted \texttt{skip} results yield \emph{abstain}, while \texttt{escalate} results proceed to full contextual assessment followed by intervention control.
+For \system{}, each event undergoes contextual assessment with prepared memory and current-condition matches, followed by intervention control.
 Appendix~\ref{app:configuration} lists detailed configurations.

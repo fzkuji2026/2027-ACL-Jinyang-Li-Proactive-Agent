@@ -3,12 +3,12 @@
 
 \system{} uses three complementary memory layers (Figure~\ref{fig:architecture}): event memory for recent public events, temporal trajectory memory for source-checked activity summaries, and behavioral regularity memory for replay-assessed conditional regularities.
 Construction checks source fidelity and historical support.
-The decision stage prepares memory and matches current conditions before semantic screening; contextual assessment combines current and historical evidence.
+The decision stage combines current observations with applicable historical evidence through contextual assessment and intervention control.
 
 \begin{figure*}[t]
     \centering
     \makebox[\textwidth][c]{\resizebox{0.98\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}}
-    \caption{\system{} architecture. (A) Source validation and replay build hierarchical memory. (B) Memory preparation and matching precede screening, which routes events to abstention or contextual assessment with intervention control. Both routes commit the event after finalization (dashed arrows).}
+    \caption{\system{} architecture. (A) Source validation and replay build hierarchical memory. (B) Retrieved memory and current conditions inform contextual assessment and intervention control. The event is committed after the final decision (dashed arrows).}
     \label{fig:architecture}
 \end{figure*}
 
@@ -16,7 +16,7 @@ The decision stage prepares memory and matches current conditions before semanti
 
 Service opportunities can depend on both recent changes and recurring behavior, motivating a memory hierarchy that preserves fine-grained evidence while validating longer-term abstractions.
 
-\paragraph{bounded event memory.}
+\paragraph{Bounded event memory.}
 Evidence utilization can degrade in long contexts~\citep{liu2024lost}, motivating a bounded event layer that preserves recent observations at their original granularity.
 For event $e_t$, event memory retains prior events in their original public representation, intersecting a temporal horizon $\Delta$ with capacity $K$:
 \begin{equation}
@@ -28,14 +28,16 @@ Here $\operatorname{Tail}_{K-1}$ selects the most recent $K-1$ events in the fil
 We use $\Delta=72$ hours and $K=100$: at most 99 prior events accompany the separately supplied current event.
 A separate buffer retains all committed events from the open local day for trajectory construction.
 
-\paragraph{fact-validated temporal trajectory memory.}
+\paragraph{Fact-validated temporal trajectory memory.}
 To retain activity context beyond the recent window while keeping abstractions traceable, we construct temporal trajectories with source-level fact validation.
 After a local day closes, a construction LLM summarizes its buffered events as trajectory segments with intervals, typed facts, and event citations.
 Let $F(\cdot)$ denote normalized checkable facts obtained from typed fields.
 For segment $d$ and its cited events $\mathcal{E}(d)$, source consistency requires
 \begin{equation}
-F(d)\subseteq\bigcup_{e\in\mathcal{E}(d)}F(e),
-\qquad \mathcal{E}(d)\subseteq E^u_{\text{completed day}}.
+\begin{aligned}
+F(d)&\subseteq\bigcup_{e\in\mathcal{E}(d)}F(e),\\
+\mathcal{E}(d)&\subseteq E^u_{\text{completed day}}.
+\end{aligned}
 \label{eq:daily_validation}
 \end{equation}
 Here $E^u_{\text{completed day}}$ contains the same entity's events from that completed day.
@@ -44,7 +46,7 @@ Acceptance requires source-supported typed facts and resolved citations.
 Accepted temporal trajectories form $W_t$, retaining historical context beyond event memory.
 Appendix~\ref{app:implementation} details field handling and buffering.
 
-\paragraph{replay-assessed behavioral regularity memory.}
+\paragraph{Replay-assessed behavioral regularity memory.}
 To ground behavioral expectations in observed recurrence, we assess proposed conditional regularities through historical replay and revise their eligibility as evidence accumulates.
 Weekly consolidation groups seven completed daily records per entity in time order, with each record assigned to one cycle.
 A cycle may span more than seven calendar days.
@@ -53,9 +55,10 @@ Replay checks these conditions against validated daily facts: an observable trig
 Missing observations are censored, inapplicable days are excluded, and each date contributes at most once.
 Let $n_f$ count fulfilled (supporting) days and $n_v$ count violated days:
 \begin{equation}
-\operatorname{conf}_{\mathrm{replay}}=\frac{n_f}{n_f+n_v},
-\qquad
-\operatorname{lift}=\frac{\operatorname{conf}_{\mathrm{replay}}}{\operatorname{base}(p)}.
+\begin{aligned}
+\operatorname{conf}_{\mathrm{replay}}&=\frac{n_f}{n_f+n_v},\\
+\operatorname{lift}&=\frac{\operatorname{conf}_{\mathrm{replay}}}{\operatorname{base}(p)}.
+\end{aligned}
 \label{eq:replay_gate}
 \end{equation}
 The base rate is the frequency of $p$ over observable days under the same time-window and weekday restrictions across both triggered and other observable days.
@@ -85,34 +88,14 @@ R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
 \label{eq:long_term_retrieval}
 \end{equation}
 The top-three selection ranks eligible regularities by occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
-Retrieval precedes screening and supplies applicable regularities and occurrence states.
+Retrieval supplies applicable regularities and occurrence states for contextual assessment.
 
 \subsection{Proactive decision}
 \label{sec:decision_control}
 
 Timely assistance requires combining current needs with historical context~\citep{yang2025contextagent}.
-The decision stage screens observations, assesses service value, and tracks prior opportunity coverage.
-
-\paragraph{Semantic screening.}
-\label{sec:semantic_screening}
-Screening uses prepared memory and current-condition matches to assess relevance and event-local abstention evidence.
-Let $\mathcal{M}_t^{(k)}$ contain prior same-entity event records, validated trajectory segments, and active or weakening regularities for $k=1,2,3$, respectively.
-For a nonempty layer, semantic encoder $\phi$ gives the maximum cosine similarity:
-\begin{equation}
-\rho_t^{(k)}=\max_{m\in\mathcal{M}_t^{(k)}}
-\cos\!\left(\phi(e_t),\phi(m)\right).
-\label{eq:semantic_screening}
-\end{equation}
-Each layer has a relevance threshold $\lambda_k$.
-Pending services, timer observations, and matched upcoming or unresolved regularity occurrences take the \emph{escalate} route, as do incomplete memory and any $\rho_t^{(k)}\geq\lambda_k$.
-When all three populated layers satisfy $\rho_t^{(k)}<\lambda_k$, a single-event LLM assesses the public current event.
-A valid \emph{skip} requires explicit abstention evidence quoted from the event and reported confidence at least $\eta$.
-All other outcomes, including new needs, risks, ambiguity, and history-dependent judgments, escalate.
-An accepted skip yields \emph{abstain}; escalated events receive contextual assessment.
-Appendix~\ref{app:semantic_screening} specifies the screening contract and execution settings.
-
 \paragraph{Contextual assessment and intervention control.}
-For escalated events, the decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
+For each event, the decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
 \begin{equation}
 C_t=(e_t,S_t,W_t,R_t,Q_t),
 \label{eq:decision_context}
@@ -126,7 +109,7 @@ Scope-specific changes in opportunity state, service identity, contextual regula
 The controller finalizes the proposal as $(\hat y_t,\hat m_t)$, the output defined in Section~\ref{sec:problem}.
 Appendix~\ref{app:intervention_control} specifies matching fields, phase transitions, and re-entry rules.
 
-Inference stages $e_t$, retrieves prior memory and matches current conditions, screens the event, assembles full context for escalated events, finalizes the output, and commits $e_t$.
-Both routes retain the complete public event in the event buffer and open-day buffer, advancing trajectory construction, regularity replay, and lifecycle updates.
+Inference stages $e_t$, retrieves prior memory and matches current conditions, assembles $C_t$ for assessment, applies intervention control, and commits $e_t$ after finalization.
+Each complete public event enters the event buffer and open-day buffer, advancing trajectory construction, regularity replay, and lifecycle updates.
 Maintenance incorporating $e_t$ can affect only later decisions.
 Reference labels remain private during construction and retrieval.

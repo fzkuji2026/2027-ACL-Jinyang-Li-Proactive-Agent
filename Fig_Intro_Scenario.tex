@@ -23,9 +23,9 @@
 \definecolor{purplelt}{HTML}{E6E1F4}
 \definecolor{rose}{HTML}{C75B66}
 \tikzset{
-  txt/.style={text=ink,font=\fontsize{8.5}{10.2}\selectfont,inner sep=0pt,align=left},
-  sm/.style={txt,font=\fontsize{8}{9.6}\selectfont},
-  hd/.style={txt,font=\bfseries\fontsize{9}{10.8}\selectfont},
+  txt/.style={text=ink,font=\fontsize{9.5}{11.4}\selectfont,inner sep=0pt,align=left},
+  sm/.style={txt,font=\fontsize{9.3}{11.2}\selectfont},
+  hd/.style={txt,font=\bfseries\fontsize{10}{12}\selectfont},
   arr/.style={-{Stealth[length=1.6mm,width=1.2mm]},line width=.9pt,rounded corners=2pt},
 }
 % ---------------------------------------------------------------- icons
@@ -75,28 +75,25 @@
   \fill[amber,rounded corners=.8pt] (3.09,#1-.085) rectangle ++(.17,.17);}
 % one layer of the memory cylinder: y-top, y-bottom, colour, label
 \newcommand{\layer}[4]{%
-  \fill[#3] (.42,#1) rectangle (1.82,#2);
-  \fill[#3] (1.12,#2) ellipse (.70 and .09);
-  \draw[white,line width=.7pt] (.42,#1) arc[start angle=180,end angle=360,x radius=.70,y radius=.09];
-  \node[txt,font=\bfseries\fontsize{7.8}{9.4}\selectfont,text=white,anchor=center]
-    at (1.12,{(#1+#2)/2+.035}) {#4};}
+  \fill[#3] (.42,#1) rectangle (2.02,#2);
+  \fill[#3] (1.22,#2) ellipse (.80 and .09);
+  \draw[white,line width=.7pt] (.42,#1) arc[start angle=180,end angle=360,x radius=.80,y radius=.09];
+  \node[txt,font=\bfseries\fontsize{9.1}{10.8}\selectfont,text=white,anchor=center]
+    at (1.22,{(#1+#2)/2+.035}) {#4};}
 
 \begin{document}
 \begin{tikzpicture}[x=1cm,y=-1cm]
   \path[use as bounding box] (0,0) rectangle (7.70,4.90);
 
   % ================================================== event stream
-  \node[hd,anchor=west] at (.32,.18) {event stream};
-  \node[sm,text=muted,anchor=center] at (1.54,.48) {earlier days};
+  \node[hd,anchor=west] at (.32,.34) {earlier walks};
   \draw[line,line width=1.2pt,line cap=round] (.32,.90)--(4.30,.90);
-  \foreach \x/\t in {.68/18:20,1.54/18:35,2.40/18:25}{
-    \walkbadge{\x}{.90}{teal}
-    \node[sm,text=muted,anchor=center] at (\x,1.30) {\t};}
+  \foreach \x in {.68,1.54,2.40}{\walkbadge{\x}{.90}{teal}}
   \fill[bluelt,rounded corners=3pt] (2.94,.68) rectangle (4.20,1.12);
-  \node[sm,text=blue,anchor=center] at (3.57,.48) {72\,h};
+  \node[sm,text=blue,anchor=center] at (3.57,.34) {72\,h};
   \foreach \x in {3.12,3.42,3.72,4.02}{\fill[blue!60] (\x,.90) circle (.045);}
   \fill[amber] (4.50,.90) circle (.24);
-  \node[txt,font=\bfseries\fontsize{8}{9.6}\selectfont,text=white] at (4.50,.91) {$e_t$};
+  \node[txt,font=\bfseries\fontsize{9.3}{11.2}\selectfont,text=white] at (4.50,.91) {$e_t$};
   \fill[amberlt,rounded corners=4pt] (5.15,.30) rectangle (7.62,1.45);
   \avatar{5.55}{.93}{amber}
   \node[hd,text=amber,anchor=west] at (5.92,.56) {18:30};
@@ -120,28 +117,24 @@
   \draw[arr,draw=blue] (3.40,3.08)--(4.50,3.08)--(4.50,3.54);
 
   \fill[white,rounded corners=4pt] (.30,3.38) rectangle (3.50,4.81);
-  \node[txt,font=\bfseries\fontsize{8.5}{10.2}\selectfont,text=teal,anchor=west] at (.42,3.58) {hierarchical memory};
+  \node[hd,text=teal,anchor=west] at (.42,3.58) {memory};
   \layer{4.40}{4.69}{purple}{regularity}
   \layer{4.11}{4.40}{teal}{trajectory}
   \layer{3.82}{4.11}{blue}{event}
-  \fill[blue!45] (1.12,3.82) ellipse (.70 and .09);
-  \tick{1.98}{3.88}{teal}
-  \node[sm,text=teal,anchor=west] at (2.10,3.88) {checked};
-  \draw[purple,line width=.8pt,dash pattern=on 1.5pt off 1pt] (1.82,4.54)--(1.94,4.54);
-  \fill[purplelt,rounded corners=3pt] (1.94,4.07) rectangle (3.40,4.51);
-  \node[txt,font=\bfseries\fontsize{8}{9.6}\selectfont,text=purple,anchor=center] at (2.67,4.29) {18--19\,h};
-  \tick{1.98}{4.67}{purple}
-  \node[sm,text=purple,anchor=west] at (2.10,4.67) {replayed};
+  \fill[blue!45] (1.22,3.82) ellipse (.80 and .09);
+  \draw[purple,line width=.8pt,dash pattern=on 1.5pt off 1pt] (2.02,4.54)--(2.10,4.54);
+  \fill[purplelt,rounded corners=3pt] (2.10,3.86) rectangle (3.40,4.64);
+  \walkbadge{2.75}{4.07}{purple}
+  \node[txt,font=\bfseries\fontsize{9.3}{11.2}\selectfont,text=purple,anchor=center] at (2.75,4.45) {18--19\,h};
   \magnifier{3.30}{4.08}{amber}
   \draw[arr,draw=teal,dash pattern=on 2pt off 1.4pt] (.36,.90)--(.10,.90)--(.10,4.16)--(.40,4.16);
 
   \agent{4.50}{3.92}{teal}
   \draw[arr,draw=amber] (4.13,3.90)--(3.69,3.90)--(3.69,4.30)--(3.52,4.30);
-  \node[sm,text=amber,anchor=center,align=center] at (3.86,3.61) {match\\$e_t$};
+  \node[sm,text=amber,anchor=center] at (4.00,3.52) {match};
   \draw[arr,draw=purple] (3.52,4.60)--(4.50,4.60)--(4.50,4.17);
-  \node[sm,text=purple,anchor=center] at (4.02,4.76) {retrieve};
   \bubble{5.15}{3.46}{7.52}{4.42}{teal}
-  \node[txt,font=\itshape\fontsize{9}{10.8}\selectfont,text=white,anchor=center]
+  \node[txt,font=\itshape\fontsize{10}{12}\selectfont,text=white,anchor=center]
     at (6.33,3.76) {``Short walk?''};
   \node[hd,text=white,anchor=center] at (6.33,4.14) {intervene};
 \end{tikzpicture}

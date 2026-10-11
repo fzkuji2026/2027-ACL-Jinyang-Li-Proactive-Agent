@@ -4,12 +4,12 @@
 \subsection{Public events and availability}
 
 \paragraph{Sports.}
-HeartSteps mobile activity contexts~\citep{klasnja2019heartsteps} supply 1,456 meta-events from nine complete participant streams over 367 observed participant-days.
+HeartSteps~\citep{klasnja2019heartsteps} supplies 1,456 mobile activity meta-events from nine complete participant streams over 367 observed participant-days.
 Public fields include decision-time availability, recognized activity, recent steps, location category, weather, and local decision slot.
-Services concern optional activity support; inputs exclude randomized treatments and future outcomes.
+Services concern optional activity support. Inputs omit future outcomes and randomized treatments.
 
 \paragraph{Home.}
-CASAS ambient-sensor traces~\citep{cook2013casas} supply four homes with 14 consecutive days each.
+CASAS~\citep{cook2013casas} supplies ambient-sensor traces from four homes over 14 consecutive days each.
 Per local day, ten-minute source blocks are assigned exactly once to 28 regular 50-minute segments and one 40-minute tail, yielding 406 events per home.
 A segment becomes available only after interval closure and contains within-interval motion counts, room sequences, door actions, and compact numeric summaries.
 Gentle check-ins exclude disease, fall, travel, danger, and unsupported preference inference.
@@ -42,7 +42,7 @@ Labels are joined offline; reference episode states and scoring metadata stay pr
 \section{Implementation and experimental configuration}
 \label{app:implementation}
 
-\subsection{trajectory evidence and replay}
+\subsection{Trajectory evidence and replay}
 
 The trajectory construction step uses an independent buffer of all committed events from the open local day, cleared after processing.
 Activity segments contain a local interval, typed \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields, plus source-event identifiers.
@@ -92,8 +92,6 @@ Each method retains its prompts, retrieval, and budgets.
 
 \begin{table*}[t]
 \centering
-\caption{External-method memory interfaces and implementation settings.}
-\label{tab:baseline_interfaces}
 \small
 \setlength{\tabcolsep}{5pt}
 \renewcommand{\arraystretch}{1.12}
@@ -112,50 +110,28 @@ A-MEM & Linked notes with association updates augment bounded context~\citep{xu2
 Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings; committed events populate stream-isolated graphs. Current-event queries use native hybrid edge search with reciprocal-rank fusion, retrieving up to ten relation facts with validity fields and source IDs~\citep{zep2026graphiti}. \\
 \bottomrule
 \end{tabular}
+\caption{External-method memory interfaces and implementation settings.}
+\label{tab:baseline_interfaces}
 \end{table*}
 
 Graphiti supplies relation facts directly, using the task policy and output contract with memory-specific guidance; its ingestion episodes correspond to source records.
 
 \paragraph{Scoring.}
-Using final-decision confusion counts, relevance is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, coverage is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, effectiveness is $2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$, intrusion is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, and balance is $\tfrac{1}{2}[\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})+\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})]$.
+Using final-decision confusion counts, relevance is $\tfrac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}$, coverage is $\tfrac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}$, effectiveness is $\tfrac{2\mathrm{TP}}{2\mathrm{TP}+\mathrm{FP}+\mathrm{FN}}$, and intrusion is $\tfrac{\mathrm{FP}}{\mathrm{FP}+\mathrm{TN}}$.
+Balance is $\tfrac{1}{2}[\tfrac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}+\tfrac{\mathrm{TN}}{\mathrm{TN}+\mathrm{FP}}]$.
 For frequency, $1\times$ indicates equal counts of interventions and reference-positive events; larger and smaller values indicate more and fewer interventions, respectively.
 Frequency is interpreted jointly with relevance, coverage, and intrusion.
-
-\subsection{Semantic screening contract}
-\label{app:semantic_screening}
-
-\paragraph{Causal inputs.}
-Before screening, retrieval prepares strictly prior same-stream records and completed-day trajectories; current-condition matching supplies applicable regularities and occurrence states.
-Trajectory segments are embedded individually; regularity inputs retain trigger conditions, expected behavior, time windows, and weekday restrictions.
-Embedding text preserves task-bearing public fields after removing artifact identifiers, bookkeeping counters, and private annotations.
-Normalized embeddings are cached.
-Configuration specifies the embedding and screening models, layer thresholds $\lambda_k$, and confidence threshold $\eta$; the implementation initializes $\eta$ to $0.95$.
-
-\paragraph{Single-event assessment.}
-The screener assesses the complete public current event under a fixed instruction and returns \texttt{route}, \texttt{confidence}, \texttt{evidence}, \texttt{has\_new\_need\_or\_risk}, and \texttt{needs\_history}.
-Skip validation requires a valid schema, both flags set to false, and an exact nonempty event quotation.
-Across scopes, an explicitly resolved fix, completed walk with comfortable rest, or received delivery supplies a screening candidate.
-New failures, seated activity, and quiet sensor intervals require full assessment.
-
-\paragraph{Execution and measurement.}
-Unavailable or invalid inputs, uncertain timing, malformed assessments, and recoverable failures escalate; authorization and access failures halt processing.
-The runtime supports full-decision, shadow, and screening configurations.
-Shadow records proposed routes and retains full assessment; screening applies accepted skips before full-context prompt assembly.
-Versioned routing records identify the entity, stream, event, configuration, layer scores, confidence, and route.
-Screening evaluation requires threshold selection on independent development streams and fresh causal replay.
-Its measurements include screening rate, positive-event retention, and the metrics in Section~\ref{sec:experimental_settings}, with intervention control updated from each finalized output.
 
 \subsection{Cross-family event-only configuration}
 \label{app:cross_family_streams}
 
 Table~\ref{tab:cross_family_streams} lists the two complete streams selected within each scope.
-Streams are ranked by SHA256 of \texttt{seed|domain|public\_stream\_id}, using the fixed seed \texttt{proactivestream-event-only-}\allowbreak\texttt{nine-streams-20260925-v1}; the two lowest hashes in each scope determine selection.
+Streams are ranked by SHA256 of \texttt{seed|}\allowbreak\texttt{domain|}\allowbreak\texttt{public\_stream\_id}.
+The fixed seed is \texttt{proactivestream-}\allowbreak\texttt{event-only-}\allowbreak\texttt{nine-streams-}\allowbreak\texttt{20260925-v1}; the two lowest hashes in each scope determine selection.
 The selection uses public stream identifiers.
 
 \begin{table}[t]
 \centering
-\caption{Selected complete streams for the cross-family event-only comparison.}
-\label{tab:cross_family_streams}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}llr@{}}
@@ -172,6 +148,8 @@ Code & \texttt{Unitech/pm2} & 365 \\
 total & six complete streams & 1,899 \\
 \bottomrule
 \end{tabular}
+\caption{Selected complete streams for the cross-family event-only comparison.}
+\label{tab:cross_family_streams}
 \end{table}
 
 Each stream is replayed chronologically from empty state.
@@ -180,7 +158,6 @@ Requests use temperature zero and request disabled thinking, with decision outpu
 Output-format and transport-recovery settings follow each backend's interface.
 Final decisions are scored offline against the common reference labels.
 
-\FloatBarrier
 \section{Additional ablation and intervention control results}
 \label{app:extended_ablations}
 
@@ -188,12 +165,10 @@ Final decisions are scored offline against the common reference labels.
 Table~\ref{tab:validation_ablations_full} supplements the relevance and effectiveness scores in Table~\ref{tab:validation_ablations} with frequency and coverage.
 On Code, suppression removes 66 false-positive and 17 true-positive proposals; coverage falls from 99.4\% to 89.7\%.
 The diagnostic scores recorded proposals while holding later states fixed.
-For the variants in Figure~\ref{fig:memory_hierarchy}, temporal trajectories yield aggregate net gains of 4, 15, and 64 true positives on Sports, Home, and Code, respectively; behavioral regularities yield further net gains of 57, 33, and 22.
+In Figure~\ref{fig:memory_hierarchy}, the event and trajectory memory variant records 4, 15, and 64 more true positives than event-only on Sports, Home, and Code, respectively; \system{} records a further 57, 33, and 22.
 
 \begin{table}[t]
 \centering
-\caption{Additional validation and Code intervention control scores. Frequency uses multiples ($\times$); coverage uses percentages. Bold and underline mark the best and second-best coverage per scope, including ties.}
-\label{tab:validation_ablations_full}
 \small
 \setlength{\tabcolsep}{2.8pt}
 \renewcommand{\arraystretch}{1.06}
@@ -215,4 +190,6 @@ scope & method & frequency ($\times$) & coverage $\uparrow$ \\
  & \system{} & 2.24 & \underline{89.7} \\
 \bottomrule
 \end{tabular}
+\caption{Additional validation and Code intervention control scores. Frequency uses multiples ($\times$); coverage uses percentages. Bold and underline mark the best and second-best coverage per scope, including ties.}
+\label{tab:validation_ablations_full}
 \end{table}

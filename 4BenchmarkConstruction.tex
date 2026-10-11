@@ -1,7 +1,5 @@
 \begin{table*}[t]
 \centering
-\caption{Composition and provenance of ProactiveStream. Reference interventions mark service opportunities.}
-\label{tab:benchmark_stats}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
@@ -12,6 +10,8 @@ Code   & GH Archive     & repository      & 4       & 1,459                     
 total  & three scopes   & isolated stream & 17      & 4,539                                                  & three longitudinal settings       & 729                                                               \\ \bottomrule
 \end{tabular}
 }
+\caption{Composition and provenance of ProactiveStream. Reference interventions mark service opportunities.}
+\label{tab:benchmark_stats}
 \end{table*}
 
 \section{ProactiveStream benchmark}
@@ -41,9 +41,9 @@ Annotators assess $e_t$ and its complete prior same-stream history $\mathcal{H}_
 Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ reference-episode novelty shared across methods:
 \begin{equation}
 \begin{aligned}
-y_t=1 \quad \Longleftrightarrow \quad &
-\big(A(e_t)=1\ \lor\ B(e_t,\mathcal{H}_{<t})=1\big)\\
-&\land N_t^{\mathrm{ref}}=1.
+y_t=1 \iff {} & \big(A(e_t)=1\\
+& {}\lor B(e_t,\mathcal{H}_{<t})=1\big)\\
+& {}\land N_t^{\mathrm{ref}}=1.
 \end{aligned}
 \label{eq:or_semantics}
 \end{equation}

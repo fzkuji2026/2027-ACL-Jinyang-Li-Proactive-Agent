@@ -29,13 +29,12 @@ Together, these layers connect immediate changes with long-term context.
 
 LLMs construct cited trajectories from completed events, followed by source validation of typed facts.
 Historical replay assesses regularities inferred from these trajectories.
-At decision time, semantic screening uses memory relevance and event-local abstention evidence to route the event.
-Full assessment combines recent events, trajectories, and applicable regularities to judge service value.
+At decision time, contextual assessment combines the current event, recent history, trajectories, and applicable regularities to judge service value.
 Intervention control filters repeated proposals; the finalized decision precedes event commitment and memory updates.
 
 Our contributions are:
 \begin{itemize}[leftmargin=*, itemsep=0pt]
-    \item ProactiveStream supports longitudinal evaluation of memory formation and repeated service decisions, preserving causal history, entity isolation, and episode-aware reference opportunities across three scopes.
-    \item \system{} combines source-checked trajectory abstraction, replay-based regularity assessment, and selection of currently applicable regularities to supply historical context for proactive service decisions.
-    \item \system{} uses long-term behavioral context to identify service opportunities missed by recent events alone and support more selective intervention decisions.
+    \item ProactiveStream evaluates longitudinal memory formation and service decisions across three scopes, preserving causal history, entity isolation, and episode-aware labels.
+    \item \system{} combines source-checked trajectory abstraction, replay-based regularity assessment, and current-condition matching to supply historical context for proactive service decisions.
+    \item \system{} uses long-term behavioral context to identify opportunities missed by recent events alone and support more selective interventions.
 \end{itemize}
