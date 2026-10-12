@@ -42,7 +42,7 @@ Labels are joined offline; reference episode states and scoring metadata stay pr
 \section{Implementation and experimental configuration}
 \label{app:implementation}
 
-\subsection{trajectory evidence and replay}
+\subsection{Trajectory evidence and replay}
 
 The trajectory construction step uses an independent buffer of all committed events from the open local day, cleared after processing.
 Activity segments contain a local interval, typed \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields, plus source-event identifiers.
@@ -117,9 +117,9 @@ Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-Mini
 Graphiti supplies relation facts directly, using the task policy and output contract with memory-specific guidance; its ingestion episodes correspond to source records.
 
 \paragraph{Scoring.}
-Using final-decision confusion counts, relevance is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, coverage is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, effectiveness is $2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$, intrusion is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, and balance is $\tfrac{1}{2}[\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})+\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})]$.
-For frequency, $1\times$ indicates equal counts of interventions and reference-positive events; larger and smaller values indicate more and fewer interventions, respectively.
-Frequency is interpreted jointly with relevance, coverage, and intrusion.
+Using final-decision confusion counts, Precision is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$, Recall is $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$, F1 is $2\mathrm{TP}/(2\mathrm{TP}+\mathrm{FP}+\mathrm{FN})$, FPR is $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$, and BAcc is $\tfrac{1}{2}[\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})+\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})]$.
+For Freq., $1\times$ indicates equal counts of interventions and reference-positive events; larger and smaller values indicate more and fewer interventions, respectively.
+Freq.\ is interpreted jointly with Precision, Recall, and FPR.
 
 \subsection{Semantic screening contract}
 \label{app:semantic_screening}
@@ -185,21 +185,21 @@ Final decisions are scored offline against the common reference labels.
 \label{app:extended_ablations}
 
 \looseness=-1
-Table~\ref{tab:validation_ablations_full} supplements the relevance and effectiveness scores in Table~\ref{tab:validation_ablations} with frequency and coverage.
-On Code, suppression removes 66 false-positive and 17 true-positive proposals; coverage falls from 99.4\% to 89.7\%.
+Table~\ref{tab:validation_ablations_full} supplements the Precision and F1 scores in Table~\ref{tab:validation_ablations} with Freq.\ and Recall.
+On Code, suppression removes 66 false-positive and 17 true-positive proposals; Recall falls from 99.4\% to 89.7\%.
 The diagnostic scores recorded proposals while holding later states fixed.
 For the variants in Figure~\ref{fig:memory_hierarchy}, temporal trajectories yield aggregate net gains of 4, 15, and 64 true positives on Sports, Home, and Code, respectively; behavioral regularities yield further net gains of 57, 33, and 22.
 
 \begin{table}[t]
 \centering
-\caption{Additional validation and Code intervention control scores. Frequency uses multiples ($\times$); coverage uses percentages. Bold and underline mark the best and second-best coverage per scope, including ties.}
+\caption{Additional validation and Code intervention control scores. Freq.\ uses multiples ($\times$); Recall uses percentages. Bold and underline mark the best and second-best Recall per scope, including ties.}
 \label{tab:validation_ablations_full}
 \small
 \setlength{\tabcolsep}{2.8pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}clcc@{}}
 \toprule
-scope & method & frequency ($\times$) & coverage $\uparrow$ \\
+scope & method & Freq.\ ($\times$) & Recall $\uparrow$ \\
 \midrule
 \multirow{3}{*}{Sports} & w/o replay gate & 2.19 & \underline{68.2} \\
  & w/o trajectory validation & 2.23 & \textbf{76.7} \\

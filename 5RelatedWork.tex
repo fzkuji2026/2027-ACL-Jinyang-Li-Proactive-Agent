@@ -2,12 +2,16 @@
 \label{sec:related}
 
 \paragraph{Agent memory and long-horizon retrieval.}
+Surveys and architectural frameworks treat memory as a core component of language agents~\citep{sumers2024coala,zhang2024memorysurvey}.
 Generative Agents, MemoryBank, and MemGPT organize experience through reflection, updating, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
 Mem0, A-MEM, and HippoRAG use extracted memories, linked records, and graph retrieval~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
-Graphiti preserves temporal validity and provenance in event-derived relations~\citep{zep2026graphiti}.
+Graphiti/Zep preserves temporal validity and provenance in event-derived relations~\citep{rasmussen2025zep,zep2026graphiti}.
+Reflexion, ExpeL, and Voyager distill reusable lessons, insights, or skills from past trials~\citep{shinn2023reflexion,zhao2024expel,wang2024voyager}; these abstractions target task success rather than validated recurrence in an entity's behavior.
+These systems retrieve by relevance to the current input; \system{} additionally checks source fidelity, historical support, and current applicability.
 
 \paragraph{Proactive decision and memory.}
-ProactiveAgent studies task proposals and silence using annotated events~\citep{lu2025proactiveagent}.
+Proactive dialogue systems take initiative to steer conversations or clarify needs~\citep{deng2023proactivesurvey}.
+ProactiveAgent studies task proposals and silence using annotated events~\citep{lu2025proactiveagent}, and proactive programming assistants treat suggestion timing as a core design requirement~\citep{chen2025needhelp}.
 ContextAgent combines sensory contexts with historical personas to anticipate service needs~\citep{yang2025contextagent}, while PASK couples streaming demand detection with hybrid long-term memory~\citep{xie2026pask}.
 MemCog explores memory for dialogue reasoning~\citep{li2026memcog}, while Remember When It Matters injects selected reminders through a separate memory agent for long-horizon action~\citep{wu2026remember}.
 \system{} grounds trajectory-derived regularities through source checks, replay, and event matching.
@@ -16,4 +20,4 @@ MemCog explores memory for dialogue reasoning~\citep{li2026memcog}, while Rememb
 LoCoMo and LongMemEval assess long-term conversational memory and reasoning~\citep{maharana2024locomo,wu2025longmemeval}.
 Proactive benchmarks examine task proposals, latent-need detection, or memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.
 ProactiveStream evaluates sequential \emph{intervene} or \emph{abstain} decisions with accumulating memory in isolated, causally replayed streams, using episode-aware references for intervention timing.
-Interruption cost depends on task phase and receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}, motivating evaluation of opportunity recovery and intrusion.
+Interruption cost depends on task phase and receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}, motivating joint evaluation of opportunity recovery and false interventions.

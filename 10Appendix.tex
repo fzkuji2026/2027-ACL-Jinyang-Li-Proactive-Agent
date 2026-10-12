@@ -4,14 +4,14 @@
 
 \begin{table*}[!t]
 \centering
-\caption{Reference sensitivity on 150 targets per scope. Effectiveness (\%) scores identical outputs under earlier and separate-team references. Positives and confusion counts use the latter; $I$ counts final interventions.}
+\caption{Reference sensitivity on 150 targets per scope. F1 (\%) scores identical outputs under earlier and separate-team references. Positives and confusion counts use the latter; $I$ counts final interventions.}
 \label{tab:reference_sensitivity_450}
 \small
 \setlength{\tabcolsep}{6pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{lrrrrrrcc}
 \toprule
-scope & positives & $I$ & TP & FP & FN & TN & \shortstack{earlier diagnostic\\effectiveness} & \shortstack{separate-team\\effectiveness} \\
+scope & positives & $I$ & TP & FP & FN & TN & \shortstack{earlier diagnostic\\F1} & \shortstack{separate-team\\F1} \\
 \midrule
 Sports & 27 & 86 & 24 & 62 & 3 & 61 & 42.6 & 42.5 \\
 Home & 15 & 39 & 15 & 24 & 0 & 111 & 68.7 & 55.6 \\
@@ -22,14 +22,14 @@ Code & 34 & 42 & 18 & 24 & 16 & 92 & 57.6 & 47.4 \\
 
 \begin{table*}[!t]
 \centering
-\caption{\system{} episode diagnostic on 150 targets per scope. Coverage, SR, and RIR use percentages. Unresolved denotes ambiguous semantic or condition matches; $U=0$ in all scopes.}
+\caption{\system{} episode diagnostic on 150 targets per scope. Episode coverage, SP, and RIR use percentages. Unresolved denotes ambiguous semantic or condition matches; $U=0$ in all scopes.}
 \label{tab:episode_review_450}
 \small
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{lcrrrrrrrcc}
 \toprule
-scope & \shortstack{covered/new\\(coverage)} & $I$ & $F$ & $V$ & $R$ & unmatched & late & unresolved & SR & RIR \\
+scope & \shortstack{covered/new\\(coverage)} & $I$ & $F$ & $V$ & $R$ & unmatched & late & unresolved & SP & RIR \\
 \midrule
 Sports & 23/26 (88.5) & 86 & 23 & 1 & 1 & 60 & 0 & 1 & 27.9 & 1.2 \\
 Home & 9/9 (100.0) & 39 & 10 & 6 & 17 & 6 & 0 & 0 & 41.0 & 43.6 \\
@@ -55,7 +55,7 @@ The predictions come from separate diagnostic runs on the selected targets.
 The diagnostic uses Luna with temperature zero, thinking disabled, decision limits of 256 tokens for Sports and Home and 512 for Code, and the same context bound of 72 hours and at most 100 events, trajectory validation, replay gating, and intervention control policy.
 Immediate and scheduled services both count as \emph{intervene}.
 
-Rescoring against the separate-team references yields similar effectiveness on Sports and lower effectiveness on Home and Code relative to the earlier references.
+Rescoring against the separate-team references yields similar F1 on Sports and lower F1 on Home and Code relative to the earlier references.
 Absolute scores are label-sensitive, especially on Home and Code.
 
 \subsection{Episode references and matching}
@@ -81,7 +81,7 @@ Each reference episode receives coverage credit once.
 \paragraph{Metrics and boundaries.}
 Let $I$ count all target interventions, $F$ first valid interventions across all reference episodes, $V$ valuable follow-ups, $R$ redundant follow-ups, and $U$ uncertain follow-ups.
 New reference episodes have onsets within the target interval.
-Episode coverage divides covered new episodes by all new reference episodes; supported relevance is $\mathrm{SR}=(F+V)/I$, and redundant intervention rate is $\mathrm{RIR}=R/I$.
+Episode coverage divides covered new episodes by all new reference episodes; supported precision is $\mathrm{SP}=(F+V)/I$, and redundant intervention rate is $\mathrm{RIR}=R/I$.
 Uncertain, unmatched, late, and unresolved outcomes contribute only to the intervention count $I$.
 Table~\ref{tab:episode_review_450} combines the rates and outcome counts.
 

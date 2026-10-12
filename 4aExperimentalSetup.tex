@@ -1,14 +1,14 @@
 % Declare the wide main-results table early so it can share a page with its discussion.
 \begin{table*}[t]
 \centering
-\caption{Full-scope comparison (GPT-5.6 Luna). Frequency is in multiples ($\times$); other metrics are percentages. Bold and underline mark the best and second-best scores per scope, including ties.}
+\caption{Full-scope comparison (GPT-5.6 Luna). Freq.\ is interventions per reference positive ($\times$); other metrics are percentages. Overall pools confusion counts over all 17 streams. Bold and underline mark the best and second-best scores per block, including ties.}
 \label{tab:main_results}
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}clcccccc@{}}
 \toprule
-scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & balance $\uparrow$ \\
+scope & method & Freq.\ ($\times$) & Precision $\uparrow$ & Recall $\uparrow$ & F1 $\uparrow$ & FPR $\downarrow$ & BAcc $\uparrow$ \\
 \midrule
 \multirow{6}{*}{Sports} & ProactiveAgent & 2.75 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
   & ContextAgent & 2.16 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
@@ -30,6 +30,13 @@ scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparro
   & A-MEM & 2.55 & 30.4 & 77.6 & \underline{43.7} & 24.0 & \underline{76.8} \\
   & Graphiti & 2.36 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
   & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
+\midrule
+\multirow{6}{*}{Overall} & ProactiveAgent & 2.65 & 25.3 & 66.9 & 36.7 & 37.8 & 64.6 \\
+  & ContextAgent & 2.08 & 29.2 & 60.9 & 39.5 & 28.2 & 66.3 \\
+  & Mem0 & 2.05 & 29.2 & 59.7 & 39.2 & \underline{27.7} & 66.0 \\
+  & A-MEM & 2.24 & \underline{31.3} & \underline{70.2} & \underline{43.3} & 29.4 & \underline{70.4} \\
+  & Graphiti & 2.06 & 29.4 & 60.6 & 39.6 & 27.8 & 66.4 \\
+  & \system{} & 2.00 & \textbf{39.5} & \textbf{79.0} & \textbf{52.6} & \textbf{23.2} & \textbf{77.9} \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -37,7 +44,7 @@ scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparro
 \section{Experimental evaluation}
 \label{sec:experiments}
 
-We examine overall effectiveness (\textbf{RQ1}), model choice (\textbf{RQ2}), and memory organization and validation (\textbf{RQ3}), with supplementary checks of reference sensitivity and episode behavior.
+We examine overall effectiveness against external methods (\textbf{RQ1}), model choice (\textbf{RQ2}), and memory organization and validation (\textbf{RQ3}), with supplementary checks of reference sensitivity and episode behavior.
 
 \subsection{Experimental settings}
 \label{sec:experimental_settings}
@@ -63,11 +70,10 @@ We evaluate five external methods:
 
 \paragraph{Metrics.}
 Each event receives one post-controller decision; immediate and scheduled services count as \emph{intervene} at the decision event.
-We report \textbf{relevance} (precision), the share of interventions matching reference opportunities; \textbf{coverage} (recall), the share of opportunities recovered; and \textbf{effectiveness} (F1), their harmonic mean.
-Overall effectiveness pools confusion counts across all streams and scopes.
-The \textbf{intrusion} score (false positive rate) measures the share of reference negatives receiving interventions; \textbf{balance} (balanced accuracy) averages coverage and the correct-abstention rate on reference negatives.
-Higher relevance, coverage, effectiveness, and balance and lower intrusion are preferred.
-The \textbf{frequency} metric measures interventions per reference-positive event: $(\mathrm{TP}+\mathrm{FP})/(\mathrm{TP}+\mathrm{FN})$, with counts pooled across streams within each scope.
+We report \textbf{Precision}, the share of interventions that match reference opportunities; \textbf{Recall}, the share of opportunities recovered; and their harmonic mean \textbf{F1}.
+To capture unwanted interruptions, \textbf{FPR} (false positive rate) is the share of reference negatives that receive an intervention, and \textbf{BAcc} (balanced accuracy) averages Recall and the correct-abstention rate.
+\textbf{Freq.}\ is the number of interventions per reference-positive event, $(\mathrm{TP}+\mathrm{FP})/(\mathrm{TP}+\mathrm{FN})$; it describes intervention volume and has no preferred direction.
+Scope-level scores pool counts across streams; Overall pools across all streams and scopes.
 Appendix~\ref{app:configuration} gives metric formulas and frequency interpretation.
 
 \paragraph{Implementation details.}
@@ -75,5 +81,4 @@ The primary model is \texttt{gpt-5.6-luna}, with temperature zero and thinking d
 Methods share task semantics and the intervention controller policy, with interface-specific prompts and budgets.
 The event-only, event and trajectory memory, and \system{} variants share their decision prompt, schema, and context bound of 72 hours and at most 100 events, including the current event.
 A-MEM and Graphiti augment that bound with their representations.
-For \system{}, memory preparation and current-condition matching precede semantic screening: accepted \texttt{skip} results yield \emph{abstain}, while \texttt{escalate} results proceed to full contextual assessment followed by intervention control.
 Appendix~\ref{app:configuration} lists detailed configurations.
