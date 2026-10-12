@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="500" height="480" viewBox="0 0 500 480">
 <desc>Code event-only comparison. All five axes span 0 to 100 percent. GPT-5.6 Luna: relevance 29.0%, coverage 64.4%, effectiveness 40.0%, specificity 76.7%, balance 70.5%; Gemini 3.8 Flash: relevance 35.6%, coverage 53.5%, effectiveness 42.7%, specificity 85.7%, balance 69.6%; DeepSeek V4 Flash: relevance 20.0%, coverage 28.7%, effectiveness 23.6%, specificity 83.0%, balance 55.9%; GLM 5.3 Flash: relevance 23.7%, coverage 28.7%, effectiveness 25.9%, specificity 86.3%, balance 57.5%</desc>
 <rect width="100%" height="100%" fill="white"/>
-<g font-family="Arial, sans-serif" font-weight="400">
+<g font-family="Times New Roman, Times, serif" font-weight="400">
 <style>polygon[stroke="#d9e1e7"], line[stroke="#d9e1e7"] { stroke: #bfccd7; stroke-width: 1.2; }</style>
 <polygon points="250.00,212.00 286.14,238.26 272.34,280.74 227.66,280.74 213.86,238.26" fill="none" stroke="#d9e1e7" stroke-width="1"/>
 <polygon points="250.00,174.00 322.28,226.51 294.67,311.49 205.33,311.49 177.72,226.51" fill="none" stroke="#d9e1e7" stroke-width="1"/>

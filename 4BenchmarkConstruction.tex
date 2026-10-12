@@ -31,14 +31,14 @@ Each sensor segment becomes available at interval closure.
 
 Each participant, home, or repository defines an isolated chronological stream, allowing earlier observations to inform later service opportunities.
 Public inputs contain contemporaneously available observations, using the same scope-specific schema for both label classes.
-Agents construct their own memory from these events; annotation and scoring metadata remain evaluator-private.
+Agents construct their own memory from these events; annotation and scoring metadata are reserved for evaluation.
 Appendix~\ref{app:benchmark_protocol} details source datasets, fields, and preprocessing.
 
 \subsection{Reference labels and causal replay}
 \label{sec:reference_labels}
 
-Annotators assess $e_t$ and its complete prior same-stream history $\mathcal{H}_{<t}$.
-Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ reference-episode novelty shared across methods:
+Annotators assess $e_t$ and its complete prior history $\mathcal{H}_{<t}$ within the same stream.
+Let $A$ indicate a concrete, timely, feasible, low-risk opportunity supported by $e_t$, $B$ an opportunity at $e_t$ supported by historical observations, and $N_t^{\mathrm{ref}}$ the novelty of the reference episode, shared across methods:
 \begin{equation}
 \begin{aligned}
 y_t=1 \iff {} & \big(A(e_t)=1\\
@@ -50,10 +50,10 @@ y_t=1 \iff {} & \big(A(e_t)=1\\
 The reference protocol labels the first reliable actionable window \emph{intervene} and covered windows \emph{abstain}, allowing renewed opportunities when support strengthens, the service changes, or an episode reopens.
 Event-level labels assess timely detection of these service windows.
 
-LLM-assisted triage prioritizes candidate opportunities; three team members then independently label every event while blinded to evaluated-system outputs, followed by cross-review and adjudication.
+LLM-assisted triage prioritizes candidate opportunities; three team members then independently label every event while blinded to outputs from the evaluated systems, followed by cross-review and adjudication.
 Appendix~\ref{app:label_review_450} details a separate-team diagnostic of reference sensitivity and episode behavior.
 Main comparisons fix labels, prompts, memory bounds, and validation settings before evaluation.
 
-Each stream is replayed chronologically from empty method state, with access to the current event and strictly prior same-stream context.
+Each stream is replayed chronologically from empty method state, using the current event and strictly prior context from that stream.
 Each decision is finalized before the current event is committed to memory; reference labels are joined after inference for scoring.
 Scoring includes the initial events and continues as history accumulates.

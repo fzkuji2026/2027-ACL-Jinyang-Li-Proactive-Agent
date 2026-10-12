@@ -1,62 +1,3 @@
-% Declare experimental floats early so each wide result stays near its discussion.
-\begin{table*}[t]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.06}
-\begin{tabular}{@{}lcccccc@{}}
-\toprule
-\multirow{2}{*}{model} & \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
- & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ \\
-\midrule
-GPT-5.6 Luna & 48.8 & 46.1 & 58.6 & 10.3 & 55.4 & 18.1 \\
-GPT-5.6 Terra & \underline{54.1} & \underline{39.4} & \underline{64.4} & \underline{9.1} & \underline{60.3} & \underline{14.9} \\
-GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \textbf{66.4} & \textbf{11.8} \\
-\bottomrule
-\end{tabular}
-\caption{Within-series model scaling (\%). Bold and underline mark the best and second-best scores per column.}
-\label{tab:backbone_sensitivity}
-\end{table*}
-
-\begin{figure*}[tp]
-\centering
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Sports.png}\hfill
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Home.png}\hfill
-\includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Code.png}
-\par\vspace{2pt}
-\includegraphics[width=0.98\textwidth]{Fig_Model_Sensitivity_Legend.png}
-\caption{Event-only comparison on selected streams (0--100\%). Specificity $=1-\mathrm{intrusion}$.}
-\label{fig:event_only_model_radar}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\input{Fig2_Memory_Hierarchy_body}
-\caption{Proactive agent ablation (GPT-5.6 Luna). Effectiveness and intrusion across three memory configurations with a shared decision prompt and intervention control policy.}
-\label{fig:memory_hierarchy}
-\end{figure*}
-
-\begin{table*}[t]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccc}
-\toprule
-& \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
-\midrule
-w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
-w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
-before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
-\system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} \\
-\bottomrule
-\end{tabular}
-\caption{Validation and Code intervention control (GPT-5.6 Luna, \%). Before suppression scores recorded proposals with later states fixed. Bold and underline mark the best and second-best scores.}
-\label{tab:validation_ablations}
-\end{table*}
-
 \subsection{Main results (RQ1)}
 \label{sec:main_results}
 
@@ -74,7 +15,6 @@ Appendix~\ref{app:label_review_450} examines reference sensitivity and episode b
 Construction and decision LLMs change together, with all other settings fixed (Table~\ref{tab:backbone_sensitivity}).
 Effectiveness increases and intrusion decreases from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol across scopes.
 \system{} engages these backbones in extracting task-relevant details, inducing conditional regularities, and interpreting historical memory alongside current evidence.
-The trend is consistent with stronger backbones benefiting this coupled construction-and-decision process.
 Controlled ablations retain GPT-5.6 Luna.
 
 \paragraph{Cross-family event-only comparison.}
@@ -91,13 +31,12 @@ The profiles shift on Sports, linking backbone choice to the service domain and 
 Figure~\ref{fig:memory_hierarchy} compares event-only memory, event and trajectory memory, and the full hierarchy using Luna under shared decision settings, with representation-dependent intervention keys.
 Trajectories extend activity context beyond recent events, while regularities organize recurring evidence around its conditions of applicability.
 Opportunity recovery increases with trajectory memory, especially on Code; the full hierarchy combines further recovery with fewer false interventions across scopes.
-This progression is consistent with the complementary roles of activity-level context and conditional behavioral evidence in the complete system (RQ3).
 
 \paragraph{Memory validation.}
 Source validation checks trajectory fidelity; replay assesses historical support for conditional regularities.
 Table~\ref{tab:validation_ablations} compares both ablations with the same model and decision settings.
 \emph{w/o replay gate} retains current matching and bypasses activation thresholds for well-formed, source-linked candidates reconstructed online.
-\emph{w/o trajectory validation} retains schema-valid same-entity extractions, weekly construction, and replay, omitting fact checks.
+\emph{w/o trajectory validation} retains schema-valid extractions for the same entity, weekly construction, and replay, omitting fact checks.
 Both reduce relevance and effectiveness; removing replay yields the larger effectiveness decline.
 On Code, trajectory validation is associated with fewer false interventions at unchanged coverage (RQ3).
 

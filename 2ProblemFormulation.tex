@@ -9,7 +9,7 @@ e^u_t=(\tau^u_t,x^u_t),
 \end{equation}
 where $T_u$ is the stream length and $x^u_t$ contains public fields available at time $\tau^u_t$.
 Events follow chronological order with deterministic tie-breaking; we omit $u$ when clear.
-State $Z^u_t$ comprises prior same-entity observations, finalized outputs, and the memory and intervention-control states derived from them.
+State $Z^u_t$ comprises prior observations and finalized outputs for the same entity, together with the resulting memory and intervention control states.
 The policy produces
 \begin{equation}
 (\hat y_t,\hat m_t)=\pi(e^u_t,Z^u_t),
@@ -22,5 +22,5 @@ After finalization, update function $U$ commits the event and output:
 Z^u_{t+1}=U(Z^u_t,e^u_t,\hat y_t,\hat m_t).
 \label{eq:causal_update}
 \end{equation}
-The objective is to detect timely, actionable \emph{service opportunities} supported by current or prior same-entity observations.
-Evaluation uses fixed reference decisions $y_t\in\{0,1\}$ under Section~\ref{sec:reference_labels}; labels and annotation metadata remain evaluator-private.
+The objective is to detect timely, actionable \emph{service opportunities} supported by current or prior observations of the same entity.
+Evaluation uses fixed reference decisions $y_t\in\{0,1\}$ under Section~\ref{sec:reference_labels}; labels and annotation metadata are reserved for evaluation.

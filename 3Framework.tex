@@ -8,13 +8,14 @@ The decision stage combines current observations with applicable historical evid
 \begin{figure*}[t]
     \centering
     \makebox[\textwidth][c]{\resizebox{0.98\textwidth}{!}{\input{Fig1_EPM_Architecture_body}}}
-    \caption{\system{} architecture. (A) Source validation and replay build hierarchical memory. (B) Retrieved memory and current conditions inform contextual assessment and intervention control. The event is committed after the final decision (dashed arrows).}
+    \caption{\system{} architecture. (A) Source validation and replay build hierarchical memory. (B) Retrieved memory and current conditions inform contextual assessment and intervention control. Every event is stored after the final decision, including abstention (dashed arrows).}
     \label{fig:architecture}
 \end{figure*}
 
 \subsection{Memory construction and update}
 
-Service opportunities can depend on both recent changes and recurring behavior, motivating a memory hierarchy that preserves fine-grained evidence while validating longer-term abstractions.
+Recent events capture immediate changes; recurring behavior emerges across days.
+\system{} organizes these observations into three memory layers.
 
 \paragraph{Bounded event memory.}
 Evidence utilization can degrade in long contexts~\citep{liu2024lost}, motivating a bounded event layer that preserves recent observations at their original granularity.
@@ -29,8 +30,7 @@ We use $\Delta=72$ hours and $K=100$: at most 99 prior events accompany the sepa
 A separate buffer retains all committed events from the open local day for trajectory construction.
 
 \paragraph{Fact-validated temporal trajectory memory.}
-To retain activity context beyond the recent window while keeping abstractions traceable, we construct temporal trajectories with source-level fact validation.
-After a local day closes, a construction LLM summarizes its buffered events as trajectory segments with intervals, typed facts, and event citations.
+At the end of each local day, an LLM summarizes that day's events into trajectory segments with intervals, typed facts, and source citations.
 Let $F(\cdot)$ denote normalized checkable facts obtained from typed fields.
 For segment $d$ and its cited events $\mathcal{E}(d)$, source consistency requires
 \begin{equation}
@@ -47,7 +47,7 @@ Accepted temporal trajectories form $W_t$, retaining historical context beyond e
 Appendix~\ref{app:implementation} details field handling and buffering.
 
 \paragraph{Replay-assessed behavioral regularity memory.}
-To ground behavioral expectations in observed recurrence, we assess proposed conditional regularities through historical replay and revise their eligibility as evidence accumulates.
+Historical replay tests whether a proposed behavioral regularity recurs in the recorded observations.
 Weekly consolidation groups seven completed daily records per entity in time order, with each record assigned to one cycle.
 A cycle may span more than seven calendar days.
 An LLM proposes a trigger $g$, expected behavior $p$, time window, optional weekday restrictions, and source daily identifiers.
@@ -64,7 +64,7 @@ Let $n_f$ count fulfilled (supporting) days and $n_v$ count violated days:
 The base rate is the frequency of $p$ over observable days under the same time-window and weekday restrictions across both triggered and other observable days.
 A zero denominator gives a zero score.
 
-A well-formed proposal becomes \emph{active} when $n_f\geq3$, confidence $\geq0.5$, and lift $\geq1.0$; otherwise it remains a decision-invisible \emph{candidate}.
+A well-formed proposal remains a \emph{candidate} until $n_f\geq3$, confidence $\geq0.5$, and lift $\geq1.0$; it then becomes \emph{active} and available for retrieval.
 Malformed proposals are rejected.
 Consolidation resets the online trajectory view, retaining records for audit.
 Later observations update regularity confidence and lifecycle: repeated violations can lower retrieval priority or suspend eligibility.
@@ -72,9 +72,8 @@ Appendix~\ref{app:lifecycle} specifies these transitions.
 
 \subsection{Memory retrieval and selection}
 
-To make accumulated regularities relevant to the present service opportunity, retrieval checks their trigger conditions, temporal applicability, and occurrence state.
 The event memory supplies the bounded sequence and $W_t$ supplies all completed temporal trajectories in the current cycle.
-Retrieval of regularities additionally checks entity-local trigger context, weekdays, and temporal applicability with a 30-minute lead and grace interval.
+Regularity retrieval checks trigger context for the same entity, weekdays, and temporal applicability with a 30-minute lead and grace interval.
 Matching considers current and previously recorded causal trigger occurrences.
 An occurrence is fulfilled when its expected behavior has been observed; censored occurrences have insufficient observations for assessment.
 Selection excludes both states.
@@ -88,12 +87,10 @@ R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
 \label{eq:long_term_retrieval}
 \end{equation}
 The top-three selection ranks eligible regularities by occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
-Retrieval supplies applicable regularities and occurrence states for contextual assessment.
 
 \subsection{Proactive decision}
 \label{sec:decision_control}
 
-Timely assistance requires combining current needs with historical context~\citep{yang2025contextagent}.
 \paragraph{Contextual assessment and intervention control.}
 For each event, the decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
 \begin{equation}
@@ -112,4 +109,4 @@ Appendix~\ref{app:intervention_control} specifies matching fields, phase transit
 Inference stages $e_t$, retrieves prior memory and matches current conditions, assembles $C_t$ for assessment, applies intervention control, and commits $e_t$ after finalization.
 Each complete public event enters the event buffer and open-day buffer, advancing trajectory construction, regularity replay, and lifecycle updates.
 Maintenance incorporating $e_t$ can affect only later decisions.
-Reference labels remain private during construction and retrieval.
+Reference labels are reserved for offline evaluation.

@@ -23,21 +23,21 @@ Services cover low-risk triage, review, and maintenance; native \texttt{PushEven
 
 \paragraph{Public-input contract.}
 Both label classes share the same scope-specific schema: event and stream identifiers, timestamps, and contemporaneously observable fields.
-Reference labels, candidate flags, episode annotations, memory-level markers, and scoring masks remain evaluator-private.
+Reference labels, candidate flags, episode annotations, memory-level markers, and scoring masks are reserved for evaluation.
 Evaluation includes early events before temporal trajectories or behavioral regularities are available.
 
 \subsection{Reference labels and causal replay}
 \label{app:reference_protocol}
 
-Annotators apply the opportunity and novelty semantics in Section~\ref{sec:reference_labels} to each current event and its complete prior same-stream history, independently of a tested method's memory.
-LLM-assisted triage prioritizes the review queue; three team members independently assign labels while blinded to evaluated-system decisions, followed by cross-review and adjudication of every public event.
+Annotators apply the opportunity and novelty semantics in Section~\ref{sec:reference_labels} to each current event and its complete prior history within the same stream, independently of a tested method's memory.
+LLM-assisted triage prioritizes the review queue; three team members independently assign labels while blinded to decisions from the evaluated systems, followed by cross-review and adjudication of every public event.
 
 The Home aggregation rule precedes event construction.
 Each evaluation version fixes the event inventory, labels, intervention prompt, event memory bound, and validation settings before main runs on the jointly developed benchmark.
 
 Every stream starts from empty method state and is replayed chronologically under the causal execution order in Section~\ref{sec:decision_control}.
 Current events are committed only after the output is finalized; maintenance incorporating an event affects later decisions.
-Labels are joined offline; reference episode states and scoring metadata stay private.
+Labels are joined offline; reference episode states and scoring metadata are reserved for evaluation.
 
 \section{Implementation and experimental configuration}
 \label{app:implementation}
@@ -45,7 +45,7 @@ Labels are joined offline; reference episode states and scoring metadata stay pr
 \subsection{Trajectory evidence and replay}
 
 The trajectory construction step uses an independent buffer of all committed events from the open local day, cleared after processing.
-Activity segments contain a local interval, typed \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields, plus source-event identifiers.
+Activity segments contain a local interval, typed \texttt{observed}, \texttt{context-before}, and \texttt{outcome} fields, plus source event identifiers.
 The checks in Equation~\ref{eq:daily_validation} canonicalize scalar values, accept exact or schema-preserving suffix field paths, and require consistent entities, intervals, and resolved citations.
 Validation and replay operate on typed evidence.
 Accepted trajectories remain in the current construction cycle after their events leave event memory.
@@ -58,7 +58,7 @@ Confidence and lift have zero-denominator scores of zero.
 \subsection{Lifecycle and current matching}
 \label{app:lifecycle}
 
-Post-admission confidence combines replay and online counts in a support ratio smoothed with one initial success and failure; censored observations preserve both counts.
+After admission, confidence combines replay and online counts in a support ratio smoothed with one initial success and failure; censored observations preserve both counts.
 Two consecutive violations move an active regularity to \emph{weakening}, lowering retrieval priority; four move it to \emph{dormant}.
 A fulfilled observation restores a weakening regularity to active at confidence $\geq0.5$.
 Dormant regularities return to candidate for replay readmission.
@@ -73,12 +73,12 @@ Occurrence priority is deviated, followed by pending and upcoming.
 \label{app:intervention_control}
 
 In Sports and Home, the intervention key combines scope-specific episode state, proposed service action and target, and sorted regularity identifiers available in context.
-Plain summaries or graph facts supply an empty regularity-identifier list.
+Plain summaries or graph facts supply an empty list of regularity identifiers.
 Sports state includes availability and activity; Home state includes activity and room and onset, confirmed, and sustained phases at one, two, and three or more consecutive matching observations.
 Without an explicit episode key, scope-specific time or target fields identify the opportunity, with unchanged evidence additionally required for duplicate suppression.
 State changes, sequence restarts, changed service or regularity identifiers, and local-day transitions can generate new keys.
 
-Code uses repository-object identity and the most recent allowed intervention's mode, recipient, content, and firing condition.
+Code uses the identity of the repository and object, along with the most recent allowed intervention's mode, recipient, content, and firing condition.
 An exact match converts a repeated \texttt{create} proposal to \emph{abstain}; changed signatures and other episode operations pass this check.
 Representation-dependent key evidence can yield different suppression decisions across memory interfaces.
 
@@ -103,11 +103,11 @@ ProactiveAgent & Released prompt and proposal/null contract on the study backbon
 \addlinespace[3pt]
 ContextAgent & In-context proactive-service judgment on public events~\citep{yang2025contextagent}. \\
 \addlinespace[3pt]
-Mem0 & Open-source \texttt{mem0ai==2.0.12} extraction, consolidation, and retrieval; local \texttt{all-MiniLM-L6-v2} embeddings; top-8 same-entity retrieval with search threshold $0.1$~\citep{chhikara2025mem0,mem0ai2026mem0v2012}. \\
+Mem0 & Open-source \texttt{mem0ai==2.0.12} extraction, consolidation, and retrieval; local \texttt{all-MiniLM-L6-v2} embeddings; retrieval of up to eight memories for the same entity with search threshold $0.1$~\citep{chhikara2025mem0,mem0ai2026mem0v2012}. \\
 \addlinespace[3pt]
 A-MEM & Linked notes with association updates augment bounded context~\citep{xu2025amem}. \\
 \addlinespace[3pt]
-Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings; committed events populate stream-isolated graphs. Current-event queries use native hybrid edge search with reciprocal-rank fusion, retrieving up to ten relation facts with validity fields and source IDs~\citep{zep2026graphiti}. \\
+Graphiti & Graphiti 0.30.2 with Neo4j and local 384-dimensional \texttt{all-MiniLM-L6-v2} embeddings; committed events populate separate graphs for each stream. Queries from the current event use native hybrid edge search with reciprocal-rank fusion, retrieving up to ten relation facts with validity fields and source IDs~\citep{zep2026graphiti}. \\
 \bottomrule
 \end{tabular}
 \caption{External-method memory interfaces and implementation settings.}
@@ -153,7 +153,7 @@ total & six complete streams & 1,899 \\
 \end{table}
 
 Each stream is replayed chronologically from empty state.
-Models share the scope-specific task prompt, intervention control policy, and a causal context containing the current event and up to 99 prior same-stream events within 72 hours.
+Models share the scope-specific task prompt, intervention control policy, and a causal context containing the current event and up to 99 prior events from the same stream within 72 hours.
 Requests use temperature zero and request disabled thinking, with decision output limits of 256 tokens for Sports and Home and 512 for Code.
 Output-format and transport-recovery settings follow each backend's interface.
 Final decisions are scored offline against the common reference labels.
