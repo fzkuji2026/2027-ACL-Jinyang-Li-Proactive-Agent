@@ -43,6 +43,9 @@ F(d)&\subseteq\bigcup_{e\in\mathcal{E}(d)}F(e),\\
 Here $E^u_{\text{completed day}}$ contains the same entity's events from that completed day.
 The validator checks entity, interval, citations, and canonicalized scalar values at compatible field paths.
 Acceptance requires source-supported typed facts and resolved citations.
+Source citations preserve the link between an accepted trajectory and the observations it summarizes.
+An unsupported detail could otherwise propagate into a proposed regularity as daily records are consolidated.
+Validation therefore constrains the factual basis on which regularities are proposed, while retaining the source links needed to inspect their support.
 Accepted temporal trajectories form $W_t$, retaining historical context beyond event memory.
 Appendix~\ref{app:implementation} details field handling and buffering.
 
@@ -63,6 +66,10 @@ Let $n_f$ count fulfilled (supporting) days and $n_v$ count violated days:
 \end{equation}
 The base rate is the frequency of $p$ over observable days under the same time-window and weekday restrictions across both triggered and other observable days.
 A zero denominator gives a zero score.
+Confidence measures consistency across observable triggered days, whereas lift accounts for how common the expected behavior is under comparable temporal restrictions.
+A frequently observed activity can yield high confidence even when it also occurs without the trigger.
+Comparing the two frequencies makes this distinction explicit when assessing a proposed regularity.
+The support requirement further ensures that activation rests on repeated observations across distinct days.
 
 A well-formed proposal remains a \emph{candidate} until $n_f\geq3$, confidence $\geq0.5$, and lift $\geq1.0$; it then becomes \emph{active} and available for retrieval.
 Malformed proposals are rejected.
@@ -87,6 +94,10 @@ R_t&=\operatorname{Top3}\big\{\ell\in L_t^u:\\
 \label{eq:long_term_retrieval}
 \end{equation}
 The top-three selection ranks eligible regularities by occurrence state, lifecycle, confidence, and temporal distance (Appendix~\ref{app:matching}).
+Consider the evening-walk example in Figure~\ref{fig:intro_scenario}.
+Repeated walks under similar conditions may support a regularity even after their source events leave recent memory.
+When a later event satisfies its trigger near the usual walking time, the regularity contributes evidence from those earlier days.
+A walk already completed during the applicable occurrence removes it from selection, as does an occurrence \mbox{with insufficient observations}.
 
 \subsection{Proactive decision}
 \label{sec:decision_control}
@@ -99,6 +110,8 @@ C_t=(e_t,S_t,W_t,R_t,Q_t),
 \end{equation}
 where $Q_t$ describes the service opportunity's observable state; the controller separately records previously allowed interventions to track service coverage.
 The LLM produces $(\tilde y_t,\tilde m_t)=\pi_\theta(C_t)$, proposing intervention when the current event \emph{or} historical context supports concrete, timely, feasible, low-risk assistance, and abstention otherwise.
+For the walking example, a retrieved regularity supplies the historical reason to consider a reminder.
+The assessment then uses recent activity and the current situation to determine whether such assistance is timely and feasible.
 
 Within each scope, all methods apply the same intervention controller policy to their own context and intervention history.
 The controller compares proposed services with previously allowed interventions and converts duplicates to \emph{abstain}.
@@ -108,5 +121,8 @@ Appendix~\ref{app:intervention_control} specifies matching fields, phase transit
 
 Inference stages $e_t$, retrieves prior memory and matches current conditions, assembles $C_t$ for assessment, applies intervention control, and commits $e_t$ after finalization.
 Each complete public event enters the event buffer and open-day buffer, advancing trajectory construction, regularity replay, and lifecycle updates.
+Abstained events can still record completed activities, changed circumstances, or violations of an existing regularity.
+Storing them preserves the observations needed to revise memory as behavior changes.
 Maintenance incorporating $e_t$ can affect only later decisions.
+The current event is therefore assessed against the memory available on arrival, together with its own observed content.
 Reference labels are reserved for offline evaluation.

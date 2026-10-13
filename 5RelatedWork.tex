@@ -2,18 +2,19 @@
 \label{sec:related}
 
 \paragraph{Agent memory.}
-Generative Agents, MemoryBank, and MemGPT organize experience through reflection, updating, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
-Mem0, A-MEM, and HippoRAG use extracted memories, linked records, and graph retrieval~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
-Graphiti preserves temporal validity and provenance in event-derived relations~\citep{zep2026graphiti}.
+Generative Agents, MemoryBank, and MemGPT organize experience through reflection, memory updates, or tiered context management~\citep{park2023generative,zhong2024memorybank,packer2023memgpt}.
+For retrieval, Mem0 uses extracted memories, A-MEM links records, and HippoRAG relies on graphs~\citep{chhikara2025mem0,xu2025amem,gutierrez2024hipporag}.
+Graphiti also tracks when event-derived relations are valid and where they originate~\citep{zep2026graphiti}.
 
 \paragraph{Proactive agents and memory.}
-ProactiveAgent studies task proposals and silence using annotated events~\citep{lu2025proactiveagent}.
-ContextAgent combines sensory contexts with historical personas to anticipate service needs~\citep{yang2025contextagent}, while PASK couples streaming demand detection with hybrid long-term memory~\citep{xie2026pask}.
-\mbox{MemCog}~\citep{li2026memcog} explores memory for dialogue reasoning, while Remember When It Matters injects selected reminders through a separate memory agent for long-horizon action~\citep{wu2026remember}.
-\system{} grounds trajectory-derived regularities through source checks, replay, and event matching.
+ProactiveAgent studies whether to propose a task or remain silent given annotated events~\citep{lu2025proactiveagent}.
+To anticipate service needs, ContextAgent combines sensory contexts with historical personas~\citep{yang2025contextagent}, and PASK couples streaming demand detection with hybrid long-term memory~\citep{xie2026pask}.
+\mbox{MemCog} explores memory for dialogue reasoning~\citep{li2026memcog}; Remember When It Matters uses a separate memory agent to supply selected reminders for long-horizon action~\citep{wu2026remember}.
+\system{} checks trajectory facts against source events and tests regularities through replay before matching them to current conditions.
 
 \paragraph{Evaluation of proactive service.}
 LoCoMo and LongMemEval assess long-term conversational memory and reasoning~\citep{maharana2024locomo,wu2025longmemeval}.
-Proactive benchmarks examine task proposals, latent-need detection, or memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.
-ProactiveStream evaluates sequential \emph{intervene} or \emph{abstain} decisions with accumulating memory in isolated, causally replayed streams, using episode-aware references for intervention timing.
-Interruption cost depends on task phase and receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}, motivating evaluation of opportunity recovery and intrusion.
+For proactive agents, benchmarks examine task proposals, latent-need detection, or memory triggering~\citep{lu2025proactiveagent,xie2026pask,li2026memcog}.
+ProactiveStream follows successive \emph{intervene} or \emph{abstain} decisions as memory accumulates, using isolated, causally replayed streams and episode-aware references for intervention timing.
+Interruption costs vary with task phase and user receptivity~\citep{adamczyk2004ifnotnow,iqbal2007breakpoints,iqbal2008notification,mehrotra2016myphone}.
+We therefore evaluate both \mbox{opportunity recovery and intrusion}.

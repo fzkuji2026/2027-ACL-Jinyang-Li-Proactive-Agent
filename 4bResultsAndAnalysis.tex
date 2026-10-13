@@ -1,36 +1,48 @@
 \subsection{Main results (RQ1)}
 \label{sec:main_results}
 
-ProactiveStream evaluates service decisions as history accumulates.
+We compare \system{} with five external methods on ProactiveStream.
 
 \paragraph{Comparisons with external methods.}
-\system{} achieves higher effectiveness and balance across scopes, jointly reflecting opportunity recovery and intervention selectivity (Table~\ref{tab:main_results}, RQ1).
+Across all three scopes, \system{} achieves higher effectiveness and balance than the external baselines (Table~\ref{tab:main_results}, RQ1).
+The comparison reflects different trade-offs across scopes.
+On Sports, Mem0 attains greater coverage alongside more false interventions; \system{} is more selective, with higher relevance and lower intrusion.
+On Home, \system{} recovers more opportunities than every external baseline, with fewer false interventions than the higher-frequency A-MEM and Graphiti.
+On Code, it likewise obtains the highest coverage, whereas Mem0 achieves lower intrusion with substantially less opportunity recovery.
+The gains therefore come with different changes in operating behavior: more selective intervention on Sports and broader opportunity recovery on Home and Code.
+
 \label{sec:reviewed_diagnostics}
-Appendix~\ref{app:label_review_450} examines reference sensitivity and episode behavior on a separate 450-target sample.
+Appendix~\ref{app:label_review_450} examines reference sensitivity and episode behavior on a separate diagnostic sample.
+Rescoring fixed diagnostic outputs against separate-team references gives similar effectiveness on Sports and lower effectiveness on Home and Code, indicating that absolute performance depends on how actionable opportunities are labeled.
 
 \subsection{Model comparison (RQ2)}
 \label{sec:model_sensitivity}
 
 \paragraph{Within-series model scaling.}
-Construction and decision LLMs change together, with all other settings fixed (Table~\ref{tab:backbone_sensitivity}).
+With all other settings fixed, construction and decision LLMs change together (Table~\ref{tab:backbone_sensitivity}).
 Effectiveness increases and intrusion decreases from GPT-5.6 Luna through GPT-5.6 Terra to GPT-5.6 Sol across scopes.
-\system{} engages these backbones in extracting task-relevant details, inducing conditional regularities, and interpreting historical memory alongside current evidence.
+Stronger backbones can improve both the construction of conditional regularities and their use in decisions about the current event.
 Controlled ablations retain GPT-5.6 Luna.
 
 \paragraph{Cross-family event-only comparison.}
 Using the shared event-only interface, we compare GPT-5.6 Luna, Gemini 3.8 Flash, DeepSeek V4 Flash, and GLM 5.3 Flash on two selected complete streams per scope (Figure~\ref{fig:event_only_model_radar}; Appendix~\ref{app:cross_family_streams}).
-The results reveal scope-dependent trade-offs between opportunity recovery and correct abstention.
 On Home and Code, Luna recovers more opportunities than DeepSeek and GLM, while the latter achieve higher specificity.
-The profiles shift on Sports, linking backbone choice to the service domain and the relative importance of missed opportunities and unnecessary interventions.
+Sports provides a contrast: Luna achieves both higher coverage and higher specificity than DeepSeek.
 
 \subsection{Ablation and memory analysis (RQ3)}
 \label{sec:hierarchy}
 \label{sec:validation_ablations}
 
 \paragraph{Proactive agent ablation.}
-Figure~\ref{fig:memory_hierarchy} compares event-only memory, event and trajectory memory, and the full hierarchy using Luna under shared decision settings, with representation-dependent intervention keys.
+Figure~\ref{fig:memory_hierarchy} compares event-only memory, event and trajectory memory, and the full hierarchy using Luna under shared decision settings.
 Trajectories extend activity context beyond recent events, while regularities organize recurring evidence around its conditions of applicability.
-Opportunity recovery increases with trajectory memory, especially on Code; the full hierarchy combines further recovery with fewer false interventions across scopes.
+Adding trajectory memory raises effectiveness in every scope, with the largest improvement on Code.
+Intrusion remains unchanged on Sports and Home and rises slightly on Code, so the gain at this stage lies mainly in opportunity recovery.
+
+The full hierarchy improves effectiveness further and lowers intrusion across all three scopes.
+It retains recurring behavior together with its triggers and time windows, allowing earlier observations to inform assessment when the corresponding conditions recur.
+The improvement on both measures is consistent with a useful role for this more selective historical context.
+These configurations also use representation-dependent intervention keys, so the comparison captures memory retrieval and intervention control operating together.
 
 \paragraph{Memory validation.}
 Source validation checks trajectory fidelity; replay assesses historical support for conditional regularities.

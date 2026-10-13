@@ -1,6 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We introduced ProactiveStream and \system{} to study proactive assistance as history accumulates.
-\system{} checks trajectory facts against source events and assesses behavioral regularities through replay.
-Across three scopes, it achieves higher effectiveness and balance than the evaluated baselines.
+We introduced ProactiveStream to evaluate proactive assistance over event streams as history accumulates.
+\system{} combines recent events, source-checked temporal trajectories, and replay-assessed behavioral regularities, bringing evidence from earlier observations into current decisions.
+Across Sports, Home, and Code, it achieves higher effectiveness and balance than the evaluated baselines.
+The memory ablations further show improved opportunity recovery with trajectories and fewer false interventions with the full hierarchy.
+These results support maintaining historical evidence at multiple temporal scales for \mbox{event-driven proactive assistance}.
