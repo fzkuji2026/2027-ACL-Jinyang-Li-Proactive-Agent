@@ -97,7 +97,7 @@ Each method retains its prompts, retrieval, and budgets.
 \renewcommand{\arraystretch}{1.12}
 \begin{tabular}{@{}p{0.16\textwidth}p{0.80\textwidth}@{}}
 \toprule
-method & interface and settings \\
+\textbf{Method} & \textbf{Interface and Settings} \\
 \midrule
 ProactiveAgent & Released prompt and proposal/null contract on the study backbone; causal event--decision history capped at 1,000 events per request including the current event~\citep{lu2025proactiveagent,thunlp2026proactiveagentrepo}. \\
 \addlinespace[3pt]
@@ -136,7 +136,7 @@ The selection uses public stream identifiers.
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}llr@{}}
 \toprule
-scope & source stream & events \\
+\textbf{Scope} & \textbf{Source Stream} & \textbf{Events} \\
 \midrule
 Sports & HeartSteps participant 05 & 184 \\
  & HeartSteps participant 35 & 191 \\
@@ -174,7 +174,7 @@ In Figure~\ref{fig:memory_hierarchy}, the event and trajectory memory variant re
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}clcc@{}}
 \toprule
-scope & method & frequency ($\times$) & coverage $\uparrow$ \\
+\textbf{Scope} & \textbf{Method} & \begin{tabular}[c]{@{}c@{}}\textbf{Frequency}\\ ($\times$)\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{Coverage}\\ $\uparrow$\end{tabular} \\
 \midrule
 \multirow{3}{*}{Sports} & w/o replay gate & 2.19 & \underline{68.2} \\
  & w/o trajectory validation & 2.23 & \textbf{76.7} \\

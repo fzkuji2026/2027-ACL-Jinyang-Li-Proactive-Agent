@@ -14,7 +14,9 @@ The decision stage combines current observations with applicable historical evid
 
 \subsection{Memory construction and update}
 
-Service opportunities can depend on both recent changes and recurring behavior, motivating a memory hierarchy that preserves fine-grained evidence while validating longer-term abstractions.
+Service opportunities can arise from recent changes or from recurring behavior.
+Existing agent memories mainly serve retrieval~\citep{chhikara2025mem0,xu2025amem} and do not focus on recurring behavior.
+\system{} therefore organizes memory into three layers: event memory, temporal trajectory memory, and behavioral regularity memory.
 
 \paragraph{Bounded event memory.}
 Evidence utilization can degrade in long contexts~\citep{liu2024lost}, motivating a bounded event layer that preserves recent observations at their original granularity.
@@ -72,7 +74,9 @@ Appendix~\ref{app:lifecycle} specifies these transitions.
 
 \subsection{Memory retrieval and selection}
 
-To make accumulated regularities relevant to the present service opportunity, retrieval checks their trigger conditions, temporal applicability, and occurrence state.
+A regularity is useful only when its conditions hold at the current moment.
+Existing agent memories mainly retrieve by semantic relevance~\citep{park2023generative,chhikara2025mem0}, which can return memories that are similar to the current event but do not apply to it.
+\system{} instead uses a regularity only when its trigger and time window match the current event and the expected behavior has not yet occurred.
 The event memory supplies the bounded sequence and $W_t$ supplies all completed temporal trajectories in the current cycle.
 Retrieval of regularities additionally checks entity-local trigger context, weekdays, and temporal applicability with a 30-minute lead and grace interval.
 Matching considers current and previously recorded causal trigger occurrences.
@@ -93,7 +97,9 @@ Retrieval supplies applicable regularities and occurrence states for contextual 
 \subsection{Proactive decision}
 \label{sec:decision_control}
 
-Timely assistance requires combining current needs with historical context~\citep{yang2025contextagent}.
+Proactive assistance should consider both current needs and historical context~\citep{yang2025contextagent}.
+Poorly timed interruptions disrupt users~\citep{adamczyk2004ifnotnow}.
+\system{} therefore combines contextual assessment with intervention control.
 \paragraph{Contextual assessment and intervention control.}
 For each event, the decision context combines the current event, recent events, temporal trajectories, selected regularities, and observable episode state:
 \begin{equation}

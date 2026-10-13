@@ -6,9 +6,9 @@
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
-\multirow{2}{*}{model} & \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+\multirow{2}{*}{\textbf{Model}} & \multicolumn{2}{c}{\textbf{Sports}} & \multicolumn{2}{c}{\textbf{Home}} & \multicolumn{2}{c}{\textbf{Code}} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
- & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ \\
+ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ \\
 \midrule
 GPT-5.6 Luna & 48.8 & 46.1 & 58.6 & 10.3 & 55.4 & 18.1 \\
 GPT-5.6 Terra & \underline{54.1} & \underline{39.4} & \underline{64.4} & \underline{9.1} & \underline{60.3} & \underline{14.9} \\
@@ -43,9 +43,9 @@ GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \te
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+& \multicolumn{2}{c}{\textbf{Sports}} & \multicolumn{2}{c}{\textbf{Home}} & \multicolumn{2}{c}{\textbf{Code}} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
+\textbf{Method} & \textbf{Relevance} & \textbf{Effectiveness} & \textbf{Relevance} & \textbf{Effectiveness} & \textbf{Relevance} & \textbf{Effectiveness} \\
 \midrule
 w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
 w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
@@ -63,7 +63,26 @@ before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
 ProactiveStream evaluates service decisions as history accumulates.
 
 \paragraph{Comparisons with external methods.}
-\system{} achieves higher effectiveness and balance across scopes, jointly reflecting opportunity recovery and intervention selectivity (Table~\ref{tab:main_results}, RQ1).
+\system{} achieves the highest effectiveness and balance in all three scopes (Table~\ref{tab:main_results}, RQ1).
+
+\paragraph{Event-history methods.}
+ProactiveAgent intervenes frequently on Sports and Code (2.75$\times$ and 4.45$\times$), which yields high coverage but also high intrusion (64.5 and 49.7); on Home, it recovers only 26.8\% of opportunities.
+ProactiveAgent and ContextAgent judge each event from event history and do not focus on when a behavior usually occurs.
+Without this information, they cannot tell whether the current moment matches a recurring behavior, so they either intervene broadly or miss opportunities supported by earlier observations.
+This shows the need for memory that captures recurring behavior.
+
+\paragraph{Retrieval-based memory.}
+Mem0 shows the most unstable trade-off: it recovers 97.8\% of Sports opportunities with 81.0 intrusion, but only 17.4\% and 25.9\% on Home and Code.
+A-MEM, the strongest baseline on Home and Code, still trails \system{} by 15.7 and 11.7 effectiveness points.
+These methods retrieve memories by semantic relevance, so the retrieved memories reflect what is similar to the current event rather than what applies now.
+Their decisions therefore depend on which memories are retrieved, and the trade-off shifts across scopes.
+This shows the importance of checking whether historical memory applies at the current moment.
+
+\paragraph{\system{}.}
+\system{} has the highest relevance in all three scopes and the highest coverage on Home and Code (73.7 and 89.7).
+It uses a regularity only when its trigger and time window match the current event and the expected behavior has not yet occurred, so historical evidence is added at matching moments and left out elsewhere.
+As a result, coverage and relevance improve together.
+On Sports, intrusion remains 46.1, leaving room for more selective decisions.
 \label{sec:reviewed_diagnostics}
 Appendix~\ref{app:label_review_450} examines reference sensitivity and episode behavior on a separate 450-target sample.
 
