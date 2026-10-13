@@ -1,0 +1,48 @@
+% Editable vector radar panels for the cross-family event-only comparison.
+% Values match the <desc> fields of Fig_Model_Sensitivity_{Sports,Home,Code}.svg.
+% Axis order: Precision, Recall, F1, Specificity, BAcc (clockwise from top).
+\definecolor{radluna}{HTML}{C33760}
+\definecolor{radgemini}{HTML}{007F78}
+\definecolor{raddeepseek}{HTML}{5554A5}
+\definecolor{radglm}{HTML}{A95817}
+\tikzset{
+  radgrid/.style={draw=black!15,line width=0.4pt},
+  radlabel/.style={font=\scriptsize,inner sep=1pt},
+  radluna/.style={draw=radluna,line width=0.9pt,dash pattern=on 3.3pt off 1.7pt},
+  radgemini/.style={draw=radgemini,line width=0.9pt},
+  raddeepseek/.style={draw=raddeepseek,line width=0.9pt,dash pattern=on 1pt off 1.7pt},
+  radglm/.style={draw=radglm,line width=0.9pt,dash pattern=on 2.6pt off 1.7pt},
+}
+% \radarseries{style}{mark}{v1,v2,v3,v4,v5}
+\newcommand{\radarseries}[3]{%
+  \foreach \v [count=\i] in {#3} {\coordinate (p\i) at ({90-72*(\i-1)}:{\radarR*\v/100});}
+  \draw[#1,line join=round] (p1)--(p2)--(p3)--(p4)--(p5)--cycle;
+  \foreach \i in {1,...,5} {\node[#2] at (p\i) {};}
+}
+\newcommand{\radarpanel}[5]{%
+\begin{tikzpicture}
+  \def\radarR{1.25}
+  \foreach \r in {0.25,0.5,0.75,1} {\draw[radgrid] (90:\radarR*\r) \foreach \k in {1,...,4} {--({90-72*\k}:\radarR*\r)} --cycle;}
+  \foreach \k in {0,...,4} {\draw[radgrid] (0,0)--({90-72*\k}:\radarR);}
+  \node[font=\tiny,text=black!50,anchor=west] at (0.05,0.5*\radarR) {50};
+  \node[font=\tiny,text=black!50,anchor=west] at (0.05,\radarR) {100};
+  \node[radlabel,anchor=south] at (90:\radarR+0.05) {Precision};
+  \node[radlabel,anchor=west]  at (18:\radarR+0.05) {Recall};
+  \node[radlabel,anchor=north west] at (-54:\radarR+0.02) {F1};
+  \node[radlabel,anchor=north east] at (-126:\radarR+0.02) {Specificity};
+  \node[radlabel,anchor=east]  at (162:\radarR+0.05) {BAcc};
+  \radarseries{radglm}{fill=radglm,regular polygon,regular polygon sides=3,inner sep=0pt,minimum size=3.6pt}{#5}
+  \radarseries{raddeepseek}{fill=raddeepseek,diamond,inner sep=0pt,minimum size=3.6pt}{#4}
+  \radarseries{radgemini}{fill=radgemini,circle,inner sep=0pt,minimum size=3pt}{#3}
+  \radarseries{radluna}{fill=radluna,rectangle,inner sep=0pt,minimum size=2.8pt}{#2}
+  \node[font=\small,anchor=north] at (0,-\radarR-0.42) {#1};
+\end{tikzpicture}}
+\radarpanel{(a) Sports}{28.6,53.1,37.1,51.9,52.5}{30.6,53.1,38.8,56.3,54.7}{19.4,40.8,26.3,38.5,39.7}{25.9,44.9,32.8,53.3,49.1}\hfill
+\radarpanel{(b) Home}{44.3,75.0,55.7,86.2,80.6}{71.8,53.8,61.5,96.9,75.4}{100.0,17.3,29.5,100.0,58.7}{63.6,13.5,22.2,98.9,56.2}\hfill
+\radarpanel{(c) Code}{29.0,64.4,40.0,76.7,70.5}{35.6,53.5,42.7,85.7,69.6}{20.0,28.7,23.6,83.0,55.9}{23.7,28.7,25.9,86.3,57.5}
+\par\vspace{3pt}
+{\small
+\tikz[baseline=-0.6ex]{\draw[radluna] (0,0)--(0.5,0); \node[fill=radluna,inner sep=0pt,minimum size=2.8pt] at (0.25,0) {};}~GPT-5.6 Luna\hspace{14pt}
+\tikz[baseline=-0.6ex]{\draw[radgemini] (0,0)--(0.5,0); \node[fill=radgemini,circle,inner sep=0pt,minimum size=3pt] at (0.25,0) {};}~Gemini 3.8 Flash\hspace{14pt}
+\tikz[baseline=-0.6ex]{\draw[raddeepseek] (0,0)--(0.5,0); \node[fill=raddeepseek,diamond,inner sep=0pt,minimum size=3.6pt] at (0.25,0) {};}~DeepSeek V4 Flash\hspace{14pt}
+\tikz[baseline=-0.6ex]{\draw[radglm] (0,0)--(0.5,0); \node[fill=radglm,regular polygon,regular polygon sides=3,inner sep=0pt,minimum size=3.6pt] at (0.25,0) {};}~GLM 5.3 Flash\par}

@@ -1,12 +1,12 @@
 % Declare the wide main-results table early so it can share a page with its discussion.
 \begin{table*}[t]
 \centering
-\small
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.06}
+\caption{Full-scope comparison (GPT-5.6 Luna, \%; frequency in $\times$). Bold/underline: best/second-best per scope.}
+\label{tab:main_results}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}clcccccc@{}}
 \toprule
-scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & balance $\uparrow$ \\
+\textbf{Scope} & \textbf{Method} & \textbf{Frequency} ($\times$) & \textbf{Relevance} $\uparrow$ & \textbf{Coverage} $\uparrow$ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ & \textbf{Balance} $\uparrow$ \\
 \midrule
 \multirow{6}{*}{Sports} & ProactiveAgent & 2.75 & 30.0 & \underline{82.5} & 43.9 & 64.5 & \underline{59.0} \\
   & ContextAgent & 2.16 & \underline{31.0} & 67.1 & 42.4 & \underline{50.0} & 58.6 \\
@@ -29,9 +29,8 @@ scope & method & frequency ($\times$) & relevance $\uparrow$ & coverage $\uparro
   & Graphiti & 2.36 & 26.8 & 63.2 & 37.7 & 23.3 & 69.9 \\
   & \system{} & 2.24 & \textbf{40.1} & \textbf{89.7} & \textbf{55.4} & \underline{18.1} & \textbf{85.8} \\
 \bottomrule
-\end{tabular}
-\caption{Full-scope comparison (GPT-5.6 Luna). Frequency is in multiples ($\times$); other metrics are percentages. Bold and underline mark the best and second-best scores per scope, including ties.}
-\label{tab:main_results}
+\end{tabular}%
+}
 \end{table*}
 
 \section{Experimental evaluation}
@@ -45,22 +44,21 @@ We examine overall effectiveness (\textbf{RQ1}), model choice (\textbf{RQ2}), an
 % Declare experimental floats early so each wide result stays near its discussion.
 \begin{table*}[t]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.06}
+\caption{Within-series model scaling (\%). Bold and underline mark the best and second-best scores per column.}
+\label{tab:backbone_sensitivity}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
-\multirow{2}{*}{model} & \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+\multirow{2}{*}{\textbf{Model}} & \multicolumn{2}{c}{\textbf{Sports}} & \multicolumn{2}{c}{\textbf{Home}} & \multicolumn{2}{c}{\textbf{Code}} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
- & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ & effectiveness $\uparrow$ & intrusion $\downarrow$ \\
+ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ & \textbf{Effectiveness} $\uparrow$ & \textbf{Intrusion} $\downarrow$ \\
 \midrule
 GPT-5.6 Luna & 48.8 & 46.1 & 58.6 & 10.3 & 55.4 & 18.1 \\
 GPT-5.6 Terra & \underline{54.1} & \underline{39.4} & \underline{64.4} & \underline{9.1} & \underline{60.3} & \underline{14.9} \\
 GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \textbf{66.4} & \textbf{11.8} \\
 \bottomrule
-\end{tabular}
-\caption{Within-series model scaling (\%). Bold and underline mark the best and second-best scores per column.}
-\label{tab:backbone_sensitivity}
+\end{tabular}%
+}
 \end{table*}
 
 \begin{figure*}[tp]
@@ -70,35 +68,35 @@ GPT-5.6 Sol & \textbf{58.6} & \textbf{34.4} & \textbf{69.3} & \textbf{7.5} & \te
 \includegraphics[width=0.32\textwidth]{Fig_Model_Sensitivity_Code.png}
 \par\vspace{2pt}
 \includegraphics[width=0.98\textwidth]{Fig_Model_Sensitivity_Legend.png}
-\caption{Event-only comparison on selected streams (0--100\%). Specificity $=1-\mathrm{intrusion}$.}
+\caption{Event-only comparison of four backbones on selected streams (0--100\%). Specificity $=1-\mathrm{intrusion}$.}
 \label{fig:event_only_model_radar}
 \end{figure*}
 
 \begin{figure*}[t]
 \centering
 \input{Fig2_Memory_Hierarchy_body}
-\caption{Proactive agent ablation (GPT-5.6 Luna). Effectiveness and intrusion across three memory configurations with a shared decision prompt and intervention control policy.}
+\caption{Memory-layer ablation (GPT-5.6 Luna) under a shared decision prompt and intervention control policy.}
 \label{fig:memory_hierarchy}
 \end{figure*}
 
 \begin{table*}[t]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
+\caption{Validation and Code intervention control (GPT-5.6 Luna, \%). Each w/o row drops one check; before suppression scores recorded proposals with later states fixed. Bold and underline mark the best and second-best.}
+\label{tab:validation_ablations}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{2}{c}{Sports} & \multicolumn{2}{c}{Home} & \multicolumn{2}{c}{Code} \\
+& \multicolumn{2}{c}{\textbf{Sports}} & \multicolumn{2}{c}{\textbf{Home}} & \multicolumn{2}{c}{\textbf{Code}} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-method & relevance & effectiveness & relevance & effectiveness & relevance & effectiveness \\
+\textbf{Method} & \textbf{Relevance} & \textbf{Effectiveness} & \textbf{Relevance} & \textbf{Effectiveness} & \textbf{Relevance} & \textbf{Effectiveness} \\
 \midrule
 w/o replay gate & 31.1 & 42.7 & 43.6 & 54.4 & 33.8 & 48.1 \\
 w/o trajectory validation & \underline{34.4} & \underline{47.5} & \underline{45.9} & \underline{56.7} & 36.1 & 51.5 \\
 before suppression & -- & -- & -- & -- & \underline{36.7} & \underline{53.6} \\
 \system{} & \textbf{35.8} & \textbf{48.8} & \textbf{48.6} & \textbf{58.6} & \textbf{40.1} & \textbf{55.4} \\
 \bottomrule
-\end{tabular}
-\caption{Validation and Code intervention control (GPT-5.6 Luna, \%). Before suppression scores recorded proposals with later states fixed. Bold and underline mark the best and second-best scores.}
-\label{tab:validation_ablations}
+\end{tabular}%
+}
 \end{table*}
 
 \paragraph{Baselines.}

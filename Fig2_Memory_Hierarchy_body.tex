@@ -18,13 +18,13 @@
     font=\small,ylabel style={font=\small},
     every axis plot/.append style={draw=none}
 }}
-\begin{axis}[memorybars,name=ispanel,ylabel={effectiveness $\uparrow$}]
+\begin{axis}[memorybars,name=ispanel,ylabel={F1 $\uparrow$}]
 \node[anchor=south east,font=\small,yshift=2pt] at (rel axis cs:0,1) {\%};
 \addplot[fill=eventblue] coordinates {(Sports,38.3) (Home,40.0) (Code,28.7)};
 \addplot[fill=dailygold] coordinates {(Sports,38.9) (Home,45.1) (Code,48.5)};
 \addplot[fill=patternteal] coordinates {(Sports,48.8) (Home,58.6) (Code,55.4)};
 \end{axis}
-\begin{axis}[memorybars,at={(ispanel.east)},anchor=west,xshift=1.15cm,ylabel={intrusion $\downarrow$}]
+\begin{axis}[memorybars,at={(ispanel.east)},anchor=west,xshift=1.15cm,ylabel={FPR $\downarrow$}]
 \node[anchor=south east,font=\small,yshift=2pt] at (rel axis cs:0,1) {\%};
 \addplot[fill=eventblue] coordinates {(Sports,51.3) (Home,12.4) (Code,18.9)};
 \addplot[fill=dailygold] coordinates {(Sports,51.3) (Home,12.4) (Code,19.1)};
