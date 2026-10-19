@@ -1,0 +1,115 @@
+\subsection{Example input events}
+\label{app:input_event_examples}
+
+Figure~\ref{fig:input_event_examples} shows one public event record from each scope of ProactiveStream.
+Field names, values, and nesting are retained; additional fields are omitted for readability.
+Events are processed chronologically within each stream, and reference labels are stored separately for evaluation.
+
+\lstdefinestyle{inputevent}{
+  basicstyle=\ttfamily\fontsize{9}{10.5}\selectfont,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true,
+  breaklines=true,
+  breakatwhitespace=false,
+  breakindent=1em,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{black!35},
+  framesep=3pt,
+  xleftmargin=3.5pt,
+  xrightmargin=3.5pt,
+  aboveskip=5pt,
+  belowskip=5pt
+}
+
+\begin{figure*}[p]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Sports.}
+\begin{lstlisting}[style=inputevent]
+{
+  "event_id": "6379c89c927a28f79bc620c3",
+  "timestamp": "2015-07-22T21:31:48Z",
+  "stream_id": "heartsteps_participant_01",
+  "observable_payload": {
+    "source_local_decision_time":
+      "2015-07-22T17:31:48",
+    "source_utc_offset_seconds": -14400,
+    "available": true,
+    "recognized_activity": "STILL",
+    "google_fit_steps_pre30": 0,
+    "google_fit_steps_pre60": 73,
+    "jawbone_steps_pre30": 261,
+    "jawbone_steps_pre60": 456,
+    "location_category": "home",
+    "weather_condition": "Mostly Cloudy",
+    "temperature_c": 25.8
+  }
+}
+\end{lstlisting}
+An activity-context record at 17:31:48 local time (UTC$-$04:00), with availability, location, weather, and step counts from Google Fit and Jawbone over the preceding 30 and 60 minutes.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Home.}
+\begin{lstlisting}[style=inputevent]
+{
+  "decision_id": "casas50_d_000000",
+  "stream_id": "casas_home_0001",
+  "window_start": "2012-07-21T00:00:00",
+  "window_end": "2012-07-21T00:50:00",
+  "decision_time": "2012-07-21T00:50:00",
+  "duration_minutes": 50,
+  "motion": {
+    "raw_event_count": 84,
+    "activation_count": 43,
+    "deactivation_count": 41,
+    "location_counts": {
+      "Bathroom": 13,
+      "Bedroom": 17,
+      "LivingRoom": 11,
+      "OutsideDoor": 2
+    },
+    "location_sequence": [
+      "Bedroom", "LivingRoom", "OutsideDoor",
+      "Bedroom", "Bathroom", "Bedroom"
+    ]
+  },
+  "door_actions": [],
+  "numeric_sensors": [],
+  "other_actions": []
+}
+\end{lstlisting}
+This event summarizes sensor observations from 00:00 to 00:50 in source-local time and becomes available when the interval closes at 00:50.
+Location counts record sensor activations; the location sequence collapses consecutive repeated location labels.
+\end{minipage}
+
+\par\medskip
+\begin{minipage}{\textwidth}
+\textbf{Code.}
+\begin{lstlisting}[style=inputevent]
+{
+  "event_id": "ghe_48350778162",
+  "event_time": "2025-04-05T05:32:35.000Z",
+  "stream_id": "github_repo_23768977",
+  "repository": {"full_name": "thephpleague/commonmark"},
+  "event": {"action": "opened", "github_type": "PullRequestEvent"},
+  "object": {"number": 1069, "type": "pull_request"},
+  "content": {
+    "title": "docs/2.6/extensions/front-matter.md: add missing newline",
+    "body": "In docs/2.6/extensions/front-matter.md, add a missing newline so that `use` statements are on individual lines"
+  },
+  "attributes": {
+    "state": "open",
+    "changed_files": 1,
+    "additions": 2,
+    "deletions": 1
+  }
+}
+\end{lstlisting}
+This event records the opening of a pull request that corrects documentation formatting; \texttt{event\_time} gives the GitHub event timestamp in UTC.
+\end{minipage}
+\caption{Example input events from Sports, Home, and Code. Excerpts preserve the original fields and nesting.}
+\label{fig:input_event_examples}
+\end{figure*}
